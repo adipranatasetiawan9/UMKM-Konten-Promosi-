@@ -1,62 +1,314 @@
 /*
  * UMKM PROMO
  * Data Produk UMKM
- * R. Adi Pranata Setiawan
+ * Raden Adi Pranata Setiawan
  * 2026/2027
+ *
+ * Catatan:
+ * Data produk pada tahap prototype ini
+ * merupakan data simulasi katalog.
  */
 
 const products = [
+
     {
         id: 1,
         name: "Keripik Tette",
         category: "Makanan",
-        price: 18000,
+        price: 15000,
         icon: "🍘",
-        description: "Camilan renyah khas Madura yang cocok untuk teman bersantai."
+        description:
+            "Camilan renyah khas Madura yang cocok untuk teman bersantai."
     },
 
     {
         id: 2,
         name: "Batik Madura",
         category: "Fashion",
-        price: 250000,
+        price: 125000,
         icon: "👕",
-        description: "Produk batik lokal dengan motif khas Madura."
+        description:
+            "Produk batik dengan motif dan karakter khas Madura."
     },
 
     {
         id: 3,
-        name: "Kopi Tubruk Gajah",
+        name: "Kopi Madura",
         category: "Minuman",
-        price: 8000,
+        price: 35000,
         icon: "☕",
-        description: "Kopi lokal dengan cita rasa khas untuk pecinta kopi."
+        description:
+            "Kopi lokal dengan cita rasa khas untuk pecinta kopi."
     },
 
     {
         id: 4,
         name: "Petis Madura",
         category: "Makanan",
-        price: 15000,
+        price: 28000,
         icon: "🥫",
-        description: "Produk olahan khas Madura untuk melengkapi berbagai hidangan."
+        description:
+            "Produk olahan khas Madura yang dapat digunakan sebagai pelengkap berbagai hidangan."
     },
 
     {
         id: 5,
         name: "Tas Anyaman",
         category: "Kerajinan",
-        price: 125000,
+        price: 75000,
         icon: "👜",
-        description: "Kerajinan anyaman yang dibuat dengan desain sederhana dan menarik."
+        description:
+            "Kerajinan anyaman dengan desain sederhana yang cocok digunakan untuk berbagai kebutuhan."
     },
 
     {
         id: 6,
-        name: "Aneka Jajanan Tradisional",
+        name: "Kue Tradisional",
         category: "Makanan",
-        price: 5000,
+        price: 20000,
         icon: "🍰",
-        description: "Aneka kue tradisional yang cocok untuk berbagai acara."
+        description:
+            "Aneka kue tradisional yang cocok untuk acara keluarga dan berbagai kegiatan."
+    },
+
+    {
+        id: 7,
+        name: "Rengginang",
+        category: "Makanan",
+        price: 18000,
+        icon: "🍘",
+        description:
+            "Camilan berbahan dasar beras yang memiliki tekstur renyah dan cocok sebagai makanan ringan."
+    },
+
+    {
+        id: 8,
+        name: "Dodol Madura",
+        category: "Makanan",
+        price: 25000,
+        icon: "🍬",
+        description:
+            "Makanan tradisional dengan rasa manis dan tekstur khas yang cocok sebagai oleh-oleh."
+    },
+
+    {
+        id: 9,
+        name: "Abon Ikan",
+        category: "Makanan",
+        price: 30000,
+        icon: "🐟",
+        description:
+            "Olahan ikan yang praktis dan dapat dinikmati sebagai pelengkap berbagai makanan."
+    },
+
+    {
+        id: 10,
+        name: "Abon Sapi",
+        category: "Makanan",
+        price: 35000,
+        icon: "🥩",
+        description:
+            "Olahan daging sapi berbumbu yang praktis untuk melengkapi hidangan sehari-hari."
+    },
+
+    {
+        id: 11,
+        name: "Sate Ayam Madura",
+        category: "Makanan",
+        price: 25000,
+        icon: "🍢",
+        description:
+            "Sajian sate ayam dengan bumbu khas Madura yang populer dan mudah dikenal masyarakat."
+    },
+
+    {
+        id: 12,
+        name: "Gado-Gado",
+        category: "Makanan",
+        price: 15000,
+        icon: "🥗",
+        description:
+            "Hidangan sayuran dengan pelengkap dan saus kacang yang cocok untuk berbagai kalangan."
+    },
+
+    {
+        id: 13,
+        name: "Bakso",
+        category: "Makanan",
+        price: 15000,
+        icon: "🍲",
+        description:
+            "Hidangan bakso dengan kuah hangat yang cocok dinikmati sebagai makanan sehari-hari."
+    },
+
+    {
+        id: 14,
+        name: "Nasi Goreng",
+        category: "Makanan",
+        price: 18000,
+        icon: "🍚",
+        description:
+            "Nasi goreng dengan pilihan bumbu dan pelengkap yang cocok untuk sarapan atau makan malam."
+    },
+
+    {
+        id: 15,
+        name: "Mie Goreng",
+        category: "Makanan",
+        price: 15000,
+        icon: "🍜",
+        description:
+            "Mie goreng dengan bumbu gurih dan pilihan pelengkap yang cocok untuk berbagai usia."
+    },
+
+    {
+        id: 16,
+        name: "Rujak Cingur",
+        category: "Makanan",
+        price: 20000,
+        icon: "🥗",
+        description:
+            "Hidangan tradisional dengan perpaduan sayuran, pelengkap, dan bumbu petis."
+    },
+
+    {
+        id: 17,
+        name: "Mie Lontong",
+        category: "Makanan",
+        price: 15000,
+        icon: "🍜",
+        description:
+            "Hidangan berbahan mie dan lontong dengan kuah serta pelengkap yang khas."
+    },
+
+    {
+        id: 18,
+        name: "Campur Lorjuk",
+        category: "Makanan",
+        price: 25000,
+        icon: "🍲",
+        description:
+            "Hidangan dengan lorjuk sebagai bahan khas yang dapat menjadi pilihan kuliner lokal."
+    },
+
+    {
+        id: 19,
+        name: "Ayam Bumbu Hitam Madura",
+        category: "Makanan",
+        price: 30000,
+        icon: "🍗",
+        description:
+            "Olahan ayam dengan bumbu hitam khas Madura yang kaya rasa."
+    },
+
+    {
+        id: 20,
+        name: "Bebek Bumbu Hitam Madura",
+        category: "Makanan",
+        price: 35000,
+        icon: "🦆",
+        description:
+            "Olahan bebek dengan bumbu hitam khas Madura yang memiliki cita rasa gurih dan berbumbu."
+    },
+
+    {
+        id: 21,
+        name: "Kerupuk",
+        category: "Makanan",
+        price: 10000,
+        icon: "🥠",
+        description:
+            "Camilan renyah yang dapat dinikmati sebagai pelengkap berbagai hidangan."
+    },
+
+    {
+        id: 22,
+        name: "Jamu Tradisional",
+        category: "Minuman",
+        price: 12000,
+        icon: "🫙",
+        description:
+            "Minuman tradisional berbahan rempah yang diperkenalkan sebagai bagian dari produk lokal."
+    },
+
+    {
+        id: 23,
+        name: "Kerajinan Bambu",
+        category: "Kerajinan",
+        price: 65000,
+        icon: "🎋",
+        description:
+            "Kerajinan berbahan bambu dengan desain sederhana dan nilai kreativitas lokal."
+    },
+
+    {
+        id: 24,
+        name: "Busana Muslim/Muslimah",
+        category: "Fashion",
+        price: 175000,
+        icon: "👗",
+        description:
+            "Pilihan busana muslim dan muslimah dengan desain yang dapat digunakan untuk berbagai kegiatan."
+    },
+
+    {
+        id: 25,
+        name: "Es Sudi Mampir Pamekasan",
+        category: "Minuman",
+        price: 10000,
+        icon: "🥤",
+        description:
+            "Minuman dingin yang dimasukkan sebagai contoh data simulasi produk kuliner Pamekasan."
+    },
+
+    {
+        id: 26,
+        name: "Es Teler",
+        category: "Minuman",
+        price: 15000,
+        icon: "🍧",
+        description:
+            "Minuman segar dengan perpaduan buah dan bahan pelengkap yang cocok dinikmati saat cuaca panas."
+    },
+
+    {
+        id: 27,
+        name: "Es Dawet",
+        category: "Minuman",
+        price: 10000,
+        icon: "🥤",
+        description:
+            "Minuman tradisional yang menyegarkan dengan cita rasa manis dan tekstur khas."
+    },
+
+    {
+        id: 28,
+        name: "Air Kelapa / Degan",
+        category: "Minuman",
+        price: 12000,
+        icon: "🥥",
+        description:
+            "Minuman segar dari kelapa muda yang cocok dinikmati pada siang hari."
+    },
+
+    {
+        id: 29,
+        name: "Tahu Tek-Tek",
+        category: "Makanan",
+        price: 15000,
+        icon: "🥢",
+        description:
+            "Hidangan berbahan tahu dengan pelengkap dan saus yang gurih."
+    },
+
+    {
+        id: 30,
+        name: "Tahu Kocek",
+        category: "Makanan",
+        price: 12000,
+        icon: "🍢",
+        description:
+            "Olahan tahu dengan cita rasa gurih dan pedas yang cocok sebagai camilan atau makanan ringan."
     }
+
 ];
