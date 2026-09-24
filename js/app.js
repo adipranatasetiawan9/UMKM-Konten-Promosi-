@@ -3,26 +3,110 @@
  * Main JavaScript
  * Raden Adi Pranata Setiawan
  * 2026/2027
+ *
+ * Fitur:
+ * - Navigasi halaman
+ * - Katalog produk
+ * - Pencarian produk
+ * - Filter kategori
+ * - Detail produk
+ * - Rekomendasi konten promosi
+ * - Salin konten
  */
 
 
 /* =========================
-   ELEMENT
-========================= */
+   NAVIGASI HALAMAN
+   ========================= */
 
-const pages =
-    document.querySelectorAll(".page");
+const pages = document.querySelectorAll(".page");
+const pageButtons = document.querySelectorAll("[data-page]");
 
-const navLinks =
-    document.querySelectorAll(
-        ".nav-link"
+
+function showPage(pageName) {
+
+    pages.forEach(function(page) {
+
+        page.classList.remove("active");
+
+    });
+
+
+    const targetPage =
+        document.getElementById(
+            "page-" + pageName
+        );
+
+
+    if (targetPage) {
+
+        targetPage.classList.add("active");
+
+    }
+
+
+    pageButtons.forEach(function(button) {
+
+        if (
+            button.classList.contains("nav-link")
+        ) {
+
+            button.classList.remove("active");
+
+
+            if (
+                button.dataset.page ===
+                pageName
+            ) {
+
+                button.classList.add("active");
+
+            }
+
+        }
+
+    });
+
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/*
+ * Semua tombol yang mempunyai
+ * data-page akan berfungsi sebagai
+ * navigasi halaman.
+ */
+
+pageButtons.forEach(function(button) {
+
+    button.addEventListener(
+        "click",
+        function() {
+
+            const pageName =
+                button.dataset.page;
+
+
+            if (pageName) {
+
+                showPage(pageName);
+
+            }
+
+        }
     );
 
-const pageButtons =
-    document.querySelectorAll(
-        "[data-page]"
-    );
+});
 
+
+/* =========================
+   ELEMEN PRODUK
+   ========================= */
 
 const productGrid =
     document.getElementById(
@@ -30,109 +114,38 @@ const productGrid =
     );
 
 
-/* =========================
-   REKOMENDASI ELEMENT
-========================= */
-
-const recommendationProduct =
+const productSearch =
     document.getElementById(
-        "recommendationProduct"
-    );
-
-const recommendationTarget =
-    document.getElementById(
-        "recommendationTarget"
-    );
-
-const recommendationPlatform =
-    document.getElementById(
-        "recommendationPlatform"
-    );
-
-const recommendationStyle =
-    document.getElementById(
-        "recommendationStyle"
-    );
-
-const recommendationButton =
-    document.getElementById(
-        "recommendationButton"
-    );
-
-const recommendationResult =
-    document.getElementById(
-        "recommendationResult"
-    );
-
-const resultIdea =
-    document.getElementById(
-        "resultIdea"
-    );
-
-const resultCaption =
-    document.getElementById(
-        "resultCaption"
-    );
-
-const resultHashtag =
-    document.getElementById(
-        "resultHashtag"
-    );
-
-const copyRecommendation =
-    document.getElementById(
-        "copyRecommendation"
+        "productSearch"
     );
 
 
-/* =========================
-   MODAL ELEMENT
-========================= */
-
-const productModal =
+const clearSearch =
     document.getElementById(
-        "productModal"
+        "clearSearch"
     );
 
-const modalClose =
+
+const categoryFilters =
     document.getElementById(
-        "modalClose"
+        "categoryFilters"
     );
 
-const modalProductIcon =
+
+const searchResultInfo =
     document.getElementById(
-        "modalProductIcon"
+        "searchResultInfo"
     );
 
-const modalProductCategory =
-    document.getElementById(
-        "modalProductCategory"
-    );
 
-const modalProductName =
-    document.getElementById(
-        "modalProductName"
-    );
+let currentSearch = "";
 
-const modalProductPrice =
-    document.getElementById(
-        "modalProductPrice"
-    );
-
-const modalProductDescription =
-    document.getElementById(
-        "modalProductDescription"
-    );
-
-const modalPromoButton =
-    document.getElementById(
-        "modalPromoButton"
-    );
+let currentCategory = "Semua";
 
 
 /* =========================
    FORMAT RUPIAH
-========================= */
+   ========================= */
 
 function formatRupiah(price) {
 
@@ -149,96 +162,12 @@ function formatRupiah(price) {
 
 
 /* =========================
-   NAVIGASI HALAMAN
-========================= */
-
-function showPage(pageName) {
-
-    pages.forEach(
-        function(page) {
-
-            page.classList.remove(
-                "active"
-            );
-
-        }
-    );
-
-
-    const selectedPage =
-        document.getElementById(
-            "page-" + pageName
-        );
-
-
-    if (selectedPage) {
-
-        selectedPage.classList.add(
-            "active"
-        );
-
-    }
-
-
-    navLinks.forEach(
-        function(link) {
-
-            link.classList.remove(
-                "active"
-            );
-
-
-            if (
-                link.dataset.page ===
-                pageName
-            ) {
-
-                link.classList.add(
-                    "active"
-                );
-
-            }
-
-        }
-    );
-
-
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-
-}
-
-
-/* =========================
-   EVENT NAVIGASI
-========================= */
-
-pageButtons.forEach(
-    function(button) {
-
-        button.addEventListener(
-            "click",
-            function() {
-
-                const pageName =
-                    button.dataset.page;
-
-                showPage(pageName);
-
-            }
-        );
-
-    }
-);
-
-
-/* =========================
    TAMPILKAN PRODUK
-========================= */
+   ========================= */
 
-function displayProducts() {
+function displayProducts(
+    productList
+) {
 
     if (!productGrid) {
         return;
@@ -248,7 +177,38 @@ function displayProducts() {
     productGrid.innerHTML = "";
 
 
-    products.forEach(
+    if (
+        productList.length === 0
+    ) {
+
+        productGrid.innerHTML = `
+
+            <div class="empty-product-result">
+
+                <div class="empty-icon">
+                    🔎
+                </div>
+
+                <h3>
+                    Produk tidak ditemukan
+                </h3>
+
+                <p>
+                    Coba gunakan kata pencarian
+                    lain atau pilih kategori
+                    yang berbeda.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+    productList.forEach(
         function(product) {
 
             const card =
@@ -265,27 +225,64 @@ function displayProducts() {
                 product.id;
 
 
+            card.setAttribute(
+                "role",
+                "button"
+            );
+
+
+            card.setAttribute(
+                "tabindex",
+                "0"
+            );
+
+
+            card.setAttribute(
+                "aria-label",
+                "Lihat detail " +
+                product.name
+            );
+
+
             card.innerHTML = `
 
                 <div class="product-image">
+
                     ${product.icon}
+
                 </div>
+
 
                 <div class="product-info">
 
                     <span class="product-category">
+
                         ${product.category}
+
                     </span>
 
+
                     <h3>
+
                         ${product.name}
+
                     </h3>
 
+
                     <p class="product-price">
+
                         ${formatRupiah(
                             product.price
                         )}
+
                     </p>
+
+
+                    <span class="product-detail-hint">
+
+                        Lihat detail →
+
+                    </span>
 
                 </div>
 
@@ -303,40 +300,172 @@ function displayProducts() {
 
 
 /* =========================
-   ISI PRODUK REKOMENDASI
-========================= */
+   FILTER PRODUK
+   ========================= */
 
-function loadRecommendationProducts() {
+function filterProducts() {
+
+    const search =
+        currentSearch
+            .trim()
+            .toLowerCase();
+
+
+    const filteredProducts =
+        products.filter(
+            function(product) {
+
+                const name =
+                    String(
+                        product.name
+                    ).toLowerCase();
+
+
+                const category =
+                    String(
+                        product.category
+                    ).toLowerCase();
+
+
+                const description =
+                    String(
+                        product.description
+                    ).toLowerCase();
+
+
+                const matchesSearch =
+                    search === "" ||
+                    name.includes(search) ||
+                    category.includes(search) ||
+                    description.includes(search);
+
+
+                const matchesCategory =
+                    currentCategory ===
+                        "Semua" ||
+                    product.category ===
+                        currentCategory;
+
+
+                return (
+                    matchesSearch &&
+                    matchesCategory
+                );
+
+            }
+        );
+
+
+    displayProducts(
+        filteredProducts
+    );
+
+
+    updateSearchInfo(
+        filteredProducts.length
+    );
+
+}
+
+
+/* =========================
+   INFORMASI HASIL PENCARIAN
+   ========================= */
+
+function updateSearchInfo(
+    resultCount
+) {
+
+    if (!searchResultInfo) {
+        return;
+    }
+
+
+    const searchText =
+        currentSearch.trim();
+
 
     if (
-        !recommendationProduct
+        searchText === "" &&
+        currentCategory === "Semua"
     ) {
+
+        searchResultInfo.textContent =
+            `Menampilkan semua ${products.length} produk`;
 
         return;
 
     }
 
 
-    products.forEach(
-        function(product) {
+    if (
+        searchText !== "" &&
+        currentCategory !== "Semua"
+    ) {
 
-            const option =
-                document.createElement(
-                    "option"
-                );
+        searchResultInfo.textContent =
+            `${resultCount} produk ditemukan untuk "${searchText}" dalam kategori ${currentCategory}`;
 
+        return;
 
-            option.value =
-                product.id;
-
-
-            option.textContent =
-                product.name;
+    }
 
 
-            recommendationProduct.appendChild(
-                option
-            );
+    if (searchText !== "") {
+
+        searchResultInfo.textContent =
+            `${resultCount} produk ditemukan untuk "${searchText}"`;
+
+        return;
+
+    }
+
+
+    searchResultInfo.textContent =
+        `${resultCount} produk dalam kategori ${currentCategory}`;
+
+}
+
+
+/* =========================
+   PENCARIAN
+   ========================= */
+
+if (productSearch) {
+
+    productSearch.addEventListener(
+        "input",
+        function() {
+
+            currentSearch =
+                productSearch.value;
+
+
+            if (clearSearch) {
+
+                if (
+                    currentSearch.trim()
+                    !== ""
+                ) {
+
+                    clearSearch.classList.add(
+                        "active"
+                    );
+
+                }
+
+                else {
+
+                    clearSearch.classList.remove(
+                        "active"
+                    );
+
+                }
+
+            }
+
+
+            filterProducts();
 
         }
     );
@@ -345,35 +474,222 @@ function loadRecommendationProducts() {
 
 
 /* =========================
-   DETAIL PRODUK
-========================= */
+   HAPUS PENCARIAN
+   ========================= */
 
-function showProductDetail(product) {
+if (clearSearch) {
 
-    modalProductIcon.textContent =
-        product.icon;
+    clearSearch.addEventListener(
+        "click",
+        function() {
 
+            if (productSearch) {
 
-    modalProductCategory.textContent =
-        product.category;
+                productSearch.value = "";
 
-
-    modalProductName.textContent =
-        product.name;
-
-
-    modalProductPrice.textContent =
-        formatRupiah(
-            product.price
-        );
+            }
 
 
-    modalProductDescription.textContent =
-        product.description;
+            currentSearch = "";
+
+
+            clearSearch.classList.remove(
+                "active"
+            );
+
+
+            filterProducts();
+
+
+            if (productSearch) {
+
+                productSearch.focus();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================
+   FILTER KATEGORI
+   ========================= */
+
+if (categoryFilters) {
+
+    categoryFilters.addEventListener(
+        "click",
+        function(event) {
+
+            const button =
+                event.target.closest(
+                    ".filter-button"
+                );
+
+
+            if (!button) {
+                return;
+            }
+
+
+            currentCategory =
+                button.dataset.category;
+
+
+            const buttons =
+                categoryFilters.querySelectorAll(
+                    ".filter-button"
+                );
+
+
+            buttons.forEach(
+                function(item) {
+
+                    item.classList.remove(
+                        "active"
+                    );
+
+                }
+            );
+
+
+            button.classList.add(
+                "active"
+            );
+
+
+            filterProducts();
+
+        }
+    );
+
+}
+
+
+/* =========================
+   MODAL DETAIL PRODUK
+   ========================= */
+
+const productModal =
+    document.getElementById(
+        "productModal"
+    );
+
+
+const modalClose =
+    document.getElementById(
+        "modalClose"
+    );
+
+
+const modalProductIcon =
+    document.getElementById(
+        "modalProductIcon"
+    );
+
+
+const modalProductCategory =
+    document.getElementById(
+        "modalProductCategory"
+    );
+
+
+const modalProductName =
+    document.getElementById(
+        "modalProductName"
+    );
+
+
+const modalProductPrice =
+    document.getElementById(
+        "modalProductPrice"
+    );
+
+
+const modalProductDescription =
+    document.getElementById(
+        "modalProductDescription"
+    );
+
+
+const modalPromoButton =
+    document.getElementById(
+        "modalPromoButton"
+    );
+
+
+let selectedProductForPromo =
+    null;
+
+
+/* =========================
+   TAMPILKAN DETAIL PRODUK
+   ========================= */
+
+function showProductDetail(
+    product
+) {
+
+    if (!productModal) {
+        return;
+    }
+
+
+    if (modalProductIcon) {
+
+        modalProductIcon.textContent =
+            product.icon;
+
+    }
+
+
+    if (modalProductCategory) {
+
+        modalProductCategory.textContent =
+            product.category;
+
+    }
+
+
+    if (modalProductName) {
+
+        modalProductName.textContent =
+            product.name;
+
+    }
+
+
+    if (modalProductPrice) {
+
+        modalProductPrice.textContent =
+            formatRupiah(
+                product.price
+            );
+
+    }
+
+
+    if (modalProductDescription) {
+
+        modalProductDescription.textContent =
+            product.description;
+
+    }
+
+
+    selectedProductForPromo =
+        product;
 
 
     productModal.classList.add(
         "active"
+    );
+
+
+    document.body.classList.add(
+        "modal-open"
     );
 
 }
@@ -381,22 +697,88 @@ function showProductDetail(product) {
 
 /* =========================
    TUTUP MODAL
-========================= */
+   ========================= */
 
 function closeProductModal() {
 
+    if (!productModal) {
+        return;
+    }
+
+
     productModal.classList.remove(
         "active"
+    );
+
+
+    document.body.classList.remove(
+        "modal-open"
+    );
+
+}
+
+
+if (modalClose) {
+
+    modalClose.addEventListener(
+        "click",
+        closeProductModal
+    );
+
+}
+
+
+if (productModal) {
+
+    productModal.addEventListener(
+        "click",
+        function(event) {
+
+            if (
+                event.target ===
+                productModal
+            ) {
+
+                closeProductModal();
+
+            }
+
+        }
     );
 
 }
 
 
 /* =========================
-   KLIK PRODUK
-========================= */
+   ESC UNTUK MODAL
+   ========================= */
 
-if (productGrid) {
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeProductModal();
+
+        }
+
+    }
+);
+
+
+/* =========================
+   KLIK PRODUK
+   ========================= */
+
+function setupProductInteraction() {
+
+    if (!productGrid) {
+        return;
+    }
+
 
     productGrid.addEventListener(
         "click",
@@ -443,35 +825,59 @@ if (productGrid) {
         }
     );
 
-}
 
-
-/* =========================
-   MODAL CLOSE
-========================= */
-
-if (modalClose) {
-
-    modalClose.addEventListener(
-        "click",
-        closeProductModal
-    );
-
-}
-
-
-if (productModal) {
-
-    productModal.addEventListener(
-        "click",
+    productGrid.addEventListener(
+        "keydown",
         function(event) {
 
             if (
-                event.target ===
-                productModal
+                event.key !== "Enter" &&
+                event.key !== " "
             ) {
 
-                closeProductModal();
+                return;
+
+            }
+
+
+            const card =
+                event.target.closest(
+                    ".product-card"
+                );
+
+
+            if (!card) {
+                return;
+            }
+
+
+            event.preventDefault();
+
+
+            const productId =
+                Number(
+                    card.dataset.id
+                );
+
+
+            const product =
+                products.find(
+                    function(item) {
+
+                        return (
+                            item.id ===
+                            productId
+                        );
+
+                    }
+                );
+
+
+            if (product) {
+
+                showProductDetail(
+                    product
+                );
 
             }
 
@@ -482,8 +888,119 @@ if (productModal) {
 
 
 /* =========================
-   DARI DETAIL KE REKOMENDASI
-========================= */
+   PRODUK → REKOMENDASI
+   ========================= */
+
+const recommendationProduct =
+    document.getElementById(
+        "recommendationProduct"
+    );
+
+
+const recommendationTarget =
+    document.getElementById(
+        "recommendationTarget"
+    );
+
+
+const recommendationPlatform =
+    document.getElementById(
+        "recommendationPlatform"
+    );
+
+
+const recommendationStyle =
+    document.getElementById(
+        "recommendationStyle"
+    );
+
+
+const recommendationButton =
+    document.getElementById(
+        "recommendationButton"
+    );
+
+
+const recommendationResult =
+    document.getElementById(
+        "recommendationResult"
+    );
+
+
+const resultIdea =
+    document.getElementById(
+        "resultIdea"
+    );
+
+
+const resultCaption =
+    document.getElementById(
+        "resultCaption"
+    );
+
+
+const resultHashtag =
+    document.getElementById(
+        "resultHashtag"
+    );
+
+
+const copyRecommendation =
+    document.getElementById(
+        "copyRecommendation"
+    );
+
+
+/* =========================
+   ISI PRODUK REKOMENDASI
+   ========================= */
+
+function loadRecommendationProducts() {
+
+    if (!recommendationProduct) {
+        return;
+    }
+
+
+    recommendationProduct.innerHTML = `
+
+        <option value="">
+            Pilih Produk
+        </option>
+
+    `;
+
+
+    products.forEach(
+        function(product) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                product.id;
+
+
+            option.textContent =
+                product.name;
+
+
+            recommendationProduct.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================
+   TOMBOL BUAT PROMOSI
+   ========================= */
 
 if (modalPromoButton) {
 
@@ -491,44 +1008,25 @@ if (modalPromoButton) {
         "click",
         function() {
 
-            showPage(
-                "rekomendasi"
-            );
-
-
             if (
+                selectedProductForPromo &&
                 recommendationProduct
             ) {
 
-                const productId =
-                    modalProductName.dataset
-                        ? null
-                        : null;
-
-                const selected =
-                    products.find(
-                        function(product) {
-
-                            return (
-                                product.name ===
-                                modalProductName.textContent
-                            );
-
-                        }
+                recommendationProduct.value =
+                    String(
+                        selectedProductForPromo.id
                     );
-
-
-                if (selected) {
-
-                    recommendationProduct.value =
-                        selected.id;
-
-                }
 
             }
 
 
             closeProductModal();
+
+
+            showPage(
+                "rekomendasi"
+            );
 
         }
     );
@@ -537,10 +1035,124 @@ if (modalPromoButton) {
 
 
 /* =========================
+   NAMA TARGET
+   ========================= */
+
+function getTargetName(
+    value
+) {
+
+    const names = {
+
+        "AnakAnak":
+            "Anak Anak",
+
+        "Remaja":
+            "Remaja",
+
+        "Pelajar/Mahasiswa":
+            "Pelajar/Mahasiswa",
+
+        "Keluarga":
+            "Keluarga",
+
+        "Masyarakat Umum":
+            "Masyarakat Umum"
+
+    };
+
+
+    return (
+        names[value] ||
+        value
+    );
+
+}
+
+
+/* =========================
+   NAMA PLATFORM
+   ========================= */
+
+function getPlatformName(
+    value
+) {
+
+    const names = {
+
+        Instagram:
+            "Instagram",
+
+        TikTok:
+            "TikTok",
+
+        Facebook:
+            "Facebook",
+
+        WhatsApp:
+            "WhatsApp"
+
+    };
+
+
+    return (
+        names[value] ||
+        value
+    );
+
+}
+
+
+/* =========================
+   NAMA GAYA
+   ========================= */
+
+function getStyleName(
+    value
+) {
+
+    const names = {
+
+        Informatif:
+            "Informatif",
+
+        Promosi:
+            "Promosi",
+
+        Storytelling:
+            "Storytelling",
+
+        Santai:
+            "Santai"
+
+    };
+
+
+    return (
+        names[value] ||
+        value
+    );
+
+}
+
+
+/* =========================
    GENERATE REKOMENDASI
-========================= */
+   ========================= */
 
 function generateRecommendation() {
+
+    if (
+        !recommendationProduct ||
+        !recommendationTarget ||
+        !recommendationPlatform ||
+        !recommendationStyle
+    ) {
+
+        return;
+
+    }
+
 
     const productId =
         Number(
@@ -568,7 +1180,7 @@ function generateRecommendation() {
     ) {
 
         alert(
-            "Silakan lengkapi semua pilihan terlebih dahulu."
+            "Silakan lengkapi Produk, Target Audiens, Platform, dan Gaya Konten terlebih dahulu."
         );
 
         return;
@@ -594,6 +1206,24 @@ function generateRecommendation() {
     }
 
 
+    const targetName =
+        getTargetName(
+            target
+        );
+
+
+    const platformName =
+        getPlatformName(
+            platform
+        );
+
+
+    const styleName =
+        getStyleName(
+            style
+        );
+
+
     let idea = "";
 
 
@@ -602,7 +1232,7 @@ function generateRecommendation() {
     ) {
 
         idea =
-            `Buat konten informatif tentang ${product.name} dengan menjelaskan keunggulan, manfaat, dan karakteristik produk.`;
+            `Buat konten informatif tentang ${product.name}. Jelaskan karakteristik, keunggulan, dan informasi penting produk agar mudah dipahami oleh ${targetName}.`;
 
     }
 
@@ -611,7 +1241,7 @@ function generateRecommendation() {
     ) {
 
         idea =
-            `Buat konten promosi ${product.name} dengan menonjolkan keunggulan produk dan alasan menarik untuk membelinya.`;
+            `Buat konten promosi untuk ${product.name} dengan menonjolkan daya tarik produk, harga simulasi, dan alasan produk layak diperkenalkan kepada ${targetName}.`;
 
     }
 
@@ -620,71 +1250,129 @@ function generateRecommendation() {
     ) {
 
         idea =
-            `Ceritakan kisah di balik ${product.name}, mulai dari proses pembuatan hingga menjadi produk yang siap digunakan atau dikonsumsi.`;
+            `Buat konten storytelling tentang ${product.name} dengan menceritakan karakter produk dan pengalaman yang ingin dibangun untuk ${targetName}.`;
 
     }
 
     else {
 
         idea =
-            `Buat konten santai tentang ${product.name} menggunakan bahasa ringan dan mudah dipahami oleh audiens.`;
+            `Buat konten santai tentang ${product.name} menggunakan bahasa ringan, menarik, dan mudah dipahami oleh ${targetName}.`;
 
     }
 
 
-    const caption =
+    let caption = "";
 
-        `Kenalan dengan ${product.name}! ✨\n\n` +
 
-        `${product.description}\n\n` +
+    if (
+        style === "Promosi"
+    ) {
 
-        `Konten ini ditujukan untuk ${target} ` +
+        caption =
+            `✨ Kenalan dengan ${product.name}!\n\n` +
+            `${product.description}\n\n` +
+            `Harga simulasi: ${formatRupiah(
+                product.price
+            )}.\n\n` +
+            `Konten ini ditujukan untuk ${targetName} ` +
+            `dan dapat dipublikasikan melalui ${platformName}.\n\n` +
+            `Yuk kenali dan dukung produk UMKM lokal!`;
 
-        `dan dapat dipublikasikan melalui ${platform}.\n\n` +
+    }
 
-        `Yuk dukung produk UMKM lokal!`;
+    else if (
+        style === "Informatif"
+    ) {
+
+        caption =
+            `📌 Mengenal ${product.name}\n\n` +
+            `${product.description}\n\n` +
+            `Informasi ini dapat disampaikan kepada ${targetName} ` +
+            `melalui ${platformName} dengan gaya yang mudah dipahami.\n\n` +
+            `Kenali produk lokal dan dukung UMKM Indonesia.`;
+
+    }
+
+    else if (
+        style === "Storytelling"
+    ) {
+
+        caption =
+            `📖 Cerita di balik ${product.name}\n\n` +
+            `${product.description}\n\n` +
+            `Setiap produk lokal memiliki cerita dan karakter tersendiri. ` +
+            `Mari memperkenalkannya kepada ${targetName} ` +
+            `melalui ${platformName}.\n\n` +
+            `Dukung kreativitas dan produk UMKM lokal.`;
+
+    }
+
+    else {
+
+        caption =
+            `👋 Hai! Kenalan dengan ${product.name}.\n\n` +
+            `${product.description}\n\n` +
+            `Konten santai ini cocok untuk ${targetName} ` +
+            `dan dapat dibagikan melalui ${platformName}.\n\n` +
+            `Yuk kenali produk lokal hari ini!`;
+
+    }
+
+
+    const categoryTag =
+        product.category
+            .replace(/\s/g, "")
+            .replace(/\//g, "");
 
 
     const hashtag =
-
         `#UMKM ` +
         `#ProdukLokal ` +
         `#UMKMIndonesia ` +
+        `#${categoryTag} ` +
         `#DigitalMarketing ` +
-        `#${platform.replace(
-            /\s/g,
-            ""
-        )}`;
+        `#${platform}`;
 
 
-    resultIdea.textContent =
-        idea;
+    if (resultIdea) {
+
+        resultIdea.textContent =
+            idea;
+
+    }
 
 
-    resultCaption.textContent =
-        caption;
+    if (resultCaption) {
+
+        resultCaption.textContent =
+            caption;
+
+    }
 
 
-    resultHashtag.textContent =
-        hashtag;
+    if (resultHashtag) {
+
+        resultHashtag.textContent =
+            hashtag;
+
+    }
 
 
-    recommendationResult.classList.add(
-        "active"
-    );
+    if (recommendationResult) {
 
+        recommendationResult.classList.add(
+            "active"
+        );
 
-    recommendationResult.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-    });
+    }
 
 }
 
 
 /* =========================
-   EVENT REKOMENDASI
-========================= */
+   TOMBOL REKOMENDASI
+   ========================= */
 
 if (recommendationButton) {
 
@@ -697,57 +1385,86 @@ if (recommendationButton) {
 
 
 /* =========================
-   SALIN REKOMENDASI
-========================= */
+   SALIN KONTEN
+   ========================= */
+
+function copyRecommendationContent() {
+
+    if (
+        !resultCaption ||
+        !resultHashtag
+    ) {
+
+        return;
+
+    }
+
+
+    const content =
+        `${resultCaption.textContent}
+
+${resultHashtag.textContent}`;
+
+
+    if (
+        navigator.clipboard &&
+        navigator.clipboard.writeText
+    ) {
+
+        navigator.clipboard
+            .writeText(content)
+            .then(
+                function() {
+
+                    alert(
+                        "Konten berhasil disalin."
+                    );
+
+                }
+            )
+            .catch(
+                function() {
+
+                    alert(
+                        "Konten tidak dapat disalin otomatis."
+                    );
+
+                }
+            );
+
+    }
+
+}
+
 
 if (copyRecommendation) {
 
     copyRecommendation.addEventListener(
         "click",
-        function() {
-
-            const content =
-
-                `${resultIdea.textContent}
-
-${resultCaption.textContent}
-
-${resultHashtag.textContent}`;
-
-
-            navigator.clipboard
-                .writeText(content)
-                .then(
-                    function() {
-
-                        alert(
-                            "Konten berhasil disalin."
-                        );
-
-                    }
-                )
-                .catch(
-                    function() {
-
-                        alert(
-                            "Konten tidak dapat disalin otomatis."
-                        );
-
-                    }
-                );
-
-        }
+        copyRecommendationContent
     );
 
 }
 
 
 /* =========================
-   INITIALIZE
-========================= */
+   INISIALISASI
+   ========================= */
 
-displayProducts();
+displayProducts(
+    products
+);
+
 
 loadRecommendationProducts();
 
-showPage("beranda");
+
+setupProductInteraction();
+
+
+filterProducts();
+
+
+showPage(
+    "beranda"
+);

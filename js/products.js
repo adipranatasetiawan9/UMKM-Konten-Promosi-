@@ -226,7 +226,7 @@ const products = [
         name: "Jamu Tradisional",
         category: "Minuman",
         price: 12000,
-        icon: "🫙",
+        icon: "🍵",
         description:
             "Minuman tradisional berbahan rempah yang diperkenalkan sebagai bagian dari produk lokal."
     },

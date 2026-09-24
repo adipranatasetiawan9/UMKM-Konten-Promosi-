@@ -231,6 +231,114 @@
         </div>
 
 
+        <!-- =========================
+             PENCARIAN & FILTER PRODUK
+             TAHAP E
+             ========================= -->
+
+        <div class="product-tools">
+
+            <div class="product-search">
+
+                <label for="productSearch">
+                    Cari Produk UMKM
+                </label>
+
+                <div class="search-box">
+
+                    <span class="search-icon">
+                        🔍
+                    </span>
+
+                    <input
+                        type="search"
+                        id="productSearch"
+                        placeholder="Cari produk UMKM..."
+                        autocomplete="off"
+                    >
+
+                    <button
+                        type="button"
+                        id="clearSearch"
+                        class="clear-search"
+                        aria-label="Hapus pencarian"
+                        title="Hapus pencarian"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="product-filter">
+
+                <span class="filter-label">
+                    Filter Kategori
+                </span>
+
+                <div
+                    class="filter-buttons"
+                    id="categoryFilters"
+                >
+
+                    <button
+                        type="button"
+                        class="filter-button active"
+                        data-category="Semua"
+                    >
+                        Semua
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-category="Makanan"
+                    >
+                        Makanan
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-category="Minuman"
+                    >
+                        Minuman
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-category="Fashion"
+                    >
+                        Fashion
+                    </button>
+
+                    <button
+                        type="button"
+                        class="filter-button"
+                        data-category="Kerajinan"
+                    >
+                        Kerajinan
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div
+                class="search-result-info"
+                id="searchResultInfo"
+                aria-live="polite"
+            >
+                Menampilkan semua produk
+            </div>
+
+        </div>
+
+
         <div
             class="product-grid"
             id="productGrid"

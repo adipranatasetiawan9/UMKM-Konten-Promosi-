@@ -1171,3 +1171,1037 @@ button {
     }
 
 }
+
+/* =========================
+   TAHAP C
+   DETAIL PRODUK
+   ========================= */
+
+.product-card {
+    cursor: pointer;
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+
+    box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.08);
+}
+
+.product-card:focus {
+    outline: 2px solid #087f5b;
+    outline-offset: 3px;
+}
+
+.product-detail-hint {
+    display: block;
+
+    margin-top: 10px;
+
+    font-size: 12px;
+
+    font-weight: 600;
+
+    color: #087f5b;
+}
+
+
+/* =========================
+   MODAL
+   ========================= */
+
+.product-modal {
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(15, 23, 42, 0.62);
+}
+
+.product-modal.active {
+    display: flex;
+}
+
+
+/* =========================
+   MODAL CONTENT
+   ========================= */
+
+.product-modal-content {
+    position: relative;
+
+    width: 100%;
+
+    max-width: 460px;
+
+    padding: 32px;
+
+    background: #ffffff;
+
+    border-radius: 24px;
+
+    text-align: center;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.22);
+
+    animation:
+        productModalShow
+        0.25s
+        ease;
+}
+
+
+@keyframes productModalShow {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(20px)
+            scale(0.96);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+
+}
+
+
+/* =========================
+   TOMBOL CLOSE
+   ========================= */
+
+.modal-close {
+    position: absolute;
+
+    top: 14px;
+
+    right: 14px;
+
+    width: 38px;
+
+    height: 38px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f1f3f5;
+
+    color: #343a40;
+
+    font-size: 25px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+.modal-close:hover {
+    background: #e9ecef;
+}
+
+
+/* =========================
+   ICON PRODUK
+   ========================= */
+
+.modal-product-icon {
+    width: 110px;
+
+    height: 110px;
+
+    margin:
+        8px
+        auto
+        22px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 24px;
+
+    background: #f1f8f5;
+
+    font-size: 58px;
+}
+
+
+/* =========================
+   NAMA PRODUK
+   ========================= */
+
+.product-modal-content h2 {
+    margin:
+        12px
+        0
+        8px;
+
+    font-size: 28px;
+
+    color: #17202a;
+}
+
+
+/* =========================
+   HARGA MODAL
+   ========================= */
+
+.modal-product-price {
+    margin-top: 10px;
+
+    font-size: 20px;
+
+    font-weight: 700;
+
+    color: #087f5b;
+}
+
+
+/* =========================
+   DESKRIPSI
+   ========================= */
+
+.modal-product-description {
+    margin:
+        18px
+        0
+        26px;
+
+    color: #6c757d;
+
+    font-size: 15px;
+
+    line-height: 1.7;
+}
+
+
+/* =========================
+   TOMBOL PROMOSI
+   ========================= */
+
+.modal-promo-button {
+    width: 100%;
+}
+
+
+/* =========================
+   KUNCI SCROLL SAAT MODAL
+   ========================= */
+
+body.modal-open {
+    overflow: hidden;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 560px) {
+
+    .product-modal {
+        padding: 15px;
+    }
+
+
+    .product-modal-content {
+        padding:
+            28px
+            20px
+            24px;
+
+        border-radius: 20px;
+    }
+
+
+    .modal-product-icon {
+        width: 90px;
+
+        height: 90px;
+
+        font-size: 48px;
+    }
+
+
+    .product-modal-content h2 {
+        font-size: 24px;
+    }
+
+
+    .modal-product-description {
+        font-size: 14px;
+    }
+
+}
+
+/* =========================
+   TAHAP D
+   REKOMENDASI KONTEN
+   ========================= */
+
+.recommendation-box {
+    overflow: hidden;
+}
+
+
+/* =========================
+   FORM REKOMENDASI
+   ========================= */
+
+.recommendation-form {
+    width: 100%;
+    margin-top: 25px;
+}
+
+
+.form-group {
+    position: relative;
+
+    margin-bottom: 18px;
+}
+
+
+/* =========================
+   LABEL
+   ========================= */
+
+.form-group label {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-bottom: 8px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+}
+
+
+.form-group:nth-child(1) label::before {
+    content: "01";
+}
+
+
+.form-group:nth-child(2) label::before {
+    content: "02";
+}
+
+
+.form-group:nth-child(3) label::before {
+    content: "03";
+}
+
+
+.form-group:nth-child(4) label::before {
+    content: "04";
+}
+
+
+.form-group label::before {
+    display: inline-flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 25px;
+
+    height: 25px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #087f5b;
+
+    color: #ffffff;
+
+    font-size: 11px;
+
+    font-weight: 700;
+}
+
+
+/* =========================
+   SELECT
+   ========================= */
+
+.form-group select {
+    width: 100%;
+
+    min-height: 48px;
+
+    padding:
+        12px
+        42px
+        12px
+        14px;
+
+    border:
+        1px solid
+        #d9dee3;
+
+    border-radius: 11px;
+
+    background-color: #ffffff;
+
+    color: #17202a;
+
+    font-family: inherit;
+
+    font-size: 14px;
+
+    font-weight: 500;
+
+    line-height: 1.4;
+
+    outline: none;
+
+    cursor: pointer;
+
+    appearance: auto;
+}
+
+
+.form-group select option {
+    background: #ffffff;
+
+    color: #17202a;
+
+    font-size: 14px;
+}
+
+
+.form-group select:focus {
+    border-color: #087f5b;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(8, 127, 91, 0.15);
+}
+
+
+/* =========================
+   TOMBOL GENERATE
+   ========================= */
+
+.recommendation-generate {
+    width: 100%;
+
+    min-height: 50px;
+
+    margin-top: 8px;
+
+    font-size: 15px;
+
+    font-weight: 700;
+}
+
+
+/* =========================
+   HASIL REKOMENDASI
+   ========================= */
+
+.recommendation-result {
+    display: none;
+
+    margin-top: 30px;
+
+    padding: 30px;
+
+    background: #ffffff;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 10px 35px
+        rgba(0, 0, 0, 0.08);
+}
+
+
+.recommendation-result.active {
+    display: block;
+
+    animation:
+        recommendationShow
+        0.3s
+        ease;
+}
+
+
+@keyframes recommendationShow {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(15px);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0);
+    }
+
+}
+
+
+/* =========================
+   HEADER HASIL
+   ========================= */
+
+.result-header {
+    margin-bottom: 20px;
+}
+
+
+.result-header h2 {
+    margin-top: 8px;
+
+    color: #17202a;
+}
+
+
+/* =========================
+   ITEM HASIL
+   ========================= */
+
+.result-item {
+    display: flex;
+
+    gap: 15px;
+
+    padding: 20px 0;
+
+    border-bottom:
+        1px solid
+        #e9ecef;
+}
+
+
+.result-icon {
+    width: 44px;
+
+    height: 44px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    border-radius: 11px;
+
+    background: #f1f8f5;
+
+    font-size: 20px;
+}
+
+
+.result-item h3 {
+    margin-bottom: 8px;
+
+    color: #17202a;
+
+    font-size: 16px;
+}
+
+
+.result-item p {
+    margin: 0;
+
+    color: #495057;
+
+    font-size: 14px;
+
+    line-height: 1.8;
+
+    white-space: pre-line;
+
+    overflow-wrap: anywhere;
+}
+
+
+/* =========================
+   TOMBOL SALIN
+   ========================= */
+
+#copyRecommendation {
+    width: 100%;
+
+    min-height: 46px;
+
+    margin-top: 25px;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 850px) {
+
+    .recommendation-box {
+        padding: 25px 20px;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    .recommendation-form {
+        margin-top: 22px;
+    }
+
+
+    .form-group {
+        margin-bottom: 16px;
+    }
+
+
+    .form-group label {
+        font-size: 13px;
+    }
+
+
+    .form-group select {
+        min-height: 50px;
+
+        padding:
+            13px
+            12px;
+
+        font-size: 14px;
+
+        color: #17202a;
+    }
+
+
+    .recommendation-generate {
+        min-height: 50px;
+
+        margin-top: 5px;
+    }
+
+
+    .recommendation-result {
+        padding:
+            24px
+            18px;
+    }
+
+
+    .result-item {
+        gap: 11px;
+
+        padding:
+            18px
+            0;
+    }
+
+
+    .result-icon {
+        width: 40px;
+
+        height: 40px;
+
+        font-size: 18px;
+    }
+
+
+    .result-item h3 {
+        font-size: 15px;
+    }
+
+
+    .result-item p {
+        font-size: 13px;
+
+        line-height: 1.7;
+    }
+
+}
+
+/* =========================
+   TAHAP E
+   PENCARIAN & FILTER PRODUK
+   ========================= */
+
+.product-tools {
+    margin:
+        0
+        0
+        35px;
+}
+
+
+/* =========================
+   SEARCH
+   ========================= */
+
+.product-search {
+    width: 100%;
+    margin-bottom: 22px;
+}
+
+
+.product-search label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: #17202a;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+
+.search-box {
+    position: relative;
+
+    width: 100%;
+}
+
+
+.search-icon {
+    position: absolute;
+
+    left: 15px;
+
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    font-size: 18px;
+
+    pointer-events: none;
+}
+
+
+#productSearch {
+    width: 100%;
+
+    min-height: 52px;
+
+    padding:
+        14px
+        46px
+        14px
+        45px;
+
+    border:
+        1px solid
+        #d9dee3;
+
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    color: #17202a;
+
+    font-family: inherit;
+
+    font-size: 15px;
+
+    outline: none;
+
+    box-sizing: border-box;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+#productSearch::placeholder {
+    color: #8a929a;
+}
+
+
+#productSearch:focus {
+    border-color: #087f5b;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(8, 127, 91, 0.12);
+}
+
+
+/* =========================
+   CLEAR SEARCH
+   ========================= */
+
+.clear-search {
+    position: absolute;
+
+    right: 10px;
+
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    width: 34px;
+
+    height: 34px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background: #f1f3f5;
+
+    color: #495057;
+
+    font-size: 22px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+}
+
+
+.clear-search:hover {
+    background: #e9ecef;
+}
+
+
+.clear-search.active {
+    display: flex;
+}
+
+
+/* =========================
+   FILTER
+   ========================= */
+
+.product-filter {
+    width: 100%;
+}
+
+
+.filter-label {
+    display: block;
+
+    margin-bottom: 10px;
+
+    color: #17202a;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+
+.filter-buttons {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 9px;
+}
+
+
+.filter-button {
+    min-height: 40px;
+
+    padding:
+        9px
+        16px;
+
+    border:
+        1px solid
+        #d9dee3;
+
+    border-radius: 999px;
+
+    background: #ffffff;
+
+    color: #495057;
+
+    font-family: inherit;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+
+.filter-button:hover {
+    transform:
+        translateY(-1px);
+
+    border-color: #087f5b;
+
+    color: #087f5b;
+}
+
+
+.filter-button.active {
+    border-color: #087f5b;
+
+    background: #087f5b;
+
+    color: #ffffff;
+}
+
+
+/* =========================
+   INFO HASIL
+   ========================= */
+
+.search-result-info {
+    margin-top: 18px;
+
+    color: #6c757d;
+
+    font-size: 13px;
+}
+
+
+/* =========================
+   HASIL KOSONG
+   ========================= */
+
+.empty-product-result {
+    grid-column: 1 / -1;
+
+    padding:
+        50px
+        20px;
+
+    border:
+        1px dashed
+        #ced4da;
+
+    border-radius: 18px;
+
+    background: #ffffff;
+
+    text-align: center;
+}
+
+
+.empty-product-result .empty-icon {
+    margin-bottom: 12px;
+
+    font-size: 42px;
+}
+
+
+.empty-product-result h3 {
+    margin-bottom: 8px;
+
+    color: #17202a;
+}
+
+
+.empty-product-result p {
+    margin: 0;
+
+    color: #6c757d;
+
+    font-size: 14px;
+
+    line-height: 1.6;
+}
+
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 560px) {
+
+    .product-tools {
+        margin-bottom: 28px;
+    }
+
+
+    #productSearch {
+        min-height: 50px;
+
+        font-size: 14px;
+    }
+
+
+    .filter-buttons {
+        gap: 7px;
+    }
+
+
+    .filter-button {
+        min-height: 38px;
+
+        padding:
+            8px
+            13px;
+
+        font-size: 12px;
+    }
+
+
+    .search-result-info {
+        font-size: 12px;
+    }
+
+}
+
+
