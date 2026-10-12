@@ -19,6 +19,8 @@
       <button class="nav-link active" type="button" data-page="beranda">Beranda</button>
       <button class="nav-link" type="button" data-page="produk">Produk</button>
       <button class="nav-link" type="button" data-page="rekomendasi">Rekomendasi</button>
+      <button class="nav-link" type="button" data-page="akun">Akun</button>
+      <button class="nav-link" type="button" data-page="pesanan">Pesanan Saya</button>
       <button class="nav-link" type="button" data-page="tentang">Tentang</button>
     </nav>
   </div>
@@ -149,6 +151,83 @@
   </div>
 </section>
 
+<section class="page" id="page-akun">
+  <div class="container page-container">
+    <div class="page-header">
+      <span class="section-label">AKUN</span>
+      <h2>Masuk atau Daftar</h2>
+      <p>Buat akun untuk mulai membeli produk UMKM.</p>
+    </div>
+
+    <div id="authLoggedOut">
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-auth-tab="login">Masuk</button>
+        <button type="button" class="auth-tab" data-auth-tab="register">Daftar</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <div class="auth-field">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" required>
+        </div>
+        <div class="auth-field">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <p class="auth-error" id="loginError"></p>
+        <button type="submit" class="button primary">Masuk</button>
+      </form>
+
+      <form id="registerForm" class="auth-form" style="display:none;">
+        <div class="auth-field">
+          <label for="registerName">Nama</label>
+          <input type="text" id="registerName" required>
+        </div>
+        <div class="auth-field">
+          <label for="registerEmail">Email</label>
+          <input type="email" id="registerEmail" required>
+        </div>
+        <div class="auth-field">
+          <label for="registerPassword">Password (min. 6 karakter)</label>
+          <input type="password" id="registerPassword" required minlength="6">
+        </div>
+        <p class="auth-error" id="registerError"></p>
+        <button type="submit" class="button primary">Daftar</button>
+      </form>
+    </div>
+
+    <div id="authLoggedIn" style="display:none;">
+      <div class="account-card">
+        <h3 id="accountName">-</h3>
+        <p id="accountEmail">-</p>
+        <button type="button" class="button secondary" id="logoutButton">Keluar</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="page" id="page-pesanan">
+  <div class="container page-container">
+    <div class="page-header">
+      <span class="section-label">PESANAN</span>
+      <h2>Pesanan Saya</h2>
+      <p>Daftar produk yang sudah kamu pesan.</p>
+    </div>
+
+    <div id="ordersLoginNotice" class="order-notice" style="display:none;">
+      <p>Silakan masuk atau daftar dulu untuk melihat pesanan kamu.</p>
+      <button type="button" class="button primary" data-page="akun">Ke Halaman Akun</button>
+    </div>
+
+    <div id="ordersEmpty" class="order-notice" style="display:none;">
+      <p>Belum ada pesanan. Yuk mulai belanja produk UMKM!</p>
+      <button type="button" class="button primary" data-page="produk">Lihat Produk</button>
+    </div>
+
+    <div id="ordersList" class="orders-list"></div>
+  </div>
+</section>
+
 <section class="page" id="page-tentang">
   <div class="container page-container">
     <div class="about-card">
@@ -156,7 +235,7 @@
       <h2>UMKM PROMO</h2>
       <p>UMKM Promo merupakan rancangan sistem informasi pemasaran produk UMKM berbasis website yang menyediakan katalog produk dan fitur rekomendasi konten promosi.</p>
       <div class="about-grid">
-        <div class="about-item"><span>💻</span><h3>Teknologi</h3><p>HTML, CSS, dan JavaScript.</p></div>
+        <div class="about-item"><span>💻</span><h3>Teknologi</h3><p>HTML, CSS, JavaScript, dan Firebase.</p></div>
         <div class="about-item"><span>🎯</span><h3>Tujuan</h3><p>Membantu UMKM menyiapkan ide konten promosi.</p></div>
         <div class="about-item"><span>📱</span><h3>Platform</h3><p>Website responsif untuk perangkat desktop dan mobile.</p></div>
       </div>
@@ -174,7 +253,8 @@
     <h2 id="modalProductName">Keripik Tette</h2>
     <p class="product-price" id="modalProductPrice">Rp15.000</p>
     <p class="modal-product-description" id="modalProductDescription">Deskripsi produk.</p>
-    <button class="button primary" id="modalPromoButton" type="button">✨ Buat Konten Promosi</button>
+    <button class="button primary" id="modalBuyButton" type="button">🛒 Beli Produk</button>
+    <button class="button secondary" id="modalPromoButton" type="button">✨ Buat Konten Promosi</button>
   </div>
 </div>
 
@@ -186,7 +266,10 @@
   </div>
 </footer>
 
-<script src="js/products.js?v=1"></script>
-<script src="js/app.js?v=1"></script>
+<script src="js/products.js?v=2"></script>
+<script src="js/app.js?v=2"></script>
+<script type="module" src="js/firebase-config.js?v=2"></script>
+<script type="module" src="js/auth.js?v=2"></script>
+<script type="module" src="js/orders.js?v=2"></script>
 </body>
 </html>
