@@ -26,6 +26,7 @@
       <button class="nav-link" type="button" data-page="akun">Akun</button>
       <button class="nav-link" type="button" data-page="pesanan">Pesanan Saya</button>
       <button class="nav-link" type="button" data-page="admin-stok">Kelola Stok</button>
+      <button class="nav-link" type="button" data-page="admin-pesanan">Pesanan Masuk</button>
       <button class="nav-link" type="button" data-page="tentang">Tentang</button>
     </nav>
   </div>
@@ -249,6 +250,22 @@
   </div>
 </section>
 
+<section class="page" id="page-admin-pesanan">
+  <div class="container page-container">
+    <div class="page-header">
+      <span class="section-label">KHUSUS PENJUAL</span>
+      <h2>Pesanan Masuk</h2>
+      <p>Kelola status semua pesanan dari pembeli.</p>
+    </div>
+
+    <div id="onlyAdminOrdersNotice" class="order-notice">
+      <p>Halaman ini hanya bisa diakses oleh pemilik toko.</p>
+    </div>
+
+    <div id="adminOrdersList" class="orders-list" style="display:none;"></div>
+  </div>
+</section>
+
 <section class="page" id="page-tentang">
   <div class="container page-container">
     <div class="about-card">
@@ -275,6 +292,19 @@
     <p class="product-price" id="modalProductPrice">Rp15.000</p>
     <p class="modal-product-description" id="modalProductDescription">Deskripsi produk.</p>
     <p class="modal-stock" id="modalProductStock"></p>
+    <div class="modal-payment-field">
+      <label for="modalPaymentMethod">Metode Pembayaran</label>
+      <select id="modalPaymentMethod">
+        <option value="Transfer Bank BRI">Transfer Bank BRI</option>
+        <option value="Transfer Bank BCA">Transfer Bank BCA</option>
+        <option value="Transfer Bank Mandiri">Transfer Bank Mandiri</option>
+        <option value="Transfer Bank Lainnya">Transfer Bank Lainnya</option>
+        <option value="DANA">DANA</option>
+        <option value="OVO">OVO</option>
+        <option value="GoPay">GoPay</option>
+        <option value="ShopeePay">ShopeePay</option>
+      </select>
+    </div>
     <button class="button primary" id="modalBuyButton" type="button">🛒 Beli Produk</button>
     <button class="button secondary" id="modalPromoButton" type="button">✨ Buat Konten Promosi</button>
   </div>
@@ -288,11 +318,12 @@
   </div>
 </footer>
 
-<script src="js/products.js?v=5"></script>
-<script src="js/app.js?v=5"></script>
-<script type="module" src="js/firebase-config.js?v=5"></script>
-<script type="module" src="js/auth.js?v=5"></script>
-<script type="module" src="js/orders.js?v=5"></script>
-<script type="module" src="js/admin.js?v=5"></script>
+<script src="js/products.js?v=7"></script>
+<script src="js/app.js?v=7"></script>
+<script type="module" src="js/firebase-config.js?v=7"></script>
+<script type="module" src="js/auth.js?v=7"></script>
+<script type="module" src="js/orders.js?v=7"></script>
+<script type="module" src="js/admin.js?v=7"></script>
+<script type="module" src="js/admin-orders.js?v=7"></script>
 </body>
 </html>

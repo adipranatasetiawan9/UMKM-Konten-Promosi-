@@ -4,6 +4,7 @@ import { getFirestore, collection, addDoc, doc, runTransaction, query, where, on
 
 const db = getFirestore(app);
 const buyButton = document.getElementById("modalBuyButton");
+const paymentMethodSelect = document.getElementById("modalPaymentMethod");
 const ordersList = document.getElementById("ordersList");
 const ordersEmpty = document.getElementById("ordersEmpty");
 const ordersLoginNotice = document.getElementById("ordersLoginNotice");
@@ -12,20 +13,37 @@ let currentUser = null;
 let unsubscribeOrders = null;
 let stockMap = {};
 
-const PAYMENT_METHODS = ["BRI", "BCA", "Mandiri", "BNI", "DANA", "OVO", "GoPay", "ShopeePay"];
-
-function paymentBadgesHtml() {
-    return '<div class="payment-methods">' +
-        PAYMENT_METHODS.map(function (name) { return '<span class="payment-badge">' + name + '</span>'; }).join("") +
-        '</div>';
-}
+const STAGE_ORDER = ["menunggu_pembayaran", "menunggu_konfirmasi", "diproses", "dikemas", "dikirim", "selesai"];
+const STAGE_LABEL = {
+    menunggu_pembayaran: "Pesanan Dibuat",
+    menunggu_konfirmasi: "Menunggu Konfirmasi",
+    diproses: "Diproses",
+    dikemas: "Dikemas",
+    dikirim: "Dikirim",
+    selesai: "Selesai",
+    dibatalkan: "Dibatalkan"
+};
 
 function formatRupiah(price) {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(price);
 }
 
-function labelStatus(status) {
-    return { menunggu_pembayaran: "Menunggu Pembayaran", menunggu_konfirmasi: "Menunggu Konfirmasi Penjual", dibatalkan: "Dibatalkan" }[status] || status;
+function paymentInstruction(method) {
+    if (method && method.indexOf("Transfer Bank") === 0) {
+        return "Buka aplikasi mobile banking kamu (" + method.replace("Transfer Bank ", "") + "), pilih menu Transfer/QRIS, lalu scan kode di bawah.";
+    }
+    return "Buka aplikasi " + method + ", pilih menu Bayar/Scan QR, lalu scan kode di bawah.";
+}
+
+function stepperHtml(status) {
+    if (status === "dibatalkan") return '<div class="order-cancelled-banner">Pesanan ini sudah dibatalkan.</div>';
+    const currentIndex = STAGE_ORDER.indexOf(status);
+    return '<div class="order-stepper">' +
+        STAGE_ORDER.map(function (stage, i) {
+            const state = i < currentIndex ? "done" : (i === currentIndex ? "current" : "upcoming");
+            return '<div class="order-step order-step-' + state + '"><span class="order-step-dot"></span><span class="order-step-label">' + STAGE_LABEL[stage] + '</span></div>';
+        }).join("") +
+        '</div>';
 }
 
 function tampilkanErrorFirestore(error) {
@@ -61,24 +79,23 @@ onSnapshot(collection(db, "stock"), function (snapshot) {
 
 function renderOrders(docsSnap) {
     if (!ordersList) return;
-    const sorted = docsSnap.slice().sort(function(a, b) { return (b.data().createdAt || 0) - (a.data().createdAt || 0); });
+    const sorted = docsSnap.slice().sort(function (a, b) { return (b.data().createdAt || 0) - (a.data().createdAt || 0); });
     if (sorted.length === 0) { ordersList.innerHTML = ""; if (ordersEmpty) ordersEmpty.style.display = "block"; return; }
     if (ordersEmpty) ordersEmpty.style.display = "none";
-    ordersList.innerHTML = sorted.map(function(docSnap) {
+    ordersList.innerHTML = sorted.map(function (docSnap) {
         const order = docSnap.data();
         const id = docSnap.id;
+        let paymentHtml = "";
         let actionsHtml = "";
         if (order.status === "menunggu_pembayaran") {
-            actionsHtml = '<img class="order-qris" src="assets/payment/qris-dana.jpg" alt="QRIS Pembayaran">' +
-                paymentBadgesHtml() +
-                '<p class="order-hint">Scan QR di atas pakai aplikasi bank/e-wallet mana pun, lalu tap tombol di bawah.</p>' +
-                '<div class="order-actions"><button type="button" class="button primary" data-action="bayar" data-id="' + id + '">Saya Sudah Bayar</button><button type="button" class="button secondary" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
+            paymentHtml = '<p class="order-payment-method">Metode: ' + (order.paymentMethod || "-") + '</p>' +
+                '<img class="order-qris" src="assets/payment/qris-dana.jpg" alt="QRIS Pembayaran">' +
+                '<p class="order-hint">' + paymentInstruction(order.paymentMethod) + '</p>';
+            actionsHtml = '<div class="order-actions"><button type="button" class="button primary" data-action="bayar" data-id="' + id + '">Saya Sudah Bayar</button><button type="button" class="button secondary" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
         } else if (order.status === "menunggu_konfirmasi") {
-            actionsHtml = '<p class="order-hint">Menunggu konfirmasi penjual setelah pembayaran diterima.</p><div class="order-actions"><button type="button" class="button secondary" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
-        } else if (order.status === "dibatalkan") {
-            actionsHtml = '<p class="order-hint">Pesanan ini sudah dibatalkan.</p>';
+            actionsHtml = '<div class="order-actions"><button type="button" class="button secondary" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
         }
-        return '<div class="order-card"><div class="order-card-head"><h3>' + order.productName + '</h3><span class="order-status order-status-' + order.status + '">' + labelStatus(order.status) + '</span></div><p class="order-price">' + formatRupiah(order.productPrice) + '</p>' + actionsHtml + '</div>';
+        return '<div class="order-card"><div class="order-card-head"><h3>' + order.productName + '</h3><span class="order-status order-status-' + order.status + '">' + (STAGE_LABEL[order.status] || order.status) + '</span></div><p class="order-price">' + formatRupiah(order.productPrice) + '</p>' + stepperHtml(order.status) + paymentHtml + actionsHtml + '</div>';
     }).join("");
 }
 
@@ -90,7 +107,7 @@ if (ordersList) {
         const orderRef = doc(db, "orders", orderId);
 
         if (button.dataset.action === "bayar") {
-            updateDoc(orderRef, { status: "menunggu_konfirmasi" }).catch(tampilkanErrorFirestore);
+            updateDoc(orderRef, { status: "menunggu_konfirmasi", statusUpdatedAt: Date.now() }).catch(tampilkanErrorFirestore);
             return;
         }
 
@@ -103,7 +120,7 @@ if (ordersList) {
             const stockSnap = await transaction.get(stockRef);
             const currentQty = stockSnap.exists() ? stockSnap.data().quantity : 0;
             transaction.update(stockRef, { quantity: currentQty + 1 });
-            transaction.update(orderRef, { status: "dibatalkan" });
+            transaction.update(orderRef, { status: "dibatalkan", statusUpdatedAt: Date.now() });
         }).catch(tampilkanErrorFirestore);
     });
 }
@@ -119,6 +136,7 @@ if (buyButton) {
         const product = window.selectedProductForPromo;
         if (!product) { alert("Produk tidak terdeteksi, coba buka ulang detail produknya."); return; }
 
+        const paymentMethod = paymentMethodSelect ? paymentMethodSelect.value : "QRIS";
         const stockRef = doc(db, "stock", String(product.id));
         const newOrderRef = doc(collection(db, "orders"));
 
@@ -129,10 +147,13 @@ if (buyButton) {
             transaction.update(stockRef, { quantity: qty - 1 });
             transaction.set(newOrderRef, {
                 userId: currentUser.uid,
+                buyerEmail: currentUser.email,
                 productId: product.id,
                 productName: product.name,
                 productPrice: product.price,
+                paymentMethod: paymentMethod,
                 status: "menunggu_pembayaran",
+                statusUpdatedAt: Date.now(),
                 createdAt: Date.now()
             });
         }).then(function () {
@@ -148,7 +169,7 @@ onAuthStateChanged(auth, function (user) {
     if (user) {
         if (ordersLoginNotice) ordersLoginNotice.style.display = "none";
         const q = query(collection(db, "orders"), where("userId", "==", user.uid));
-        unsubscribeOrders = onSnapshot(q, function(snapshot) { renderOrders(snapshot.docs); }, tampilkanErrorFirestore);
+        unsubscribeOrders = onSnapshot(q, function (snapshot) { renderOrders(snapshot.docs); }, tampilkanErrorFirestore);
     } else {
         if (ordersLoginNotice) ordersLoginNotice.style.display = "block";
         if (ordersList) ordersList.innerHTML = "";

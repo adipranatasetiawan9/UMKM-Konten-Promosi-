@@ -2266,3 +2266,19 @@ body.modal-open {
 /* ===== Badge metode pembayaran ===== */
 .payment-methods { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
 .payment-badge { padding: 5px 12px; background: #eef7f2; color: #0b8457; border: 1px solid #cfe8db; border-radius: 20px; font-size: 12px; font-weight: 600; }
+
+/* ===== Pilihan metode pembayaran ===== */
+.modal-payment-field { margin: 14px 0; text-align: left; }
+.modal-payment-field label { display: block; font-size: 13px; font-weight: 600; color: #17202a; margin-bottom: 6px; }
+.modal-payment-field select { width: 100%; padding: 10px 12px; border: 1px solid #e5ece9; border-radius: 10px; font-size: 14px; }
+.order-payment-method { font-size: 13px; font-weight: 600; color: #17202a; margin-bottom: 8px; }
+
+/* ===== Stepper status pesanan ===== */
+.order-stepper { display: flex; flex-direction: column; gap: 10px; margin: 16px 0; }
+.order-step { display: flex; align-items: center; gap: 10px; font-size: 13px; color: #9aa5a0; }
+.order-step-dot { width: 12px; height: 12px; border-radius: 50%; background: #e5ece9; flex-shrink: 0; }
+.order-step-done { color: #0b8457; }
+.order-step-done .order-step-dot { background: #0b8457; }
+.order-step-current { color: #17202a; font-weight: 700; }
+.order-step-current .order-step-dot { background: #0b8457; box-shadow: 0 0 0 4px #eef7f2; }
+.order-cancelled-banner { padding: 12px 16px; background: #fde8e8; color: #c0392b; border-radius: 10px; font-size: 14px; font-weight: 600; margin: 14px 0; }
