@@ -23,10 +23,9 @@
       <button class="nav-link active" type="button" data-page="beranda">Beranda</button>
       <button class="nav-link" type="button" data-page="produk">Produk</button>
       <button class="nav-link" type="button" data-page="rekomendasi">Rekomendasi</button>
+      <button class="nav-link" type="button" data-page="pesanan">Pesanan</button>
       <button class="nav-link" type="button" data-page="akun">Akun</button>
-      <button class="nav-link" type="button" data-page="pesanan">Pesanan Saya</button>
-      <button class="nav-link" type="button" data-page="admin-stok">Kelola Stok</button>
-      <button class="nav-link" type="button" data-page="admin-pesanan">Pesanan Masuk</button>
+      <button class="nav-link" type="button" data-page="admin-stok">Stok</button>
       <button class="nav-link" type="button" data-page="tentang">Tentang</button>
     </nav>
   </div>
@@ -157,6 +156,32 @@
   </div>
 </section>
 
+<section class="page" id="page-pesanan">
+  <div class="container page-container">
+    <div class="page-header">
+      <span class="section-label">PESANAN</span>
+      <h2>Pesanan</h2>
+      <p>Pantau dan kelola pesanan di sini.</p>
+    </div>
+
+    <div id="buyerOrdersView">
+      <div id="ordersLoginNotice" class="order-notice" style="display:none;">
+        <p>Silakan masuk atau daftar dulu untuk melihat pesanan kamu.</p>
+        <button type="button" class="button primary" data-page="akun">Ke Halaman Akun</button>
+      </div>
+      <div id="ordersEmpty" class="order-notice" style="display:none;">
+        <p>Belum ada pesanan. Yuk mulai belanja produk UMKM!</p>
+        <button type="button" class="button primary" data-page="produk">Lihat Produk</button>
+      </div>
+      <div id="ordersList" class="orders-list"></div>
+    </div>
+
+    <div id="adminOrdersView" style="display:none;">
+      <div id="adminOrdersList" class="orders-list"></div>
+    </div>
+  </div>
+</section>
+
 <section class="page" id="page-akun">
   <div class="container page-container">
     <div class="page-header">
@@ -206,31 +231,10 @@
       <div class="account-card">
         <h3 id="accountName">-</h3>
         <p id="accountEmail">-</p>
+        <button type="button" class="button secondary" id="accountChatButton">💬 Chat Penjual</button>
         <button type="button" class="button secondary" id="logoutButton">Keluar</button>
       </div>
     </div>
-  </div>
-</section>
-
-<section class="page" id="page-pesanan">
-  <div class="container page-container">
-    <div class="page-header">
-      <span class="section-label">PESANAN</span>
-      <h2>Pesanan Saya</h2>
-      <p>Daftar produk yang sudah kamu pesan.</p>
-    </div>
-
-    <div id="ordersLoginNotice" class="order-notice" style="display:none;">
-      <p>Silakan masuk atau daftar dulu untuk melihat pesanan kamu.</p>
-      <button type="button" class="button primary" data-page="akun">Ke Halaman Akun</button>
-    </div>
-
-    <div id="ordersEmpty" class="order-notice" style="display:none;">
-      <p>Belum ada pesanan. Yuk mulai belanja produk UMKM!</p>
-      <button type="button" class="button primary" data-page="produk">Lihat Produk</button>
-    </div>
-
-    <div id="ordersList" class="orders-list"></div>
   </div>
 </section>
 
@@ -250,19 +254,29 @@
   </div>
 </section>
 
-<section class="page" id="page-admin-pesanan">
+<section class="page" id="page-chat">
   <div class="container page-container">
     <div class="page-header">
-      <span class="section-label">KHUSUS PENJUAL</span>
-      <h2>Pesanan Masuk</h2>
-      <p>Kelola status semua pesanan dari pembeli.</p>
+      <span class="section-label">CHAT</span>
+      <h2 id="chatWithLabel">Chat dengan Penjual</h2>
+      <p>Kirim pesan langsung ke penjual UMKM Promo.</p>
     </div>
 
-    <div id="onlyAdminOrdersNotice" class="order-notice">
-      <p>Halaman ini hanya bisa diakses oleh pemilik toko.</p>
+    <div id="chatInboxNotice" class="order-notice" style="display:none;">
+      <p>Silakan masuk atau daftar dulu untuk mulai chat.</p>
+      <button type="button" class="button primary" data-page="akun">Ke Halaman Akun</button>
     </div>
 
-    <div id="adminOrdersList" class="orders-list" style="display:none;"></div>
+    <div id="chatInbox" class="chat-inbox" style="display:none;"></div>
+
+    <div id="chatThread" style="display:none;">
+      <button type="button" class="button secondary" id="chatBackButton" style="display:none;">← Kembali ke Daftar Chat</button>
+      <div id="chatMessages" class="chat-messages"></div>
+      <form id="chatForm" class="chat-form">
+        <input type="text" id="chatInput" placeholder="Tulis pesan..." autocomplete="off" required>
+        <button type="submit" class="button primary">Kirim</button>
+      </form>
+    </div>
   </div>
 </section>
 
@@ -318,12 +332,13 @@
   </div>
 </footer>
 
-<script src="js/products.js?v=7"></script>
-<script src="js/app.js?v=7"></script>
-<script type="module" src="js/firebase-config.js?v=7"></script>
-<script type="module" src="js/auth.js?v=7"></script>
-<script type="module" src="js/orders.js?v=7"></script>
-<script type="module" src="js/admin.js?v=7"></script>
-<script type="module" src="js/admin-orders.js?v=7"></script>
+<script src="js/products.js?v=9"></script>
+<script src="js/app.js?v=9"></script>
+<script type="module" src="js/firebase-config.js?v=9"></script>
+<script type="module" src="js/auth.js?v=9"></script>
+<script type="module" src="js/orders.js?v=9"></script>
+<script type="module" src="js/admin.js?v=9"></script>
+<script type="module" src="js/admin-orders.js?v=9"></script>
+<script type="module" src="js/chat.js?v=9"></script>
 </body>
 </html>

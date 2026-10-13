@@ -5,7 +5,8 @@ import { getFirestore, collection, onSnapshot, doc, updateDoc, runTransaction } 
 const ADMIN_EMAIL = "adipranatasetiawan9@gmail.com";
 const db = getFirestore(app);
 
-const adminOrdersNotice = document.getElementById("onlyAdminOrdersNotice");
+const buyerOrdersView = document.getElementById("buyerOrdersView");
+const adminOrdersView = document.getElementById("adminOrdersView");
 const adminOrdersList = document.getElementById("adminOrdersList");
 
 const STAGE_ORDER = ["menunggu_pembayaran", "menunggu_konfirmasi", "diproses", "dikemas", "dikirim", "selesai"];
@@ -23,6 +24,11 @@ function formatRupiah(price) {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(price);
 }
 
+function findProductImage(productId) {
+    const product = products.find(function (p) { return p.id === productId; });
+    return product ? product.image : "";
+}
+
 function nextStageButton(order, id) {
     if (order.status === "dibatalkan") return "";
     const idx = STAGE_ORDER.indexOf(order.status);
@@ -38,12 +44,17 @@ function renderAdminOrders(docsSnap) {
     adminOrdersList.innerHTML = sorted.map(function (docSnap) {
         const order = docSnap.data();
         const id = docSnap.id;
+        const imgSrc = findProductImage(order.productId);
         const canCancel = order.status !== "dibatalkan" && order.status !== "selesai";
         return '<div class="order-card">' +
+            '<div class="order-card-top">' +
+            (imgSrc ? '<img class="order-product-image" src="' + imgSrc + '" alt="' + order.productName + '">' : '') +
             '<div class="order-card-head"><h3>' + order.productName + '</h3><span class="order-status order-status-' + order.status + '">' + (STAGE_LABEL[order.status] || order.status) + '</span></div>' +
+            '</div>' +
             '<p class="order-price">' + formatRupiah(order.productPrice) + '</p>' +
             '<p class="order-payment-method">Pembeli: ' + (order.buyerEmail || "-") + ' &middot; ' + (order.paymentMethod || "-") + '</p>' +
             '<div class="order-actions">' +
+            '<button type="button" class="button secondary admin-order-chat" data-buyer-id="' + order.userId + '" data-buyer-email="' + (order.buyerEmail || "") + '">💬 Chat Pembeli</button>' +
             nextStageButton(order, id) +
             (canCancel ? '<button type="button" class="button secondary admin-order-cancel" data-id="' + id + '">Batalkan</button>' : '') +
             '</div></div>';
@@ -54,6 +65,12 @@ if (adminOrdersList) {
     adminOrdersList.addEventListener("click", function (event) {
         const advanceBtn = event.target.closest(".admin-order-advance");
         const cancelBtn = event.target.closest(".admin-order-cancel");
+        const chatBtn = event.target.closest(".admin-order-chat");
+
+        if (chatBtn) {
+            window.openChatWith(chatBtn.dataset.buyerId, chatBtn.dataset.buyerEmail);
+            return;
+        }
 
         if (advanceBtn) {
             updateDoc(doc(db, "orders", advanceBtn.dataset.id), { status: advanceBtn.dataset.next, statusUpdatedAt: Date.now() })
@@ -81,8 +98,8 @@ let unsubscribeAdminOrders = null;
 
 onAuthStateChanged(auth, function (user) {
     const isAdmin = !!(user && user.email === ADMIN_EMAIL);
-    if (adminOrdersNotice) adminOrdersNotice.style.display = isAdmin ? "none" : "block";
-    if (adminOrdersList) adminOrdersList.style.display = isAdmin ? "block" : "none";
+    if (buyerOrdersView) buyerOrdersView.style.display = isAdmin ? "none" : "block";
+    if (adminOrdersView) adminOrdersView.style.display = isAdmin ? "block" : "none";
     if (unsubscribeAdminOrders) { unsubscribeAdminOrders(); unsubscribeAdminOrders = null; }
     if (isAdmin) {
         unsubscribeAdminOrders = onSnapshot(collection(db, "orders"), function (snapshot) {

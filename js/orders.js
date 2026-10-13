@@ -28,6 +28,11 @@ function formatRupiah(price) {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(price);
 }
 
+function findProductImage(productId) {
+    const product = products.find(function (p) { return p.id === productId; });
+    return product ? product.image : "";
+}
+
 function paymentInstruction(method) {
     if (method && method.indexOf("Transfer Bank") === 0) {
         return "Buka aplikasi mobile banking kamu (" + method.replace("Transfer Bank ", "") + "), pilih menu Transfer/QRIS, lalu scan kode di bawah.";
@@ -85,6 +90,7 @@ function renderOrders(docsSnap) {
     ordersList.innerHTML = sorted.map(function (docSnap) {
         const order = docSnap.data();
         const id = docSnap.id;
+        const imgSrc = findProductImage(order.productId);
         let paymentHtml = "";
         let actionsHtml = "";
         if (order.status === "menunggu_pembayaran") {
@@ -95,7 +101,14 @@ function renderOrders(docsSnap) {
         } else if (order.status === "menunggu_konfirmasi") {
             actionsHtml = '<div class="order-actions"><button type="button" class="button secondary" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
         }
-        return '<div class="order-card"><div class="order-card-head"><h3>' + order.productName + '</h3><span class="order-status order-status-' + order.status + '">' + (STAGE_LABEL[order.status] || order.status) + '</span></div><p class="order-price">' + formatRupiah(order.productPrice) + '</p>' + stepperHtml(order.status) + paymentHtml + actionsHtml + '</div>';
+        return '<div class="order-card">' +
+            '<div class="order-card-top">' +
+            (imgSrc ? '<img class="order-product-image" src="' + imgSrc + '" alt="' + order.productName + '">' : '') +
+            '<div class="order-card-head"><h3>' + order.productName + '</h3><span class="order-status order-status-' + order.status + '">' + (STAGE_LABEL[order.status] || order.status) + '</span></div>' +
+            '</div>' +
+            '<p class="order-price">' + formatRupiah(order.productPrice) + '</p>' +
+            '<button type="button" class="button secondary order-chat-button" data-action="chat">💬 Chat Penjual</button>' +
+            stepperHtml(order.status) + paymentHtml + actionsHtml + '</div>';
     }).join("");
 }
 
@@ -103,6 +116,12 @@ if (ordersList) {
     ordersList.addEventListener("click", function (event) {
         const button = event.target.closest("[data-action]");
         if (!button) return;
+
+        if (button.dataset.action === "chat") {
+            if (currentUser) window.openChatWith(currentUser.uid, currentUser.email);
+            return;
+        }
+
         const orderId = button.dataset.id;
         const orderRef = doc(db, "orders", orderId);
 
