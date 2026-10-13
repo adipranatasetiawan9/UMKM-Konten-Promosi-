@@ -3,8 +3,12 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="UMKM PROMO - Sistem Informasi Pemasaran Produk UMKM Berbasis Website">
-<title>UMKM PROMO</title>
+<meta name="description" content="UMKM Promo - Katalog produk UMKM khas Madura dengan fitur rekomendasi konten promosi, sistem akun, dan pembelian online.">
+<meta property="og:title" content="UMKM Promo">
+<meta property="og:description" content="Katalog produk UMKM khas Madura dengan fitur rekomendasi konten promosi dan pembelian online.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://adipranatasetiawan9.github.io/UMKM-Konten-Promosi-/">
+<title>UMKM PROMO - Katalog & Pemasaran Produk UMKM</title>
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
@@ -21,6 +25,7 @@
       <button class="nav-link" type="button" data-page="rekomendasi">Rekomendasi</button>
       <button class="nav-link" type="button" data-page="akun">Akun</button>
       <button class="nav-link" type="button" data-page="pesanan">Pesanan Saya</button>
+      <button class="nav-link" type="button" data-page="admin-stok">Kelola Stok</button>
       <button class="nav-link" type="button" data-page="tentang">Tentang</button>
     </nav>
   </div>
@@ -228,6 +233,22 @@
   </div>
 </section>
 
+<section class="page" id="page-admin-stok">
+  <div class="container page-container">
+    <div class="page-header">
+      <span class="section-label">KHUSUS PENJUAL</span>
+      <h2>Kelola Stok Produk</h2>
+      <p>Atur jumlah stok tiap produk secara langsung.</p>
+    </div>
+
+    <div id="onlyAdminNotice" class="order-notice">
+      <p>Halaman ini hanya bisa diakses oleh pemilik toko.</p>
+    </div>
+
+    <div id="adminStockList" style="display:none;"></div>
+  </div>
+</section>
+
 <section class="page" id="page-tentang">
   <div class="container page-container">
     <div class="about-card">
@@ -253,6 +274,7 @@
     <h2 id="modalProductName">Keripik Tette</h2>
     <p class="product-price" id="modalProductPrice">Rp15.000</p>
     <p class="modal-product-description" id="modalProductDescription">Deskripsi produk.</p>
+    <p class="modal-stock" id="modalProductStock"></p>
     <button class="button primary" id="modalBuyButton" type="button">🛒 Beli Produk</button>
     <button class="button secondary" id="modalPromoButton" type="button">✨ Buat Konten Promosi</button>
   </div>
@@ -266,10 +288,11 @@
   </div>
 </footer>
 
-<script src="js/products.js?v=2"></script>
-<script src="js/app.js?v=2"></script>
-<script type="module" src="js/firebase-config.js?v=2"></script>
-<script type="module" src="js/auth.js?v=2"></script>
-<script type="module" src="js/orders.js?v=2"></script>
+<script src="js/products.js?v=5"></script>
+<script src="js/app.js?v=5"></script>
+<script type="module" src="js/firebase-config.js?v=5"></script>
+<script type="module" src="js/auth.js?v=5"></script>
+<script type="module" src="js/orders.js?v=5"></script>
+<script type="module" src="js/admin.js?v=5"></script>
 </body>
 </html>

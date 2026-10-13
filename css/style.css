@@ -2257,3 +2257,12 @@ body.modal-open {
 .order-qris { width: 160px; height: 160px; object-fit: contain; display: block; margin-bottom: 10px; border: 1px solid #e5ece9; border-radius: 10px; padding: 8px; }
 .order-hint { font-size: 13px; color: #5b6670; margin-bottom: 12px; }
 .order-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+/* ===== Halaman Kelola Stok (Admin) ===== */
+.admin-stock-row { display: flex; align-items: center; gap: 10px; padding: 12px 0; border-bottom: 1px solid #e5ece9; flex-wrap: wrap; }
+.admin-stock-name { flex: 1; min-width: 140px; font-weight: 600; font-size: 14px; }
+.admin-stock-input { width: 70px; padding: 8px; border: 1px solid #e5ece9; border-radius: 8px; }
+
+/* ===== Badge metode pembayaran ===== */
+.payment-methods { display: flex; flex-wrap: wrap; gap: 6px; margin: 10px 0; }
+.payment-badge { padding: 5px 12px; background: #eef7f2; color: #0b8457; border: 1px solid #cfe8db; border-radius: 20px; font-size: 12px; font-weight: 600; }

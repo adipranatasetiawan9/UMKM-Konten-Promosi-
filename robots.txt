@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://adipranatasetiawan9.github.io/UMKM-Konten-Promosi-/sitemap.xml

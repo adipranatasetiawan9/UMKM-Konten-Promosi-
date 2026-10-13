@@ -48,9 +48,10 @@ function displayProducts(productList) {
         card.setAttribute("role", "button");
         card.setAttribute("tabindex", "0");
         card.setAttribute("aria-label", "Lihat detail " + product.name);
-        card.innerHTML = '<div class="product-image"><img src="' + product.image + '" alt="' + product.name + '" loading="lazy"></div><div class="product-info"><span class="product-category">' + product.category + '</span><h3>' + product.name + '</h3><p class="product-price">' + formatRupiah(product.price) + '</p><span class="product-detail-hint">Lihat detail →</span></div>';
+        card.innerHTML = '<div class="product-image"><img src="' + product.image + '" alt="' + product.name + '" loading="lazy"></div><div class="product-info"><span class="product-category">' + product.category + '</span><h3>' + product.name + '</h3><p class="product-price">' + formatRupiah(product.price) + '</p><span class="product-stock" data-stock-id="' + product.id + '"></span><span class="product-detail-hint">Lihat detail →</span></div>';
         productGrid.appendChild(card);
     });
+    if (typeof window.onProductsRendered === "function") window.onProductsRendered();
 }
 
 function filterProducts() {
@@ -127,6 +128,7 @@ function showProductDetail(product) {
     window.selectedProductForPromo = product;
     productModal.classList.add("active");
     document.body.classList.add("modal-open");
+    if (typeof window.onProductDetailShown === "function") window.onProductDetailShown(product);
 }
 
 function closeProductModal() {
