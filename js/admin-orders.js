@@ -1,9 +1,11 @@
 import { app, auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, doc, updateDoc, runTransaction } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, doc, updateDoc, deleteDoc, runTransaction } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const ADMIN_EMAIL = "adipranatasetiawan9@gmail.com";
 const db = getFirestore(app);
+const CLEANUP_HOURS = 24;
+const CLEANUP_MS = CLEANUP_HOURS * 60 * 60 * 1000;
 
 const buyerOrdersView = document.getElementById("buyerOrdersView");
 const adminOrdersView = document.getElementById("adminOrdersView");
@@ -35,6 +37,17 @@ function nextStageButton(order, id) {
     if (idx === -1 || idx === STAGE_ORDER.length - 1) return "";
     const nextStage = STAGE_ORDER[idx + 1];
     return '<button type="button" class="button primary admin-order-advance" data-id="' + id + '" data-next="' + nextStage + '">Tandai: ' + STAGE_LABEL[nextStage] + '</button>';
+}
+
+function cleanupOldOrders(docsSnap) {
+    docsSnap.forEach(function (docSnap) {
+        const order = docSnap.data();
+        const isFinished = order.status === "selesai" || order.status === "dibatalkan";
+        const isOld = order.statusUpdatedAt && (Date.now() - order.statusUpdatedAt > CLEANUP_MS);
+        if (isFinished && isOld) {
+            deleteDoc(doc(db, "orders", docSnap.id)).catch(function () {});
+        }
+    });
 }
 
 function renderAdminOrders(docsSnap) {
@@ -104,6 +117,7 @@ onAuthStateChanged(auth, function (user) {
     if (isAdmin) {
         unsubscribeAdminOrders = onSnapshot(collection(db, "orders"), function (snapshot) {
             renderAdminOrders(snapshot.docs);
+            cleanupOldOrders(snapshot.docs);
         });
     }
 });

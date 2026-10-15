@@ -82,6 +82,22 @@ onSnapshot(collection(db, "stock"), function (snapshot) {
     if (window.selectedProductForPromo) window.onProductDetailShown(window.selectedProductForPromo);
 });
 
+function updateAccountSummary(docsSnap) {
+    const counts = { belum: 0, proses: 0, kirim: 0, selesai: 0 };
+    docsSnap.forEach(function (docSnap) {
+        const status = docSnap.data().status;
+        if (status === "menunggu_pembayaran" || status === "menunggu_konfirmasi") counts.belum++;
+        else if (status === "diproses" || status === "dikemas") counts.proses++;
+        else if (status === "dikirim") counts.kirim++;
+        else if (status === "selesai") counts.selesai++;
+    });
+    const map = { countBelumBayar: counts.belum, countDiproses: counts.proses, countDikirim: counts.kirim, countSelesai: counts.selesai };
+    Object.keys(map).forEach(function (id) {
+        const el = document.getElementById(id);
+        if (el) el.textContent = map[id];
+    });
+}
+
 function renderOrders(docsSnap) {
     if (!ordersList) return;
     const sorted = docsSnap.slice().sort(function (a, b) { return (b.data().createdAt || 0) - (a.data().createdAt || 0); });
@@ -188,7 +204,10 @@ onAuthStateChanged(auth, function (user) {
     if (user) {
         if (ordersLoginNotice) ordersLoginNotice.style.display = "none";
         const q = query(collection(db, "orders"), where("userId", "==", user.uid));
-        unsubscribeOrders = onSnapshot(q, function (snapshot) { renderOrders(snapshot.docs); }, tampilkanErrorFirestore);
+        unsubscribeOrders = onSnapshot(q, function (snapshot) {
+            renderOrders(snapshot.docs);
+            updateAccountSummary(snapshot.docs);
+        }, tampilkanErrorFirestore);
     } else {
         if (ordersLoginNotice) ordersLoginNotice.style.display = "block";
         if (ordersList) ordersList.innerHTML = "";
