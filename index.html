@@ -229,8 +229,15 @@
 
     <div id="authLoggedIn" style="display:none;">
       <div class="account-card">
-        <h3 id="accountName">-</h3>
-        <p id="accountEmail">-</p>
+        <div class="account-card-head">
+          <div class="avatar-circle" id="accountAvatar"></div>
+          <div>
+            <h3 id="accountName">-</h3>
+            <p id="accountEmail">-</p>
+          </div>
+        </div>
+        <input type="file" id="accountPhotoInput" accept="image/*" style="display:none;">
+        <button type="button" class="button secondary" id="accountPhotoButton">🖼️ Ubah Foto Profil</button>
         <button type="button" class="button secondary" id="accountChatButton">💬 Chat Penjual</button>
         <button type="button" class="button secondary" id="logoutButton">Keluar</button>
       </div>
@@ -309,6 +316,13 @@
         <div class="about-item"><span>🎯</span><h3>Tujuan</h3><p>Membantu UMKM menyiapkan ide konten promosi.</p></div>
         <div class="about-item"><span>📱</span><h3>Platform</h3><p>Website responsif untuk perangkat desktop dan mobile.</p></div>
       </div>
+      <div class="toko-card">
+        <div class="avatar-circle" id="tokoAvatar"></div>
+        <div>
+          <strong>Pemilik Toko</strong>
+          <p>Raden Adi Pranata Setiawan</p>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -324,6 +338,8 @@
     <p class="product-price" id="modalProductPrice">Rp15.000</p>
     <p class="modal-product-description" id="modalProductDescription">Deskripsi produk.</p>
     <p class="modal-stock" id="modalProductStock"></p>
+    <p class="modal-rating-summary" id="modalRatingSummary"></p>
+    <div class="modal-reviews-list" id="modalReviewsList"></div>
     <div class="modal-payment-field">
       <label for="modalPaymentMethod">Metode Pembayaran</label>
       <select id="modalPaymentMethod">
@@ -350,13 +366,15 @@
   </div>
 </footer>
 
-<script src="js/products.js?v=10"></script>
-<script src="js/app.js?v=10"></script>
-<script type="module" src="js/firebase-config.js?v=10"></script>
-<script type="module" src="js/auth.js?v=10"></script>
-<script type="module" src="js/orders.js?v=10"></script>
-<script type="module" src="js/admin.js?v=10"></script>
-<script type="module" src="js/admin-orders.js?v=10"></script>
-<script type="module" src="js/chat.js?v=10"></script>
+<script src="js/products.js?v=11"></script>
+<script src="js/app.js?v=11"></script>
+<script type="module" src="js/firebase-config.js?v=11"></script>
+<script type="module" src="js/auth.js?v=11"></script>
+<script type="module" src="js/orders.js?v=11"></script>
+<script type="module" src="js/admin.js?v=11"></script>
+<script type="module" src="js/admin-orders.js?v=11"></script>
+<script type="module" src="js/chat.js?v=11"></script>
+<script type="module" src="js/profile.js?v=11"></script>
+<script type="module" src="js/reviews.js?v=11"></script>
 </body>
 </html>

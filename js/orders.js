@@ -12,6 +12,7 @@ const ordersLoginNotice = document.getElementById("ordersLoginNotice");
 let currentUser = null;
 let unsubscribeOrders = null;
 let stockMap = {};
+let lastOrdersSnap = [];
 
 const STAGE_ORDER = ["menunggu_pembayaran", "menunggu_konfirmasi", "diproses", "dikemas", "dikirim", "selesai"];
 const STAGE_LABEL = {
@@ -48,6 +49,21 @@ function stepperHtml(status) {
             const state = i < currentIndex ? "done" : (i === currentIndex ? "current" : "upcoming");
             return '<div class="order-step order-step-' + state + '"><span class="order-step-dot"></span><span class="order-step-label">' + STAGE_LABEL[stage] + '</span></div>';
         }).join("") +
+        '</div>';
+}
+
+function reviewSectionHtml(order, id) {
+    if (order.status !== "selesai") return "";
+    if (typeof window.hasReviewedOrder === "function" && window.hasReviewedOrder(id)) {
+        return '<p class="order-hint">✓ Kamu sudah memberi ulasan untuk pesanan ini.</p>';
+    }
+    return '<div class="review-form" data-order-id="' + id + '" data-product-id="' + order.productId + '" data-product-name="' + order.productName + '" data-rating="0">' +
+        '<p class="order-hint">Beri ulasan untuk pesanan ini:</p>' +
+        '<div class="review-stars-input">' +
+        [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" class="review-star" data-rating="' + n + '">★</button>'; }).join("") +
+        '</div>' +
+        '<textarea class="review-comment" placeholder="Tulis ulasan kamu (opsional)..."></textarea>' +
+        '<button type="button" class="button primary review-submit">Kirim Ulasan</button>' +
         '</div>';
 }
 
@@ -124,12 +140,36 @@ function renderOrders(docsSnap) {
             '</div>' +
             '<p class="order-price">' + formatRupiah(order.productPrice) + '</p>' +
             '<button type="button" class="button secondary order-chat-button" data-action="chat">💬 Chat Penjual</button>' +
-            stepperHtml(order.status) + paymentHtml + actionsHtml + '</div>';
+            stepperHtml(order.status) + paymentHtml + actionsHtml + reviewSectionHtml(order, id) + '</div>';
     }).join("");
 }
 
+window.rerenderMyOrders = function () { renderOrders(lastOrdersSnap); };
+
 if (ordersList) {
     ordersList.addEventListener("click", function (event) {
+        const starBtn = event.target.closest(".review-star");
+        if (starBtn) {
+            const form = starBtn.closest(".review-form");
+            const rating = Number(starBtn.dataset.rating);
+            form.dataset.rating = rating;
+            form.querySelectorAll(".review-star").forEach(function (s) {
+                s.classList.toggle("active", Number(s.dataset.rating) <= rating);
+            });
+            return;
+        }
+
+        const submitBtn = event.target.closest(".review-submit");
+        if (submitBtn) {
+            const form = submitBtn.closest(".review-form");
+            const rating = Number(form.dataset.rating);
+            if (!rating) { alert("Pilih bintang dulu sebelum kirim ulasan."); return; }
+            const comment = form.querySelector(".review-comment").value.trim();
+            submitBtn.disabled = true;
+            window.submitReview(form.dataset.orderId, Number(form.dataset.productId), form.dataset.productName, rating, comment);
+            return;
+        }
+
         const button = event.target.closest("[data-action]");
         if (!button) return;
 
@@ -205,6 +245,7 @@ onAuthStateChanged(auth, function (user) {
         if (ordersLoginNotice) ordersLoginNotice.style.display = "none";
         const q = query(collection(db, "orders"), where("userId", "==", user.uid));
         unsubscribeOrders = onSnapshot(q, function (snapshot) {
+            lastOrdersSnap = snapshot.docs;
             renderOrders(snapshot.docs);
             updateAccountSummary(snapshot.docs);
         }, tampilkanErrorFirestore);
