@@ -22,6 +22,9 @@ const STAGE_LABEL = {
     dibatalkan: "Dibatalkan"
 };
 
+let lastAdminOrdersSnap = [];
+let reviewsByOrderId = {};
+
 function formatRupiah(price) {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(price);
 }
@@ -31,12 +34,31 @@ function findProductImage(productId) {
     return product ? product.image : "";
 }
 
+function starsHtml(rating) {
+    const rounded = Math.round(rating);
+    let html = "";
+    for (let i = 1; i <= 5; i++) html += i <= rounded ? "★" : "☆";
+    return html;
+}
+
+function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text;
+    return div.innerHTML;
+}
+
 function nextStageButton(order, id) {
     if (order.status === "dibatalkan") return "";
     const idx = STAGE_ORDER.indexOf(order.status);
     if (idx === -1 || idx === STAGE_ORDER.length - 1) return "";
     const nextStage = STAGE_ORDER[idx + 1];
     return '<button type="button" class="button primary admin-order-advance" data-id="' + id + '" data-next="' + nextStage + '">Tandai: ' + STAGE_LABEL[nextStage] + '</button>';
+}
+
+function reviewDisplayHtml(orderId) {
+    const r = reviewsByOrderId[orderId];
+    if (!r) return "";
+    return '<div class="review-item"><p class="review-author">Ulasan dari ' + escapeHtml(r.buyerEmail || "pembeli") + '</p><span class="review-stars">' + starsHtml(r.rating) + '</span><p>' + escapeHtml(r.comment || "(tanpa komentar)") + '</p></div>';
 }
 
 function cleanupOldOrders(docsSnap) {
@@ -67,6 +89,7 @@ function renderAdminOrders(docsSnap) {
             '</div>' +
             '<p class="order-price">' + formatRupiah(order.productPrice) + '</p>' +
             '<p class="order-payment-method">Pembeli: ' + (order.buyerEmail || "-") + ' &middot; ' + (order.paymentMethod || "-") + '</p>' +
+            reviewDisplayHtml(id) +
             '<div class="order-actions">' +
             '<button type="button" class="button secondary admin-order-chat" data-buyer-id="' + order.userId + '" data-buyer-email="' + (order.buyerEmail || "") + '">💬 Chat Pembeli</button>' +
             nextStageButton(order, id) +
@@ -108,6 +131,15 @@ if (adminOrdersList) {
     });
 }
 
+onSnapshot(collection(db, "reviews"), function (snapshot) {
+    reviewsByOrderId = {};
+    snapshot.forEach(function (docSnap) {
+        const r = docSnap.data();
+        reviewsByOrderId[r.orderId] = r;
+    });
+    renderAdminOrders(lastAdminOrdersSnap);
+});
+
 let unsubscribeAdminOrders = null;
 
 onAuthStateChanged(auth, function (user) {
@@ -117,6 +149,7 @@ onAuthStateChanged(auth, function (user) {
     if (unsubscribeAdminOrders) { unsubscribeAdminOrders(); unsubscribeAdminOrders = null; }
     if (isAdmin) {
         unsubscribeAdminOrders = onSnapshot(collection(db, "orders"), function (snapshot) {
+            lastAdminOrdersSnap = snapshot.docs;
             renderAdminOrders(snapshot.docs);
             cleanupOldOrders(snapshot.docs);
         });
