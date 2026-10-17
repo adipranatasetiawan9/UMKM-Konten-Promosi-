@@ -230,17 +230,25 @@
     <div id="authLoggedIn" style="display:none;">
       <div class="account-card">
         <div class="account-card-head">
-          <div class="avatar-circle" id="accountAvatar"></div>
+          <div class="avatar-circle avatar-clickable" id="accountAvatar"></div>
           <div>
-            <h3 id="accountName">-</h3>
+            <div class="account-name-row">
+              <h3 id="accountName">-</h3>
+              <button type="button" class="link-button" id="editNameButton">✏️ Ubah</button>
+            </div>
+            <form id="editNameForm" class="edit-name-form" style="display:none;">
+              <input type="text" id="editNameInput" required>
+              <button type="submit" class="button primary">Simpan</button>
+              <button type="button" class="button secondary" id="editNameCancel">Batal</button>
+            </form>
             <p id="accountEmail">-</p>
           </div>
         </div>
         <input type="file" id="accountPhotoInput" accept="image/*" style="display:none;">
         <button type="button" class="button secondary" id="accountPhotoButton">🖼️ Ubah Foto Profil</button>
-        <button type="button" class="button secondary" id="accountChatButton">💬 Chat Penjual</button>
         <button type="button" class="button secondary" id="logoutButton">Keluar</button>
       </div>
+
       <div class="account-summary">
         <button type="button" class="account-summary-item" data-page="pesanan">
           <span class="account-summary-count" id="countBelumBayar">0</span>
@@ -258,6 +266,12 @@
           <span class="account-summary-count" id="countSelesai">0</span>
           <span class="account-summary-label">Selesai</span>
         </button>
+      </div>
+
+      <div class="account-menu-list">
+        <button type="button" class="account-menu-item" data-page="produk"><span>🛍️</span> Lihat Produk</button>
+        <button type="button" class="account-menu-item" id="accountChatButton"><span>💬</span> Chat dengan Penjual</button>
+        <button type="button" class="account-menu-item" data-page="tentang"><span>🏪</span> Tentang Toko</button>
       </div>
     </div>
   </div>
@@ -317,7 +331,7 @@
         <div class="about-item"><span>📱</span><h3>Platform</h3><p>Website responsif untuk perangkat desktop dan mobile.</p></div>
       </div>
       <div class="toko-card">
-        <div class="avatar-circle" id="tokoAvatar"></div>
+        <div class="avatar-circle avatar-clickable" id="tokoAvatar"></div>
         <div>
           <strong>Pemilik Toko</strong>
           <p>Raden Adi Pranata Setiawan</p>
@@ -358,6 +372,17 @@
   </div>
 </div>
 
+<div class="photo-viewer" id="photoViewer">
+  <div class="photo-viewer-content">
+    <button type="button" class="photo-viewer-close" id="photoViewerClose" aria-label="Tutup">×</button>
+    <img id="photoViewerImage" src="" alt="Foto profil">
+    <div class="photo-viewer-actions">
+      <button type="button" class="button secondary" id="photoViewerChange" style="display:none;">🖼️ Ganti Foto</button>
+      <button type="button" class="button secondary" id="photoViewerShare">🔗 Bagikan</button>
+    </div>
+  </div>
+</div>
+
 <footer class="footer">
   <div class="container">
     <strong>UMKM PROMO</strong>
@@ -366,15 +391,15 @@
   </div>
 </footer>
 
-<script src="js/products.js?v=11"></script>
-<script src="js/app.js?v=11"></script>
-<script type="module" src="js/firebase-config.js?v=11"></script>
-<script type="module" src="js/auth.js?v=11"></script>
-<script type="module" src="js/orders.js?v=11"></script>
-<script type="module" src="js/admin.js?v=11"></script>
-<script type="module" src="js/admin-orders.js?v=11"></script>
-<script type="module" src="js/chat.js?v=11"></script>
-<script type="module" src="js/profile.js?v=11"></script>
-<script type="module" src="js/reviews.js?v=11"></script>
+<script src="js/products.js?v=12"></script>
+<script src="js/app.js?v=12"></script>
+<script type="module" src="js/firebase-config.js?v=12"></script>
+<script type="module" src="js/auth.js?v=12"></script>
+<script type="module" src="js/orders.js?v=12"></script>
+<script type="module" src="js/admin.js?v=12"></script>
+<script type="module" src="js/admin-orders.js?v=12"></script>
+<script type="module" src="js/chat.js?v=12"></script>
+<script type="module" src="js/profile.js?v=12"></script>
+<script type="module" src="js/reviews.js?v=12"></script>
 </body>
 </html>

@@ -49,7 +49,7 @@ window.onProductDetailShown = function (product) {
     if (modalReviewsList) {
         const list = (stat && stat.items) || [];
         modalReviewsList.innerHTML = list.map(function (r) {
-            return '<div class="review-item"><span class="review-stars">' + starsHtml(r.rating) + '</span><p>' + escapeHtml(r.comment || "") + '</p></div>';
+            return '<div class="review-item"><p class="review-author">' + escapeHtml(r.buyerEmail || "Pembeli") + '</p><span class="review-stars">' + starsHtml(r.rating) + '</span><p>' + escapeHtml(r.comment || "") + '</p></div>';
         }).join("");
     }
 };

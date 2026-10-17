@@ -2326,3 +2326,19 @@ body.modal-open {
 .review-star { font-size: 22px; background: none; border: none; color: #d6dcd9; cursor: pointer; padding: 0; }
 .review-star.active { color: #d99a1b; }
 .review-comment { width: 100%; min-height: 60px; padding: 8px 10px; border: 1px solid #e5ece9; border-radius: 8px; font-size: 13px; box-sizing: border-box; margin-bottom: 8px; resize: vertical; }
+
+/* ===== Lightbox foto + ubah nama + menu Akun ===== */
+.avatar-clickable { cursor: pointer; }
+.account-name-row { display: flex; align-items: center; gap: 8px; }
+.link-button { background: none; border: none; color: #0b8457; font-size: 12px; font-weight: 600; cursor: pointer; padding: 0; }
+.edit-name-form { display: flex; gap: 6px; margin: 6px 0; flex-wrap: wrap; }
+.edit-name-form input { flex: 1; min-width: 120px; padding: 6px 10px; border: 1px solid #e5ece9; border-radius: 8px; font-size: 13px; }
+.account-menu-list { margin-top: 16px; display: flex; flex-direction: column; gap: 8px; max-width: 420px; }
+.account-menu-item { display: flex; align-items: center; gap: 10px; padding: 14px 16px; border: 1px solid #e5ece9; border-radius: 12px; background: white; text-align: left; cursor: pointer; font-size: 14px; color: #17202a; }
+.photo-viewer { position: fixed; inset: 0; z-index: 9999; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); padding: 20px; }
+.photo-viewer.active { display: flex; }
+.photo-viewer-content { position: relative; max-width: 420px; width: 100%; text-align: center; }
+.photo-viewer-content img { width: 100%; max-height: 60vh; object-fit: contain; border-radius: 12px; }
+.photo-viewer-close { position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 28px; cursor: pointer; }
+.photo-viewer-actions { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
+.review-author { font-size: 12px; font-weight: 700; color: #17202a; margin-bottom: 2px; }

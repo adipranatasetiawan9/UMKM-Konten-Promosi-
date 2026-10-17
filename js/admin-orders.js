@@ -43,7 +43,8 @@ function cleanupOldOrders(docsSnap) {
     docsSnap.forEach(function (docSnap) {
         const order = docSnap.data();
         const isFinished = order.status === "selesai" || order.status === "dibatalkan";
-        const isOld = order.statusUpdatedAt && (Date.now() - order.statusUpdatedAt > CLEANUP_MS);
+        const referenceTime = order.statusUpdatedAt || order.createdAt || 0;
+        const isOld = referenceTime > 0 && (Date.now() - referenceTime > CLEANUP_MS);
         if (isFinished && isOld) {
             deleteDoc(doc(db, "orders", docSnap.id)).catch(function () {});
         }
