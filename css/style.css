@@ -2342,3 +2342,9 @@ body.modal-open {
 .photo-viewer-close { position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 28px; cursor: pointer; }
 .photo-viewer-actions { display: flex; gap: 10px; justify-content: center; margin-top: 16px; }
 .review-author { font-size: 12px; font-weight: 700; color: #17202a; margin-bottom: 2px; }
+
+/* ===== Perbesar & zoom foto profil ===== */
+.photo-viewer-image-wrap { max-width: 92vw; max-height: 70vh; overflow: auto; border-radius: 12px; background: #000; margin: 0 auto; }
+.photo-viewer-image-wrap img { width: 100%; height: auto; display: block; object-fit: contain; transition: width 0.2s ease; }
+.photo-viewer-image-wrap img.zoomed-img { width: 220%; }
+.photo-viewer-hint { color: #aab5b0; font-size: 12px; margin-top: 8px; }

@@ -4,7 +4,8 @@ import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/f
 
 const ADMIN_EMAIL = "adipranatasetiawan9@gmail.com";
 const db = getFirestore(app);
-const MAX_SIZE = 160;
+const MAX_SIZE = 1048;
+const JPEG_QUALITY = 0.75;
 
 const accountAvatar = document.getElementById("accountAvatar");
 const accountPhotoInput = document.getElementById("accountPhotoInput");
@@ -17,6 +18,7 @@ const editNameInput = document.getElementById("editNameInput");
 const editNameCancel = document.getElementById("editNameCancel");
 const photoViewer = document.getElementById("photoViewer");
 const photoViewerImage = document.getElementById("photoViewerImage");
+const photoViewerImageWrap = document.getElementById("photoViewerImageWrap");
 const photoViewerClose = document.getElementById("photoViewerClose");
 const photoViewerChange = document.getElementById("photoViewerChange");
 const photoViewerShare = document.getElementById("photoViewerShare");
@@ -41,7 +43,7 @@ function resizeToDataUrl(file) {
                 const w = img.width * scale;
                 const h = img.height * scale;
                 ctx.drawImage(img, (MAX_SIZE - w) / 2, (MAX_SIZE - h) / 2, w, h);
-                resolve(canvas.toDataURL("image/jpeg", 0.7));
+                resolve(canvas.toDataURL("image/jpeg", JPEG_QUALITY));
             };
             img.onerror = reject;
             img.src = reader.result;
@@ -80,6 +82,7 @@ if (accountPhotoInput) {
 function openPhotoViewer(dataUrl, allowChange) {
     if (!dataUrl || !photoViewer) return;
     photoViewerImage.src = dataUrl;
+    photoViewerImage.classList.remove("zoomed-img");
     if (photoViewerChange) photoViewerChange.style.display = allowChange ? "inline-block" : "none";
     photoViewer.classList.add("active");
 }
@@ -116,6 +119,21 @@ if (photoViewerShare) {
         } catch (error) {
             if (error && error.name !== "AbortError") alert("Gagal membagikan foto.");
         }
+    });
+}
+
+let lastImageTap = 0;
+if (photoViewerImage) {
+    photoViewerImage.addEventListener("touchend", function () {
+        const now = Date.now();
+        if (now - lastImageTap < 300) {
+            photoViewerImage.classList.toggle("zoomed-img");
+            if (photoViewerImageWrap) { photoViewerImageWrap.scrollLeft = 0; photoViewerImageWrap.scrollTop = 0; }
+        }
+        lastImageTap = now;
+    });
+    photoViewerImage.addEventListener("dblclick", function () {
+        photoViewerImage.classList.toggle("zoomed-img");
     });
 }
 
