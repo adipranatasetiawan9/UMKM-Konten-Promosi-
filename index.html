@@ -156,6 +156,71 @@
   </div>
 </section>
 
+<section class="page" id="page-keranjang">
+  <div class="container page-container">
+    <div class="page-header">
+      <span class="section-label">KERANJANG</span>
+      <h2>Keranjang Belanja</h2>
+      <p>Periksa produk, isi alamat pengiriman, lalu buat pesanan.</p>
+    </div>
+
+    <div id="cartEmpty" class="order-notice" style="display:none;">
+      <p>Keranjang masih kosong.</p>
+      <button type="button" class="button primary" data-page="produk">Lihat Produk</button>
+    </div>
+
+    <div id="cartItems"></div>
+
+    <div id="cartLoginNotice" class="order-notice" style="display:none;">
+      <p>Silakan masuk atau daftar dulu untuk melanjutkan pesanan.</p>
+      <button type="button" class="button primary" data-page="akun">Ke Halaman Akun</button>
+    </div>
+
+    <div id="cartCheckout" style="display:none;">
+      <div class="cart-total-row"><span>Total Produk</span><span id="cartTotal">Rp0</span></div>
+      <p class="order-hint">Ongkos kirim belum termasuk dan dikonfirmasi penjual lewat chat.</p>
+      <form id="checkoutForm" class="checkout-form">
+        <div>
+          <label for="shipName">Nama Penerima</label>
+          <input type="text" id="shipName" required>
+        </div>
+        <div>
+          <label for="shipPhone">Nomor HP</label>
+          <input type="tel" id="shipPhone" placeholder="081234567890" required>
+        </div>
+        <div>
+          <label for="shipAddress">Alamat Lengkap</label>
+          <textarea id="shipAddress" placeholder="Jalan, desa/kelurahan, kecamatan, kota, kode pos" required></textarea>
+        </div>
+        <div>
+          <label for="shipCourier">Kurir</label>
+          <select id="shipCourier">
+            <option value="JNE">JNE</option>
+            <option value="J&T Express">J&T Express</option>
+            <option value="SiCepat">SiCepat</option>
+            <option value="Pos Indonesia">Pos Indonesia</option>
+          </select>
+        </div>
+        <div>
+          <label for="payMethod">Metode Pembayaran</label>
+          <select id="payMethod">
+            <option value="Transfer Bank BRI">Transfer Bank BRI</option>
+            <option value="Transfer Bank BCA">Transfer Bank BCA</option>
+            <option value="Transfer Bank Mandiri">Transfer Bank Mandiri</option>
+            <option value="Transfer Bank Lainnya">Transfer Bank Lainnya</option>
+            <option value="DANA">DANA</option>
+            <option value="OVO">OVO</option>
+            <option value="GoPay">GoPay</option>
+            <option value="ShopeePay">ShopeePay</option>
+          </select>
+        </div>
+        <p class="auth-error" id="checkoutError"></p>
+        <button type="submit" class="button primary" id="checkoutButton">Buat Pesanan</button>
+      </form>
+    </div>
+  </div>
+</section>
+
 <section class="page" id="page-pesanan">
   <div class="container page-container">
     <div class="page-header">
@@ -163,6 +228,8 @@
       <h2>Pesanan</h2>
       <p>Pantau dan kelola pesanan di sini.</p>
     </div>
+
+    <input type="file" id="proofInput" accept="image/*" style="display:none;">
 
     <div id="buyerOrdersView">
       <div id="ordersLoginNotice" class="order-notice" style="display:none;">
@@ -207,6 +274,7 @@
         </div>
         <p class="auth-error" id="loginError"></p>
         <button type="submit" class="button primary">Masuk</button>
+        <button type="button" class="link-button" id="forgotPasswordButton">Lupa password?</button>
       </form>
 
       <form id="registerForm" class="auth-form" style="display:none;">
@@ -270,6 +338,7 @@
 
       <div class="account-menu-list">
         <button type="button" class="account-menu-item" data-page="produk"><span>🛍️</span> Lihat Produk</button>
+        <button type="button" class="account-menu-item" data-page="keranjang"><span>🛒</span> Keranjang Saya</button>
         <button type="button" class="account-menu-item" id="accountChatButton"><span>💬</span> Chat dengan Penjual</button>
         <button type="button" class="account-menu-item" data-page="tentang"><span>🏪</span> Tentang Toko</button>
       </div>
@@ -343,6 +412,8 @@
 
 </main>
 
+<button type="button" class="cart-fab" data-page="keranjang" aria-label="Keranjang">🛒<span class="cart-badge" id="cartBadge">0</span></button>
+
 <div class="product-modal" id="productModal">
   <div class="product-modal-content">
     <button class="modal-close" id="modalClose" type="button" aria-label="Tutup">×</button>
@@ -354,20 +425,16 @@
     <p class="modal-stock" id="modalProductStock"></p>
     <p class="modal-rating-summary" id="modalRatingSummary"></p>
     <div class="modal-reviews-list" id="modalReviewsList"></div>
-    <div class="modal-payment-field">
-      <label for="modalPaymentMethod">Metode Pembayaran</label>
-      <select id="modalPaymentMethod">
-        <option value="Transfer Bank BRI">Transfer Bank BRI</option>
-        <option value="Transfer Bank BCA">Transfer Bank BCA</option>
-        <option value="Transfer Bank Mandiri">Transfer Bank Mandiri</option>
-        <option value="Transfer Bank Lainnya">Transfer Bank Lainnya</option>
-        <option value="DANA">DANA</option>
-        <option value="OVO">OVO</option>
-        <option value="GoPay">GoPay</option>
-        <option value="ShopeePay">ShopeePay</option>
-      </select>
+    <div class="modal-qty-row">
+      <span>Jumlah</span>
+      <div class="qty-stepper">
+        <button type="button" id="modalQtyMinus">−</button>
+        <span id="modalQty">1</span>
+        <button type="button" id="modalQtyPlus">+</button>
+      </div>
     </div>
-    <button class="button primary" id="modalBuyButton" type="button">🛒 Beli Produk</button>
+    <button class="button primary" id="modalBuyButton" type="button">⚡ Beli Sekarang</button>
+    <button class="button secondary" id="modalAddCartButton" type="button">🛒 Tambah ke Keranjang</button>
     <button class="button secondary" id="modalPromoButton" type="button">✨ Buat Konten Promosi</button>
   </div>
 </div>
@@ -376,7 +443,7 @@
   <div class="photo-viewer-content">
     <button type="button" class="photo-viewer-close" id="photoViewerClose" aria-label="Tutup">×</button>
     <div class="photo-viewer-image-wrap" id="photoViewerImageWrap">
-      <img id="photoViewerImage" src="" alt="Foto profil">
+      <img id="photoViewerImage" src="" alt="Foto">
     </div>
     <p class="photo-viewer-hint">Ketuk 2x pada foto untuk perbesar</p>
     <div class="photo-viewer-actions">
@@ -394,15 +461,17 @@
   </div>
 </footer>
 
-<script src="js/products.js?v=14"></script>
-<script src="js/app.js?v=14"></script>
-<script type="module" src="js/firebase-config.js?v=14"></script>
-<script type="module" src="js/auth.js?v=14"></script>
-<script type="module" src="js/orders.js?v=14"></script>
-<script type="module" src="js/admin.js?v=14"></script>
-<script type="module" src="js/admin-orders.js?v=14"></script>
-<script type="module" src="js/chat.js?v=14"></script>
-<script type="module" src="js/profile.js?v=14"></script>
-<script type="module" src="js/reviews.js?v=14"></script>
+<script src="js/products.js?v=15"></script>
+<script src="js/app.js?v=15"></script>
+<script type="module" src="js/firebase-config.js?v=15"></script>
+<script type="module" src="js/auth.js?v=15"></script>
+<script type="module" src="js/orders.js?v=15"></script>
+<script type="module" src="js/admin.js?v=15"></script>
+<script type="module" src="js/admin-orders.js?v=15"></script>
+<script type="module" src="js/chat.js?v=15"></script>
+<script type="module" src="js/profile.js?v=15"></script>
+<script type="module" src="js/reviews.js?v=15"></script>
+<script type="module" src="js/cart.js?v=15"></script>
+<script type="module" src="js/forgot.js?v=15"></script>
 </body>
 </html>

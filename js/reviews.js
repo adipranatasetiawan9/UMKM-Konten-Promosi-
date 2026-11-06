@@ -5,7 +5,7 @@ import { getFirestore, collection, addDoc, query, where, onSnapshot } from "http
 const db = getFirestore(app);
 let currentUser = null;
 let reviewsByProduct = {};
-let myReviewedOrderIds = new Set();
+let myReviewedKeys = new Set();
 let unsubscribeMyReviews = null;
 
 const modalRatingSummary = document.getElementById("modalRatingSummary");
@@ -19,9 +19,15 @@ function starsHtml(rating) {
 }
 
 function escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
+    return String(text == null ? "" : text).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+}
+
+function maskEmail(email) {
+    const parts = String(email || "").split("@");
+    if (parts.length !== 2) return "Pembeli";
+    return parts[0].slice(0, 3) + "***@" + parts[1];
 }
 
 function updateProductStars() {
@@ -49,7 +55,7 @@ window.onProductDetailShown = function (product) {
     if (modalReviewsList) {
         const list = (stat && stat.items) || [];
         modalReviewsList.innerHTML = list.map(function (r) {
-            return '<div class="review-item"><p class="review-author">' + escapeHtml(r.buyerEmail || "Pembeli") + '</p><span class="review-stars">' + starsHtml(r.rating) + '</span><p>' + escapeHtml(r.comment || "") + '</p></div>';
+            return '<div class="review-item"><p class="review-author">' + escapeHtml(maskEmail(r.buyerEmail)) + '</p><span class="review-stars">' + starsHtml(r.rating) + '</span><p>' + escapeHtml(r.comment || "") + '</p></div>';
         }).join("");
     }
 };
@@ -87,18 +93,18 @@ window.submitReview = function (orderId, productId, productName, rating, comment
     });
 };
 
-window.hasReviewedOrder = function (orderId) {
-    return myReviewedOrderIds.has(orderId);
+window.hasReviewedItem = function (orderId, productId) {
+    return myReviewedKeys.has(orderId + "_" + productId);
 };
 
 onAuthStateChanged(auth, function (user) {
     currentUser = user;
     if (unsubscribeMyReviews) { unsubscribeMyReviews(); unsubscribeMyReviews = null; }
-    myReviewedOrderIds = new Set();
+    myReviewedKeys = new Set();
     if (!user) return;
     const q = query(collection(db, "reviews"), where("userId", "==", user.uid));
     unsubscribeMyReviews = onSnapshot(q, function (snapshot) {
-        myReviewedOrderIds = new Set(snapshot.docs.map(function (d) { return d.data().orderId; }));
+        myReviewedKeys = new Set(snapshot.docs.map(function (d) { return d.data().orderId + "_" + d.data().productId; }));
         if (typeof window.rerenderMyOrders === "function") window.rerenderMyOrders();
     });
 });

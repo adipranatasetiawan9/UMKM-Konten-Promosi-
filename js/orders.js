@@ -1,18 +1,19 @@
 import { app, auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, doc, runTransaction, query, where, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, runTransaction, query, where, onSnapshot, updateDoc } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const db = getFirestore(app);
-const buyButton = document.getElementById("modalBuyButton");
-const paymentMethodSelect = document.getElementById("modalPaymentMethod");
 const ordersList = document.getElementById("ordersList");
 const ordersEmpty = document.getElementById("ordersEmpty");
 const ordersLoginNotice = document.getElementById("ordersLoginNotice");
+const proofInput = document.getElementById("proofInput");
 
 let currentUser = null;
 let unsubscribeOrders = null;
 let stockMap = {};
 let lastOrdersSnap = [];
+let pendingProofOrderId = null;
+let lastModalProductId = null;
 
 const STAGE_ORDER = ["menunggu_pembayaran", "menunggu_konfirmasi", "diproses", "dikemas", "dikirim", "selesai"];
 const STAGE_LABEL = {
@@ -25,6 +26,12 @@ const STAGE_LABEL = {
     dibatalkan: "Dibatalkan"
 };
 
+function esc(text) {
+    return String(text == null ? "" : text).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+}
+
 function formatRupiah(price) {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(price);
 }
@@ -32,6 +39,37 @@ function formatRupiah(price) {
 function findProductImage(productId) {
     const product = products.find(function (p) { return p.id === productId; });
     return product ? product.image : "";
+}
+
+function orderItems(order) {
+    if (Array.isArray(order.items) && order.items.length > 0) return order.items;
+    return [{ productId: order.productId, name: order.productName, price: order.productPrice, qty: order.quantity || 1 }];
+}
+
+function orderTotal(order) {
+    if (typeof order.totalPrice === "number") return order.totalPrice;
+    return orderItems(order).reduce(function (sum, i) { return sum + i.price * i.qty; }, 0);
+}
+
+function fileToDataUrl(file, maxSide, quality) {
+    return new Promise(function (resolve, reject) {
+        const reader = new FileReader();
+        reader.onload = function () {
+            const img = new Image();
+            img.onload = function () {
+                const scale = Math.min(1, maxSide / Math.max(img.width, img.height));
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.round(img.width * scale);
+                canvas.height = Math.round(img.height * scale);
+                canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL("image/jpeg", quality));
+            };
+            img.onerror = reject;
+            img.src = reader.result;
+        };
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
 }
 
 function paymentInstruction(method) {
@@ -52,27 +90,50 @@ function stepperHtml(status) {
         '</div>';
 }
 
-function reviewSectionHtml(order, id) {
-    if (order.status !== "selesai") return "";
-    if (typeof window.hasReviewedOrder === "function" && window.hasReviewedOrder(id)) {
-        return '<p class="order-hint">✓ Kamu sudah memberi ulasan untuk pesanan ini.</p>';
-    }
-    return '<div class="review-form" data-order-id="' + id + '" data-product-id="' + order.productId + '" data-product-name="' + order.productName + '" data-rating="0">' +
-        '<p class="order-hint">Beri ulasan untuk pesanan ini:</p>' +
-        '<div class="review-stars-input">' +
-        [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" class="review-star" data-rating="' + n + '">★</button>'; }).join("") +
-        '</div>' +
-        '<textarea class="review-comment" placeholder="Tulis ulasan kamu (opsional)..."></textarea>' +
-        '<button type="button" class="button primary review-submit">Kirim Ulasan</button>' +
+function itemsHtml(order) {
+    return '<div class="order-items">' + orderItems(order).map(function (it) {
+        const img = findProductImage(it.productId);
+        return '<div class="order-item">' +
+            (img ? '<img class="order-product-image" src="' + esc(img) + '" alt="">' : '') +
+            '<div class="order-item-info"><strong>' + esc(it.name) + '</strong><span>' + it.qty + ' × ' + formatRupiah(it.price) + '</span></div>' +
+            '</div>';
+    }).join("") + '</div>';
+}
+
+function shippingHtml(order) {
+    if (!order.address) return "";
+    return '<div class="order-shipping">' +
+        '<p><strong>Penerima:</strong> ' + esc(order.recipientName) + ' · ' + esc(order.phone) + '</p>' +
+        '<p>' + esc(order.address) + '</p>' +
+        '<p><strong>Kurir:</strong> ' + esc(order.courier || "-") + '</p>' +
+        (order.trackingNumber ? '<p><strong>No. Resi:</strong> ' + esc(order.trackingNumber) + '</p>' : '') +
         '</div>';
 }
 
+function reviewSectionHtml(order, id) {
+    if (order.status !== "selesai") return "";
+    return orderItems(order).map(function (it) {
+        if (typeof window.hasReviewedItem === "function" && window.hasReviewedItem(id, it.productId)) {
+            return '<p class="order-hint">✓ Sudah diulas: ' + esc(it.name) + '</p>';
+        }
+        return '<div class="review-form" data-order-id="' + id + '" data-product-id="' + it.productId + '" data-product-name="' + esc(it.name) + '" data-rating="0">' +
+            '<p class="order-hint">Beri ulasan untuk ' + esc(it.name) + ':</p>' +
+            '<div class="review-stars-input">' +
+            [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" class="review-star" data-rating="' + n + '">★</button>'; }).join("") +
+            '</div>' +
+            '<textarea class="review-comment" placeholder="Tulis ulasan kamu (opsional)..."></textarea>' +
+            '<button type="button" class="button primary review-submit">Kirim Ulasan</button>' +
+            '</div>';
+    }).join("");
+}
+
 function tampilkanErrorFirestore(error) {
-    if (error && error.message === "STOK_HABIS") { alert("Maaf, stok produk ini sudah habis."); return; }
-    if (error && error.code === "permission-denied") alert("Gagal: Firestore Rules belum di-publish.");
+    if (error && error.code === "permission-denied") alert("Gagal: Firestore Rules belum di-publish atau menolak aksi ini.");
     else alert("Terjadi kesalahan: " + (error && error.message ? error.message : error));
     console.error(error);
 }
+
+window.getStockQty = function (productId) { return stockMap[productId]; };
 
 function updateStockDisplay() {
     document.querySelectorAll(".product-stock").forEach(function (el) {
@@ -89,13 +150,23 @@ window.onProductDetailShown = function (product) {
     const qty = stockMap[product.id];
     const modalStockEl = document.getElementById("modalProductStock");
     if (modalStockEl) modalStockEl.textContent = qty === undefined ? "Memuat stok..." : (qty > 0 ? "Stok tersedia: " + qty : "Stok Habis");
-    if (buyButton) buyButton.disabled = !(qty > 0);
+    const habis = !(qty > 0);
+    ["modalBuyButton", "modalAddCartButton"].forEach(function (id) {
+        const b = document.getElementById(id);
+        if (b) b.disabled = habis;
+    });
+    if (lastModalProductId !== product.id) {
+        const q = document.getElementById("modalQty");
+        if (q) q.textContent = "1";
+        lastModalProductId = product.id;
+    }
 };
 
 onSnapshot(collection(db, "stock"), function (snapshot) {
     snapshot.forEach(function (docSnap) { stockMap[docSnap.id] = docSnap.data().quantity; });
     updateStockDisplay();
     if (window.selectedProductForPromo) window.onProductDetailShown(window.selectedProductForPromo);
+    if (typeof window.onStockChanged === "function") window.onStockChanged();
 });
 
 function updateAccountSummary(docsSnap) {
@@ -122,23 +193,22 @@ function renderOrders(docsSnap) {
     ordersList.innerHTML = sorted.map(function (docSnap) {
         const order = docSnap.data();
         const id = docSnap.id;
-        const imgSrc = findProductImage(order.productId);
         let paymentHtml = "";
         let actionsHtml = "";
         if (order.status === "menunggu_pembayaran") {
-            paymentHtml = '<p class="order-payment-method">Metode: ' + (order.paymentMethod || "-") + '</p>' +
+            paymentHtml = '<p class="order-payment-method">Metode: ' + esc(order.paymentMethod || "-") + '</p>' +
                 '<img class="order-qris" src="assets/payment/qris-dana.jpg" alt="QRIS Pembayaran">' +
-                '<p class="order-hint">' + paymentInstruction(order.paymentMethod) + '</p>';
-            actionsHtml = '<div class="order-actions"><button type="button" class="button primary" data-action="bayar" data-id="' + id + '">Saya Sudah Bayar</button><button type="button" class="button secondary" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
+                '<p class="order-hint">Total yang dibayar: <strong>' + formatRupiah(orderTotal(order)) + '</strong>. ' + esc(paymentInstruction(order.paymentMethod)) + ' Setelah bayar, unggah screenshot bukti bayarnya.</p>';
+            actionsHtml = '<div class="order-actions"><button type="button" class="button primary" data-action="bukti" data-id="' + id + '">📎 Unggah Bukti Bayar</button><button type="button" class="button secondary" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
         } else if (order.status === "menunggu_konfirmasi") {
+            paymentHtml = '<p class="order-hint">' + (order.hasProof ? '✓ Bukti bayar terkirim. ' : '') + 'Menunggu konfirmasi penjual.</p>';
             actionsHtml = '<div class="order-actions"><button type="button" class="button secondary" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
         }
         return '<div class="order-card">' +
-            '<div class="order-card-top">' +
-            (imgSrc ? '<img class="order-product-image" src="' + imgSrc + '" alt="' + order.productName + '">' : '') +
-            '<div class="order-card-head"><h3>' + order.productName + '</h3><span class="order-status order-status-' + order.status + '">' + (STAGE_LABEL[order.status] || order.status) + '</span></div>' +
-            '</div>' +
-            '<p class="order-price">' + formatRupiah(order.productPrice) + '</p>' +
+            '<div class="order-card-head-row"><h3>Pesanan #' + id.slice(-6).toUpperCase() + '</h3><span class="order-status order-status-' + order.status + '">' + (STAGE_LABEL[order.status] || order.status) + '</span></div>' +
+            itemsHtml(order) +
+            '<p class="order-price">Total: ' + formatRupiah(orderTotal(order)) + '</p>' +
+            shippingHtml(order) +
             '<button type="button" class="button secondary order-chat-button" data-action="chat">💬 Chat Penjual</button>' +
             stepperHtml(order.status) + paymentHtml + actionsHtml + reviewSectionHtml(order, id) + '</div>';
     }).join("");
@@ -178,63 +248,45 @@ if (ordersList) {
             return;
         }
 
-        const orderId = button.dataset.id;
-        const orderRef = doc(db, "orders", orderId);
-
-        if (button.dataset.action === "bayar") {
-            updateDoc(orderRef, { status: "menunggu_konfirmasi", statusUpdatedAt: Date.now() }).catch(tampilkanErrorFirestore);
+        if (button.dataset.action === "bukti") {
+            pendingProofOrderId = button.dataset.id;
+            if (proofInput) proofInput.click();
             return;
         }
+
+        const orderRef = doc(db, "orders", button.dataset.id);
 
         runTransaction(db, async function (transaction) {
             const orderSnap = await transaction.get(orderRef);
             if (!orderSnap.exists()) return;
             const order = orderSnap.data();
             if (order.status === "dibatalkan") return;
-            const stockRef = doc(db, "stock", String(order.productId));
-            const stockSnap = await transaction.get(stockRef);
-            const currentQty = stockSnap.exists() ? stockSnap.data().quantity : 0;
-            transaction.update(stockRef, { quantity: currentQty + 1 });
+            const items = orderItems(order);
+            const stockRefs = items.map(function (i) { return doc(db, "stock", String(i.productId)); });
+            const snaps = [];
+            for (const ref of stockRefs) snaps.push(await transaction.get(ref));
+            snaps.forEach(function (snap, idx) {
+                if (snap.exists()) transaction.update(stockRefs[idx], { quantity: snap.data().quantity + items[idx].qty });
+            });
             transaction.update(orderRef, { status: "dibatalkan", statusUpdatedAt: Date.now() });
         }).catch(tampilkanErrorFirestore);
     });
 }
 
-if (buyButton) {
-    buyButton.addEventListener("click", function () {
-        if (!currentUser) {
-            alert("Silakan masuk/daftar dulu sebelum membeli produk.");
-            if (typeof closeProductModal === "function") closeProductModal();
-            if (typeof showPage === "function") showPage("akun");
-            return;
+if (proofInput) {
+    proofInput.addEventListener("change", async function () {
+        const file = proofInput.files[0];
+        proofInput.value = "";
+        if (!file || !pendingProofOrderId || !currentUser) return;
+        const orderId = pendingProofOrderId;
+        pendingProofOrderId = null;
+        try {
+            const dataUrl = await fileToDataUrl(file, 900, 0.7);
+            await setDoc(doc(db, "proofs", orderId), { userId: currentUser.uid, orderId: orderId, dataUrl: dataUrl, createdAt: Date.now() });
+            await updateDoc(doc(db, "orders", orderId), { status: "menunggu_konfirmasi", statusUpdatedAt: Date.now(), hasProof: true });
+        } catch (error) {
+            tampilkanErrorFirestore(error);
         }
-        const product = window.selectedProductForPromo;
-        if (!product) { alert("Produk tidak terdeteksi, coba buka ulang detail produknya."); return; }
-
-        const paymentMethod = paymentMethodSelect ? paymentMethodSelect.value : "QRIS";
-        const stockRef = doc(db, "stock", String(product.id));
-        const newOrderRef = doc(collection(db, "orders"));
-
-        runTransaction(db, async function (transaction) {
-            const stockSnap = await transaction.get(stockRef);
-            const qty = stockSnap.exists() ? stockSnap.data().quantity : 0;
-            if (qty <= 0) throw new Error("STOK_HABIS");
-            transaction.update(stockRef, { quantity: qty - 1 });
-            transaction.set(newOrderRef, {
-                userId: currentUser.uid,
-                buyerEmail: currentUser.email,
-                productId: product.id,
-                productName: product.name,
-                productPrice: product.price,
-                paymentMethod: paymentMethod,
-                status: "menunggu_pembayaran",
-                statusUpdatedAt: Date.now(),
-                createdAt: Date.now()
-            });
-        }).then(function () {
-            if (typeof closeProductModal === "function") closeProductModal();
-            if (typeof showPage === "function") showPage("pesanan");
-        }).catch(tampilkanErrorFirestore);
     });
 }
 
