@@ -2370,3 +2370,14 @@ body.modal-open {
 .order-item-info { display: flex; flex-direction: column; font-size: 13px; }
 .order-shipping { background: #f6f8f7; border-radius: 10px; padding: 10px 12px; font-size: 12px; margin: 8px 0; line-height: 1.5; }
 .toast { position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); background: #17202a; color: white; padding: 10px 16px; border-radius: 20px; font-size: 13px; z-index: 10000; }
+
+/* ===== Ikon keranjang di navbar + admin produk ===== */
+.nav-link.nav-cart { position: relative; font-size: 16px; padding-left: 8px; padding-right: 8px; }
+.nav-cart .cart-badge { top: -4px; right: -2px; }
+.admin-toolbar { margin-bottom: 12px; }
+.admin-product-row { display: flex; gap: 12px; align-items: flex-start; padding: 12px; background: white; border: 1px solid #e5ece9; border-radius: 12px; margin-bottom: 10px; max-width: 640px; }
+.admin-product-row.is-hidden { opacity: 0.55; }
+.admin-product-thumb { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; flex-shrink: 0; }
+.admin-product-info { flex: 1; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.admin-row-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.admin-stock-input { width: 70px; padding: 6px 8px; border: 1px solid #e5ece9; border-radius: 8px; font-size: 13px; }

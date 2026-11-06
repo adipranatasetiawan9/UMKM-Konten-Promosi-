@@ -1,6 +1,12 @@
 const pages = document.querySelectorAll(".page");
 const pageButtons = document.querySelectorAll("[data-page]");
 
+function esc(text) {
+    return String(text == null ? "" : text).replace(/[&<>"']/g, function(c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+}
+
 function showPage(pageName) {
     pages.forEach(function(page) { page.classList.remove("active"); });
     const targetPage = document.getElementById("page-" + pageName);
@@ -34,6 +40,10 @@ function formatRupiah(price) {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(price);
 }
 
+function visibleProducts() {
+    return products.filter(function(product) { return !product.hidden; });
+}
+
 function displayProducts(productList) {
     if (!productGrid) return;
     productGrid.innerHTML = "";
@@ -48,7 +58,7 @@ function displayProducts(productList) {
         card.setAttribute("role", "button");
         card.setAttribute("tabindex", "0");
         card.setAttribute("aria-label", "Lihat detail " + product.name);
-        card.innerHTML = '<div class="product-image"><img src="' + product.image + '" alt="' + product.name + '" loading="lazy"></div><div class="product-info"><span class="product-category">' + product.category + '</span><h3>' + product.name + '</h3><p class="product-price">' + formatRupiah(product.price) + '</p><span class="product-stock" data-stock-id="' + product.id + '"></span><span class="product-rating" data-rating-id="' + product.id + '"></span><span class="product-detail-hint">Lihat detail →</span></div>';
+        card.innerHTML = '<div class="product-image"><img src="' + esc(product.image) + '" alt="' + esc(product.name) + '" loading="lazy"></div><div class="product-info"><span class="product-category">' + esc(product.category) + '</span><h3>' + esc(product.name) + '</h3><p class="product-price">' + formatRupiah(product.price) + '</p><span class="product-stock" data-stock-id="' + product.id + '"></span><span class="product-rating" data-rating-id="' + product.id + '"></span><span class="product-detail-hint">Lihat detail →</span></div>';
         productGrid.appendChild(card);
     });
     if (typeof window.onProductsRendered === "function") window.onProductsRendered();
@@ -56,7 +66,7 @@ function displayProducts(productList) {
 
 function filterProducts() {
     const search = currentSearch.trim().toLowerCase();
-    const filteredProducts = products.filter(function(product) {
+    const filteredProducts = visibleProducts().filter(function(product) {
         const name = String(product.name).toLowerCase();
         const category = String(product.category).toLowerCase();
         const description = String(product.description).toLowerCase();
@@ -71,7 +81,7 @@ function filterProducts() {
 function updateSearchInfo(resultCount) {
     if (!searchResultInfo) return;
     const searchText = currentSearch.trim();
-    if (searchText === "" && currentCategory === "Semua") { searchResultInfo.textContent = "Menampilkan semua " + products.length + " produk"; return; }
+    if (searchText === "" && currentCategory === "Semua") { searchResultInfo.textContent = "Menampilkan semua " + visibleProducts().length + " produk"; return; }
     if (searchText !== "" && currentCategory !== "Semua") { searchResultInfo.textContent = resultCount + ' produk ditemukan untuk "' + searchText + '" dalam kategori ' + currentCategory; return; }
     if (searchText !== "") { searchResultInfo.textContent = resultCount + ' produk ditemukan untuk "' + searchText + '"'; return; }
     searchResultInfo.textContent = resultCount + " produk dalam kategori " + currentCategory;
@@ -173,13 +183,20 @@ const copyRecommendation = document.getElementById("copyRecommendation");
 function loadRecommendationProducts() {
     if (!recommendationProduct) return;
     recommendationProduct.innerHTML = '<option value="">Pilih Produk</option>';
-    products.forEach(function(product) {
+    visibleProducts().forEach(function(product) {
         const option = document.createElement("option");
         option.value = product.id;
         option.textContent = product.name;
         recommendationProduct.appendChild(option);
     });
 }
+
+window.refreshCatalog = function() {
+    const selected = recommendationProduct ? recommendationProduct.value : "";
+    loadRecommendationProducts();
+    if (recommendationProduct && selected) recommendationProduct.value = selected;
+    filterProducts();
+};
 
 if (modalPromoButton) {
     modalPromoButton.addEventListener("click", function() {
@@ -233,7 +250,6 @@ function copyRecommendationContent() {
 
 if (copyRecommendation) copyRecommendation.addEventListener("click", copyRecommendationContent);
 
-displayProducts(products);
 loadRecommendationProducts();
 setupProductInteraction();
 filterProducts();

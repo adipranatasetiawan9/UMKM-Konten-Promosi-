@@ -25,8 +25,9 @@
       <button class="nav-link" type="button" data-page="rekomendasi">Rekomendasi</button>
       <button class="nav-link" type="button" data-page="pesanan">Pesanan</button>
       <button class="nav-link" type="button" data-page="akun">Akun</button>
-      <button class="nav-link" type="button" data-page="admin-stok">Stok</button>
+      <button class="nav-link" type="button" data-page="admin-stok">Kelola</button>
       <button class="nav-link" type="button" data-page="tentang">Tentang</button>
+      <button class="nav-link nav-cart" type="button" data-page="keranjang" aria-label="Keranjang">🛒<span class="cart-badge" id="cartBadge">0</span></button>
     </nav>
   </div>
 </header>
@@ -350,8 +351,8 @@
   <div class="container page-container">
     <div class="page-header">
       <span class="section-label">KHUSUS PENJUAL</span>
-      <h2>Kelola Stok Produk</h2>
-      <p>Atur jumlah stok tiap produk secara langsung.</p>
+      <h2>Kelola Produk dan Stok</h2>
+      <p>Tambah produk baru, ubah data produk, atur stok, atau sembunyikan produk.</p>
     </div>
 
     <div id="onlyAdminNotice" class="order-notice">
@@ -412,8 +413,6 @@
 
 </main>
 
-<button type="button" class="cart-fab" data-page="keranjang" aria-label="Keranjang">🛒<span class="cart-badge" id="cartBadge">0</span></button>
-
 <div class="product-modal" id="productModal">
   <div class="product-modal-content">
     <button class="modal-close" id="modalClose" type="button" aria-label="Tutup">×</button>
@@ -461,17 +460,18 @@
   </div>
 </footer>
 
-<script src="js/products.js?v=15"></script>
-<script src="js/app.js?v=15"></script>
-<script type="module" src="js/firebase-config.js?v=15"></script>
-<script type="module" src="js/auth.js?v=15"></script>
-<script type="module" src="js/orders.js?v=15"></script>
-<script type="module" src="js/admin.js?v=15"></script>
-<script type="module" src="js/admin-orders.js?v=15"></script>
-<script type="module" src="js/chat.js?v=15"></script>
-<script type="module" src="js/profile.js?v=15"></script>
-<script type="module" src="js/reviews.js?v=15"></script>
-<script type="module" src="js/cart.js?v=15"></script>
-<script type="module" src="js/forgot.js?v=15"></script>
+<script src="js/products.js?v=16"></script>
+<script src="js/app.js?v=16"></script>
+<script type="module" src="js/firebase-config.js?v=16"></script>
+<script type="module" src="js/auth.js?v=16"></script>
+<script type="module" src="js/orders.js?v=16"></script>
+<script type="module" src="js/admin.js?v=16"></script>
+<script type="module" src="js/admin-orders.js?v=16"></script>
+<script type="module" src="js/chat.js?v=16"></script>
+<script type="module" src="js/profile.js?v=16"></script>
+<script type="module" src="js/reviews.js?v=16"></script>
+<script type="module" src="js/cart.js?v=16"></script>
+<script type="module" src="js/forgot.js?v=16"></script>
+<script type="module" src="js/catalog.js?v=16"></script>
 </body>
 </html>
