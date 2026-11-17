@@ -23,9 +23,9 @@ let unsubscribeMessages = null;
 let unsubscribeInbox = null;
 
 function escapeHtml(text) {
-    const div = document.createElement("div");
-    div.textContent = text;
-    return div.innerHTML;
+    return String(text == null ? "" : text).replace(/[&<>"']/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
 }
 
 function formatTime(ts) {
@@ -37,13 +37,17 @@ function formatTime(ts) {
 function renderMessages(docsSnap) {
     if (!chatMessages) return;
     const sorted = docsSnap.slice().sort(function (a, b) { return (a.data().createdAt || 0) - (b.data().createdAt || 0); });
+    if (sorted.length === 0) {
+        chatMessages.innerHTML = '<p class="text-muted small text-center mt-3">Belum ada pesan. Tulis pesan pertama kamu.</p>';
+        return;
+    }
     chatMessages.innerHTML = sorted.map(function (docSnap) {
         const msg = docSnap.data();
         const mine = msg.senderRole === (isAdmin ? "admin" : "buyer");
-        return '<div class="chat-bubble-row' + (mine ? " chat-bubble-row-mine" : "") + '">' +
-            '<div class="chat-bubble ' + (mine ? "chat-bubble-mine" : "chat-bubble-other") + '">' +
-            '<p>' + escapeHtml(msg.text) + '</p>' +
-            '<span class="chat-bubble-time">' + formatTime(msg.createdAt) + '</span>' +
+        return '<div class="d-flex ' + (mine ? "justify-content-end" : "justify-content-start") + ' mb-2">' +
+            '<div class="rounded-3 px-3 py-2 ' + (mine ? "bg-success text-white" : "bg-light border") + '" style="max-width:80%;">' +
+            '<div>' + escapeHtml(msg.text) + '</div>' +
+            '<div class="small text-end ' + (mine ? "text-white-50" : "text-muted") + '">' + formatTime(msg.createdAt) + '</div>' +
             '</div></div>';
     }).join("");
     chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -85,12 +89,12 @@ if (chatBackButton) {
 function renderInbox(docsSnap) {
     if (!chatInbox) return;
     const sorted = docsSnap.slice().sort(function (a, b) { return (b.data().lastMessageAt || 0) - (a.data().lastMessageAt || 0); });
-    if (sorted.length === 0) { chatInbox.innerHTML = '<p class="order-hint">Belum ada chat masuk.</p>'; return; }
+    if (sorted.length === 0) { chatInbox.innerHTML = '<div class="alert alert-light border">Belum ada chat masuk.</div>'; return; }
     chatInbox.innerHTML = sorted.map(function (docSnap) {
         const chat = docSnap.data();
-        return '<button type="button" class="chat-inbox-item" data-id="' + docSnap.id + '" data-email="' + escapeHtml(chat.buyerEmail || "") + '">' +
-            '<span class="chat-inbox-email">' + escapeHtml(chat.buyerEmail || "Pembeli") + '</span>' +
-            '<span class="chat-inbox-preview">' + escapeHtml(chat.lastMessageText || "") + '</span>' +
+        return '<button type="button" class="list-group-item list-group-item-action chat-inbox-item" data-id="' + docSnap.id + '" data-email="' + escapeHtml(chat.buyerEmail || "") + '">' +
+            '<div class="fw-semibold">' + escapeHtml(chat.buyerEmail || "Pembeli") + '</div>' +
+            '<div class="small text-muted text-truncate">' + escapeHtml(chat.lastMessageText || "") + '</div>' +
             '</button>';
     }).join("");
 }

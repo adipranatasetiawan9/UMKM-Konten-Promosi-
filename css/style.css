@@ -1,17 +1,29 @@
-/* Penyesuaian kecil di atas Bootstrap 5.3 */
-:root { --bs-success-rgb: 10, 122, 80; }
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Poppins:wght@400;500;600&display=swap');
+
+/* TEMA: ubah warna di blok ini untuk mengganti tampilan seluruh website */
+:root {
+  --warna-utama: #0a7a50;
+  --warna-utama-gelap: #08623f;
+  --warna-gelap: #0f2b24;
+  --warna-aksen: #d99a1b;
+  --bs-success-rgb: 10, 122, 80;
+  --bs-body-font-family: 'Poppins', system-ui, sans-serif;
+}
+
 body { background: #f6f8f7; }
-.btn-success { --bs-btn-bg: #0a7a50; --bs-btn-border-color: #0a7a50; --bs-btn-hover-bg: #08623f; --bs-btn-hover-border-color: #08623f; --bs-btn-active-bg: #08623f; --bs-btn-active-border-color: #08623f; --bs-btn-disabled-bg: #0a7a50; --bs-btn-disabled-border-color: #0a7a50; }
-.btn-outline-success { --bs-btn-color: #0a7a50; --bs-btn-border-color: #0a7a50; --bs-btn-hover-bg: #0a7a50; --bs-btn-hover-border-color: #0a7a50; --bs-btn-active-bg: #0a7a50; --bs-btn-active-border-color: #0a7a50; }
-.text-success { color: #0a7a50 !important; }
-.navbar .nav-link.active { color: #0a7a50; font-weight: 600; }
+h1, h2, .navbar-brand span.fw-bold { font-family: 'Playfair Display', Georgia, serif; }
+.text-success { color: var(--warna-utama) !important; }
+.btn-success { --bs-btn-bg: var(--warna-utama); --bs-btn-border-color: var(--warna-utama); --bs-btn-hover-bg: var(--warna-utama-gelap); --bs-btn-hover-border-color: var(--warna-utama-gelap); --bs-btn-active-bg: var(--warna-utama-gelap); --bs-btn-active-border-color: var(--warna-utama-gelap); --bs-btn-disabled-bg: var(--warna-utama); --bs-btn-disabled-border-color: var(--warna-utama); }
+.btn-outline-success { --bs-btn-color: var(--warna-utama); --bs-btn-border-color: var(--warna-utama); --bs-btn-hover-bg: var(--warna-utama); --bs-btn-hover-border-color: var(--warna-utama); --bs-btn-active-bg: var(--warna-utama); --bs-btn-active-border-color: var(--warna-utama); }
+.navbar .nav-link.active { color: var(--warna-utama); font-weight: 600; }
+.navbar::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 5px; background: repeating-linear-gradient(135deg, var(--warna-utama) 0 10px, var(--warna-aksen) 10px 14px, var(--warna-gelap) 14px 24px); }
 
 /* Pengganti halaman: satu halaman tampil, sisanya disembunyikan */
 .page { display: none; }
 .page.active { display: block; }
 
-.logo-mark { width: 34px; height: 34px; border-radius: 8px; background: #0a7a50; color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
-.hero-section { background: linear-gradient(135deg, #0f2b24 0%, #0a7a50 100%); color: #fff; }
+.logo-mark { width: 34px; height: 34px; border-radius: 8px; background: var(--warna-utama); color: #fff; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; }
+.hero-section { background-image: radial-gradient(rgba(255, 255, 255, .08) 1px, transparent 1px), linear-gradient(135deg, var(--warna-gelap) 0%, var(--warna-utama) 100%); background-size: 22px 22px, auto; color: #fff; }
 
 .product-img { aspect-ratio: 4 / 3; object-fit: cover; }
 .product-card { cursor: pointer; transition: transform .15s ease; }
@@ -23,7 +35,7 @@ body { background: #f6f8f7; }
 
 .avatar { width: 72px; height: 72px; }
 .avatar img { width: 100%; height: 100%; object-fit: cover; }
-.avatar-fallback { font-size: 1.6rem; font-weight: 700; color: #0a7a50; }
+.avatar-fallback { font-size: 1.6rem; font-weight: 700; color: var(--warna-utama); }
 .avatar-clickable { cursor: pointer; }
 
 .review-item { padding: .5rem 0; border-bottom: 1px solid #dee2e6; text-align: left; }

@@ -26,8 +26,9 @@ function rupiah(price) {
 
 function toast(message) {
     const el = document.createElement("div");
-    el.className = "toast";
-    el.textContent = message;
+    el.className = "toast show align-items-center text-bg-dark border-0 position-fixed bottom-0 start-50 translate-middle-x mb-5";
+    el.style.zIndex = "2000";
+    el.innerHTML = '<div class="toast-body">' + esc(message) + '</div>';
     document.body.appendChild(el);
     setTimeout(function () { el.remove(); }, 2200);
 }
@@ -54,22 +55,21 @@ function fileToDataUrl(file, maxSide, quality) {
 }
 
 function skeletonHtml() {
-    return '<div class="admin-toolbar"><button type="button" class="button primary" id="adminAddButton">➕ Tambah Produk Baru</button></div>' +
-        '<form id="adminProductForm" class="checkout-form" style="display:none;">' +
-        '<h3 id="adminFormTitle">Tambah Produk</h3>' +
-        '<div><label for="apName">Nama Produk</label><input type="text" id="apName" required></div>' +
-        '<div><label for="apCategory">Kategori</label><select id="apCategory">' +
+    return '<div class="mb-3"><button type="button" class="btn btn-success" id="adminAddButton">➕ Tambah Produk Baru</button></div>' +
+        '<form id="adminProductForm" class="card card-body border-0 shadow-sm mb-3" style="display:none;">' +
+        '<h3 class="h5" id="adminFormTitle">Tambah Produk</h3>' +
+        '<div class="mb-3"><label for="apName" class="form-label">Nama Produk</label><input type="text" class="form-control" id="apName" required></div>' +
+        '<div class="mb-3"><label for="apCategory" class="form-label">Kategori</label><select class="form-select" id="apCategory">' +
         CATEGORIES.map(function (c) { return '<option value="' + c + '">' + c + '</option>'; }).join("") +
         '</select></div>' +
-        '<div><label for="apPrice">Harga (Rp)</label><input type="number" id="apPrice" min="1" step="1" required></div>' +
-        '<div><label for="apDesc">Deskripsi</label><textarea id="apDesc" placeholder="Deskripsi singkat produk"></textarea></div>' +
-        '<div id="apStockWrap"><label for="apStock">Stok Awal</label><input type="number" id="apStock" min="0" step="1" value="10"></div>' +
-        '<div><label for="apPhoto">Foto Produk</label><input type="file" id="apPhoto" accept="image/*"><p class="order-hint" id="apPhotoHint"></p></div>' +
-        '<p class="auth-error" id="adminProductMsg"></p>' +
-        '<button type="submit" class="button primary" id="apSubmit">Simpan Produk</button>' +
-        '<button type="button" class="button secondary" id="apCancel">Batal</button>' +
+        '<div class="mb-3"><label for="apPrice" class="form-label">Harga (Rp)</label><input type="number" class="form-control" id="apPrice" min="1" step="1" required></div>' +
+        '<div class="mb-3"><label for="apDesc" class="form-label">Deskripsi</label><textarea class="form-control" id="apDesc" rows="3" placeholder="Deskripsi singkat produk"></textarea></div>' +
+        '<div class="mb-3" id="apStockWrap"><label for="apStock" class="form-label">Stok Awal</label><input type="number" class="form-control" id="apStock" min="0" step="1" value="10"></div>' +
+        '<div class="mb-3"><label for="apPhoto" class="form-label">Foto Produk</label><input type="file" class="form-control" id="apPhoto" accept="image/*"><div class="form-text" id="apPhotoHint"></div></div>' +
+        '<p class="text-danger small" id="adminProductMsg"></p>' +
+        '<div class="d-flex gap-2"><button type="submit" class="btn btn-success" id="apSubmit">Simpan Produk</button><button type="button" class="btn btn-outline-secondary" id="apCancel">Batal</button></div>' +
         '</form>' +
-        '<div id="adminProductRows"></div>';
+        '<div class="list-group shadow-sm" id="adminProductRows"></div>';
 }
 
 function renderRows() {
@@ -77,19 +77,19 @@ function renderRows() {
     if (!box) return;
     box.innerHTML = products.map(function (p) {
         const qty = stockMap[p.id];
-        return '<div class="admin-product-row' + (p.hidden ? ' is-hidden' : '') + '">' +
-            '<img class="admin-product-thumb" src="' + esc(p.image) + '" alt="">' +
-            '<div class="admin-product-info">' +
-            '<strong>' + esc(p.name) + '</strong>' +
-            '<span>' + esc(p.category) + ' · ' + rupiah(p.price) + (p.hidden ? ' · Disembunyikan' : '') + '</span>' +
-            '<div class="admin-row-actions">' +
-            '<input type="number" min="0" class="admin-stock-input" data-id="' + p.id + '" value="' + (qty === undefined ? 0 : qty) + '">' +
-            '<button type="button" class="button secondary" data-admin="stock" data-id="' + p.id + '">Simpan Stok</button>' +
+        return '<div class="list-group-item' + (p.hidden ? ' bg-light text-muted' : '') + '"><div class="d-flex gap-3">' +
+            '<img class="rounded flex-shrink-0" style="width:56px;height:56px;object-fit:cover;" src="' + esc(p.image) + '" alt="">' +
+            '<div class="flex-grow-1">' +
+            '<div class="fw-semibold">' + esc(p.name) + '</div>' +
+            '<div class="small text-muted">' + esc(p.category) + ' · ' + rupiah(p.price) + (p.hidden ? ' · Disembunyikan' : '') + '</div>' +
+            '<div class="input-group input-group-sm mt-2" style="max-width:230px;">' +
+            '<input type="number" min="0" class="form-control admin-stock-input" data-id="' + p.id + '" value="' + (qty === undefined ? 0 : qty) + '">' +
+            '<button type="button" class="btn btn-outline-success" data-admin="stock" data-id="' + p.id + '">Simpan Stok</button>' +
             '</div>' +
-            '<div class="admin-row-actions">' +
-            '<button type="button" class="button secondary" data-admin="edit" data-id="' + p.id + '">Ubah</button>' +
-            '<button type="button" class="button secondary" data-admin="toggle" data-id="' + p.id + '">' + (p.hidden ? 'Tampilkan' : 'Sembunyikan') + '</button>' +
-            '</div></div></div>';
+            '<div class="d-flex gap-2 mt-2">' +
+            '<button type="button" class="btn btn-sm btn-outline-secondary" data-admin="edit" data-id="' + p.id + '">Ubah</button>' +
+            '<button type="button" class="btn btn-sm btn-outline-warning" data-admin="toggle" data-id="' + p.id + '">' + (p.hidden ? 'Tampilkan' : 'Sembunyikan') + '</button>' +
+            '</div></div></div></div>';
     }).join("");
 }
 
@@ -122,7 +122,7 @@ function openForm(productId) {
         document.getElementById("apStockWrap").style.display = "none";
         document.getElementById("apPhotoHint").textContent = "Kosongkan jika tidak ingin mengganti foto.";
     }
-    form.style.display = "flex";
+    form.style.display = "block";
     form.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 

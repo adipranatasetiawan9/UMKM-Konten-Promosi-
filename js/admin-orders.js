@@ -23,6 +23,15 @@ const STAGE_LABEL = {
     selesai: "Selesai",
     dibatalkan: "Dibatalkan"
 };
+const STATUS_BADGE = {
+    menunggu_pembayaran: "text-bg-warning",
+    menunggu_konfirmasi: "text-bg-info",
+    diproses: "text-bg-primary",
+    dikemas: "text-bg-primary",
+    dikirim: "text-bg-primary",
+    selesai: "text-bg-success",
+    dibatalkan: "text-bg-danger"
+};
 
 let lastAdminOrdersSnap = [];
 let reviewsByOrderId = {};
@@ -59,29 +68,31 @@ function orderTotal(order) {
 }
 
 function itemsHtml(order) {
-    return '<div class="order-items">' + orderItems(order).map(function (it) {
+    return '<div class="d-flex flex-column gap-2 my-2">' + orderItems(order).map(function (it) {
         const img = findProductImage(it.productId);
-        return '<div class="order-item">' +
-            (img ? '<img class="order-product-image" src="' + esc(img) + '" alt="">' : '') +
-            '<div class="order-item-info"><strong>' + esc(it.name) + '</strong><span>' + it.qty + ' × ' + formatRupiah(it.price) + '</span></div>' +
+        return '<div class="d-flex gap-2 align-items-center">' +
+            (img ? '<img class="rounded" style="width:48px;height:48px;object-fit:cover;" src="' + esc(img) + '" alt="">' : '') +
+            '<div class="small"><div class="fw-semibold">' + esc(it.name) + '</div><div class="text-muted">' + it.qty + ' × ' + formatRupiah(it.price) + '</div></div>' +
             '</div>';
     }).join("") + '</div>';
 }
 
 function shippingHtml(order) {
     if (!order.address) return "";
-    return '<div class="order-shipping">' +
-        '<p><strong>Penerima:</strong> ' + esc(order.recipientName) + ' · ' + esc(order.phone) + '</p>' +
-        '<p>' + esc(order.address) + '</p>' +
-        '<p><strong>Kurir:</strong> ' + esc(order.courier || "-") + '</p>' +
-        (order.trackingNumber ? '<p><strong>No. Resi:</strong> ' + esc(order.trackingNumber) + '</p>' : '') +
+    return '<div class="bg-light rounded p-2 small my-2">' +
+        '<div><strong>Penerima:</strong> ' + esc(order.recipientName) + ' · ' + esc(order.phone) + '</div>' +
+        '<div>' + esc(order.address) + '</div>' +
+        '<div><strong>Kurir:</strong> ' + esc(order.courier || "-") + '</div>' +
+        (order.trackingNumber ? '<div><strong>No. Resi:</strong> ' + esc(order.trackingNumber) + '</div>' : '') +
         '</div>';
 }
 
 function reviewsHtml(orderId) {
     return (reviewsByOrderId[orderId] || []).map(function (r) {
-        return '<div class="review-item"><p class="review-author">Ulasan ' + esc(r.productName || "") + ' dari ' + esc(r.buyerEmail || "pembeli") + '</p>' +
-            '<span class="review-stars">' + starsHtml(r.rating) + '</span><p>' + esc(r.comment || "(tanpa komentar)") + '</p></div>';
+        return '<div class="border-top pt-2 mt-2 small">' +
+            '<div class="fw-semibold">Ulasan ' + esc(r.productName || "") + ' dari ' + esc(r.buyerEmail || "pembeli") + '</div>' +
+            '<div class="text-warning">' + starsHtml(r.rating) + '</div>' +
+            '<div>' + esc(r.comment || "(tanpa komentar)") + '</div></div>';
     }).join("");
 }
 
@@ -90,7 +101,7 @@ function nextStageButton(order, id) {
     const idx = STAGE_ORDER.indexOf(order.status);
     if (idx === -1 || idx === STAGE_ORDER.length - 1) return "";
     const nextStage = STAGE_ORDER[idx + 1];
-    return '<button type="button" class="button primary admin-order-advance" data-id="' + id + '" data-next="' + nextStage + '">Tandai: ' + STAGE_LABEL[nextStage] + '</button>';
+    return '<button type="button" class="btn btn-success btn-sm admin-order-advance" data-id="' + id + '" data-next="' + nextStage + '">Tandai: ' + STAGE_LABEL[nextStage] + '</button>';
 }
 
 function cleanupOldOrders(docsSnap) {
@@ -109,24 +120,24 @@ function cleanupOldOrders(docsSnap) {
 function renderAdminOrders(docsSnap) {
     if (!adminOrdersList) return;
     const sorted = docsSnap.slice().sort(function (a, b) { return (b.data().createdAt || 0) - (a.data().createdAt || 0); });
-    if (sorted.length === 0) { adminOrdersList.innerHTML = '<p class="order-hint">Belum ada pesanan masuk.</p>'; return; }
+    if (sorted.length === 0) { adminOrdersList.innerHTML = '<div class="alert alert-light border">Belum ada pesanan masuk.</div>'; return; }
     adminOrdersList.innerHTML = sorted.map(function (docSnap) {
         const order = docSnap.data();
         const id = docSnap.id;
         const canCancel = order.status !== "dibatalkan" && order.status !== "selesai";
-        return '<div class="order-card">' +
-            '<div class="order-card-head-row"><h3>Pesanan #' + id.slice(-6).toUpperCase() + '</h3><span class="order-status order-status-' + order.status + '">' + (STAGE_LABEL[order.status] || order.status) + '</span></div>' +
+        return '<div class="card border-0 shadow-sm mb-3"><div class="card-body">' +
+            '<div class="d-flex justify-content-between align-items-center"><h3 class="h6 mb-0">Pesanan #' + id.slice(-6).toUpperCase() + '</h3><span class="badge ' + (STATUS_BADGE[order.status] || "text-bg-secondary") + '">' + (STAGE_LABEL[order.status] || order.status) + '</span></div>' +
             itemsHtml(order) +
-            '<p class="order-price">Total: ' + formatRupiah(orderTotal(order)) + '</p>' +
-            '<p class="order-payment-method">Pembeli: ' + esc(order.buyerEmail || "-") + ' &middot; ' + esc(order.paymentMethod || "-") + '</p>' +
+            '<p class="fw-bold text-success mb-1">Total: ' + formatRupiah(orderTotal(order)) + '</p>' +
+            '<p class="small text-muted mb-2">Pembeli: ' + esc(order.buyerEmail || "-") + ' · ' + esc(order.paymentMethod || "-") + '</p>' +
             shippingHtml(order) +
             reviewsHtml(id) +
-            '<div class="order-actions">' +
-            '<button type="button" class="button secondary admin-order-chat" data-buyer-id="' + esc(order.userId) + '" data-buyer-email="' + esc(order.buyerEmail || "") + '">💬 Chat Pembeli</button>' +
-            (order.hasProof ? '<button type="button" class="button secondary admin-order-proof" data-id="' + id + '">📎 Lihat Bukti Bayar</button>' : '') +
+            '<div class="d-flex flex-wrap gap-2 mt-3">' +
+            '<button type="button" class="btn btn-outline-secondary btn-sm admin-order-chat" data-buyer-id="' + esc(order.userId) + '" data-buyer-email="' + esc(order.buyerEmail || "") + '">💬 Chat Pembeli</button>' +
+            (order.hasProof ? '<button type="button" class="btn btn-outline-secondary btn-sm admin-order-proof" data-id="' + id + '">📎 Lihat Bukti Bayar</button>' : '') +
             nextStageButton(order, id) +
-            (canCancel ? '<button type="button" class="button secondary admin-order-cancel" data-id="' + id + '">Batalkan</button>' : '') +
-            '</div></div>';
+            (canCancel ? '<button type="button" class="btn btn-outline-danger btn-sm admin-order-cancel" data-id="' + id + '">Batalkan</button>' : '') +
+            '</div></div></div>';
     }).join("");
 }
 
