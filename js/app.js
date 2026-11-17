@@ -1,5 +1,6 @@
 const pages = document.querySelectorAll(".page");
 const pageButtons = document.querySelectorAll("[data-page]");
+const navMenu = document.getElementById("navMenu");
 
 function esc(text) {
     return String(text == null ? "" : text).replace(/[&<>"']/g, function(c) {
@@ -17,6 +18,9 @@ function showPage(pageName) {
             if (button.dataset.page === pageName) button.classList.add("active");
         }
     });
+    if (navMenu && navMenu.classList.contains("show") && window.bootstrap) {
+        bootstrap.Collapse.getOrCreateInstance(navMenu).hide();
+    }
     window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
@@ -48,18 +52,23 @@ function displayProducts(productList) {
     if (!productGrid) return;
     productGrid.innerHTML = "";
     if (productList.length === 0) {
-        productGrid.innerHTML = '<div class="empty-product-result"><div class="empty-icon">🔎</div><h3>Produk tidak ditemukan</h3><p>Coba gunakan kata pencarian lain atau pilih kategori yang berbeda.</p></div>';
+        productGrid.innerHTML = '<div class="col-12"><div class="text-center text-muted py-5"><div class="display-4">🔎</div><h3 class="h5 mt-2">Produk tidak ditemukan</h3><p>Coba kata pencarian lain atau pilih kategori yang berbeda.</p></div></div>';
         return;
     }
     productList.forEach(function(product) {
-        const card = document.createElement("article");
-        card.className = "product-card";
-        card.dataset.id = product.id;
-        card.setAttribute("role", "button");
-        card.setAttribute("tabindex", "0");
-        card.setAttribute("aria-label", "Lihat detail " + product.name);
-        card.innerHTML = '<div class="product-image"><img src="' + esc(product.image) + '" alt="' + esc(product.name) + '" loading="lazy"></div><div class="product-info"><span class="product-category">' + esc(product.category) + '</span><h3>' + esc(product.name) + '</h3><p class="product-price">' + formatRupiah(product.price) + '</p><span class="product-stock" data-stock-id="' + product.id + '"></span><span class="product-rating" data-rating-id="' + product.id + '"></span><span class="product-detail-hint">Lihat detail →</span></div>';
-        productGrid.appendChild(card);
+        const col = document.createElement("div");
+        col.className = "col";
+        col.innerHTML = '<article class="card h-100 shadow-sm border-0 product-card" data-id="' + product.id + '" role="button" tabindex="0" aria-label="Lihat detail ' + esc(product.name) + '">' +
+            '<img class="card-img-top product-img" src="' + esc(product.image) + '" alt="' + esc(product.name) + '" loading="lazy">' +
+            '<div class="card-body d-flex flex-column">' +
+            '<span class="badge text-bg-success align-self-start mb-2">' + esc(product.category) + '</span>' +
+            '<h3 class="h6 card-title">' + esc(product.name) + '</h3>' +
+            '<p class="fw-bold text-success mb-1">' + formatRupiah(product.price) + '</p>' +
+            '<span class="product-stock small" data-stock-id="' + product.id + '"></span>' +
+            '<span class="product-rating small text-warning" data-rating-id="' + product.id + '"></span>' +
+            '<span class="small text-muted mt-auto pt-2">Lihat detail →</span>' +
+            '</div></article>';
+        productGrid.appendChild(col);
     });
     if (typeof window.onProductsRendered === "function") window.onProductsRendered();
 }
@@ -90,7 +99,6 @@ function updateSearchInfo(resultCount) {
 if (productSearch) {
     productSearch.addEventListener("input", function() {
         currentSearch = productSearch.value;
-        if (clearSearch) { if (currentSearch.trim() !== "") clearSearch.classList.add("active"); else clearSearch.classList.remove("active"); }
         filterProducts();
     });
 }
@@ -99,7 +107,6 @@ if (clearSearch) {
     clearSearch.addEventListener("click", function() {
         if (productSearch) productSearch.value = "";
         currentSearch = "";
-        clearSearch.classList.remove("active");
         filterProducts();
         if (productSearch) productSearch.focus();
     });
@@ -117,7 +124,6 @@ if (categoryFilters) {
 }
 
 const productModal = document.getElementById("productModal");
-const modalClose = document.getElementById("modalClose");
 const modalProductIcon = document.getElementById("modalProductIcon");
 const modalProductCategory = document.getElementById("modalProductCategory");
 const modalProductName = document.getElementById("modalProductName");
@@ -126,6 +132,10 @@ const modalProductDescription = document.getElementById("modalProductDescription
 const modalPromoButton = document.getElementById("modalPromoButton");
 
 let selectedProductForPromo = null;
+
+function modalInstance() {
+    return (window.bootstrap && productModal) ? bootstrap.Modal.getOrCreateInstance(productModal) : null;
+}
 
 function showProductDetail(product) {
     if (!productModal) return;
@@ -136,20 +146,15 @@ function showProductDetail(product) {
     if (modalProductDescription) modalProductDescription.textContent = product.description;
     selectedProductForPromo = product;
     window.selectedProductForPromo = product;
-    productModal.classList.add("active");
-    document.body.classList.add("modal-open");
+    const modal = modalInstance();
+    if (modal) modal.show();
     if (typeof window.onProductDetailShown === "function") window.onProductDetailShown(product);
 }
 
 function closeProductModal() {
-    if (!productModal) return;
-    productModal.classList.remove("active");
-    document.body.classList.remove("modal-open");
+    const modal = modalInstance();
+    if (modal) modal.hide();
 }
-
-if (modalClose) modalClose.addEventListener("click", closeProductModal);
-if (productModal) { productModal.addEventListener("click", function(event) { if (event.target === productModal) closeProductModal(); }); }
-document.addEventListener("keydown", function(event) { if (event.key === "Escape") closeProductModal(); });
 
 function setupProductInteraction() {
     if (!productGrid) return;

@@ -9,402 +9,391 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://adipranatasetiawan9.github.io/UMKM-Konten-Promosi-/">
 <title>UMKM PROMO - Katalog & Pemasaran Produk UMKM</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<header class="navbar">
-  <div class="container navbar-inner">
-    <button class="logo" type="button" data-page="beranda">
-      <span class="logo-icon">U</span>
-      <span>UMKM<span class="logo-accent">Promo</span></span>
+<nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
+  <div class="container">
+    <button class="navbar-brand btn btn-link p-0 text-decoration-none d-flex align-items-center gap-2" type="button" data-page="beranda">
+      <span class="logo-mark">U</span>
+      <span class="fw-bold text-dark">UMKM<span class="text-success">Promo</span></span>
     </button>
-    <nav class="nav-menu">
-      <button class="nav-link active" type="button" data-page="beranda">Beranda</button>
-      <button class="nav-link" type="button" data-page="produk">Produk</button>
-      <button class="nav-link" type="button" data-page="rekomendasi">Rekomendasi</button>
-      <button class="nav-link" type="button" data-page="pesanan">Pesanan</button>
-      <button class="nav-link" type="button" data-page="akun">Akun</button>
-      <button class="nav-link" type="button" data-page="admin-stok">Kelola</button>
-      <button class="nav-link" type="button" data-page="tentang">Tentang</button>
-      <button class="nav-link nav-cart" type="button" data-page="keranjang" aria-label="Keranjang">🛒<span class="cart-badge" id="cartBadge">0</span></button>
-    </nav>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu" aria-controls="navMenu" aria-expanded="false" aria-label="Buka menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        <li class="nav-item"><button class="nav-link active" type="button" data-page="beranda">Beranda</button></li>
+        <li class="nav-item"><button class="nav-link" type="button" data-page="produk">Produk</button></li>
+        <li class="nav-item"><button class="nav-link" type="button" data-page="rekomendasi">Rekomendasi</button></li>
+        <li class="nav-item"><button class="nav-link" type="button" data-page="pesanan">Pesanan</button></li>
+        <li class="nav-item"><button class="nav-link" type="button" data-page="akun">Akun</button></li>
+        <li class="nav-item"><button class="nav-link" type="button" data-page="admin-stok">Kelola</button></li>
+        <li class="nav-item"><button class="nav-link" type="button" data-page="tentang">Tentang</button></li>
+        <li class="nav-item"><button class="nav-link" type="button" data-page="keranjang">🛒 Keranjang <span class="badge rounded-pill text-bg-danger" id="cartBadge" style="display:none;">0</span></button></li>
+      </ul>
+    </div>
   </div>
-</header>
+</nav>
 
 <main>
 
 <section class="page active" id="page-beranda">
-  <div class="container">
-    <div class="hero">
-      <div class="hero-content">
-        <span class="section-label">DIGITAL MARKETING UMKM</span>
-        <h1>Kembangkan Produk UMKM <span>Melalui Promosi Digital</span></h1>
-        <p>Kelola informasi produk dan temukan ide konten promosi yang sesuai untuk membantu memperkenalkan produk UMKM kepada masyarakat.</p>
-        <div class="hero-actions">
-          <button class="button primary" type="button" data-page="produk">Lihat Produk</button>
-          <button class="button secondary" type="button" data-page="rekomendasi">Buat Konten</button>
+  <div class="hero-section py-5">
+    <div class="container py-lg-4">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <span class="badge text-bg-warning mb-3">Digital Marketing UMKM</span>
+          <h1 class="display-5 fw-bold">Kembangkan Produk UMKM <span class="text-warning">Melalui Promosi Digital</span></h1>
+          <p class="lead">Kelola informasi produk dan temukan ide konten promosi yang sesuai untuk membantu memperkenalkan produk UMKM kepada masyarakat.</p>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-warning btn-lg" type="button" data-page="produk">Lihat Produk</button>
+            <button class="btn btn-outline-light btn-lg" type="button" data-page="rekomendasi">Buat Konten</button>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <div class="card border-0 shadow">
+            <div class="card-header bg-white fw-semibold">✦ Rekomendasi Konten</div>
+            <div class="card-body">
+              <span class="badge text-bg-success mb-2">Ide promosi</span>
+              <h3 class="h5">Kenalkan Produk Lokalmu</h3>
+              <p class="text-muted">Buat konten sederhana, informatif, dan menarik untuk memperkenalkan produk UMKM.</p>
+              <p class="small text-success mb-0">#UMKM #ProdukLokal #DigitalMarketing</p>
+            </div>
+          </div>
         </div>
       </div>
-      <div class="hero-card">
-        <div class="hero-card-header"><span>✦</span> Rekomendasi Konten</div>
-        <div class="hero-card-content">
-          <span class="mini-label">IDE PROMOSI</span>
-          <h3>Kenalkan Produk Lokalmu</h3>
-          <p>Buat konten sederhana, informatif, dan menarik untuk memperkenalkan produk UMKM.</p>
-          <div class="hero-tags">#UMKM #ProdukLokal #DigitalMarketing</div>
-        </div>
-      </div>
+    </div>
+  </div>
+  <div class="container py-4">
+    <div class="row row-cols-1 row-cols-md-3 g-3">
+      <div class="col"><div class="card h-100 shadow-sm border-0"><div class="card-body"><div class="fs-2">🛍️</div><h3 class="h6 mt-2">Katalog produk</h3><p class="small text-muted mb-0">30 produk UMKM khas Madura lengkap dengan foto, harga, dan stok.</p></div></div></div>
+      <div class="col"><div class="card h-100 shadow-sm border-0"><div class="card-body"><div class="fs-2">📦</div><h3 class="h6 mt-2">Pesan dan pantau</h3><p class="small text-muted mb-0">Keranjang, QRIS, bukti bayar, dan status pesanan yang berubah langsung.</p></div></div></div>
+      <div class="col"><div class="card h-100 shadow-sm border-0"><div class="card-body"><div class="fs-2">✨</div><h3 class="h6 mt-2">Ide konten promosi</h3><p class="small text-muted mb-0">Dapatkan ide, caption, dan hashtag untuk mempromosikan produk.</p></div></div></div>
     </div>
   </div>
 </section>
 
 <section class="page" id="page-produk">
-  <div class="container page-container">
-    <div class="page-header">
-      <span class="section-label">KATALOG</span>
-      <h2>Produk Unggulan</h2>
-      <p>Temukan berbagai produk UMKM yang tersedia dalam katalog.</p>
-    </div>
-    <div class="product-tools">
-      <div class="product-search">
-        <label for="productSearch">Cari Produk UMKM</label>
-        <div class="search-box">
-          <span class="search-icon">🔍</span>
-          <input type="search" id="productSearch" placeholder="Cari produk UMKM..." autocomplete="off">
-          <button type="button" id="clearSearch" class="clear-search" aria-label="Hapus pencarian" title="Hapus pencarian">×</button>
+  <div class="container py-4">
+    <p class="text-success fw-semibold small mb-1">KATALOG</p>
+    <h2 class="fw-bold">Produk Unggulan</h2>
+    <p class="text-muted">Temukan berbagai produk UMKM yang tersedia dalam katalog.</p>
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <label for="productSearch" class="form-label fw-semibold">Cari Produk UMKM</label>
+        <div class="input-group mb-3">
+          <span class="input-group-text">🔍</span>
+          <input type="search" class="form-control" id="productSearch" placeholder="Cari produk UMKM..." autocomplete="off">
+          <button type="button" class="btn btn-outline-secondary" id="clearSearch" aria-label="Hapus pencarian">×</button>
         </div>
-      </div>
-      <div class="product-filter">
-        <span class="filter-label">Filter Kategori</span>
-        <div class="filter-buttons" id="categoryFilters">
-          <button type="button" class="filter-button active" data-category="Semua">Semua</button>
-          <button type="button" class="filter-button" data-category="Makanan">Makanan</button>
-          <button type="button" class="filter-button" data-category="Minuman">Minuman</button>
-          <button type="button" class="filter-button" data-category="Fashion">Fashion</button>
-          <button type="button" class="filter-button" data-category="Kerajinan">Kerajinan</button>
+        <span class="form-label fw-semibold d-block">Filter Kategori</span>
+        <div class="d-flex flex-wrap gap-2" id="categoryFilters">
+          <button type="button" class="btn btn-sm btn-outline-success filter-button active" data-category="Semua">Semua</button>
+          <button type="button" class="btn btn-sm btn-outline-success filter-button" data-category="Makanan">Makanan</button>
+          <button type="button" class="btn btn-sm btn-outline-success filter-button" data-category="Minuman">Minuman</button>
+          <button type="button" class="btn btn-sm btn-outline-success filter-button" data-category="Fashion">Fashion</button>
+          <button type="button" class="btn btn-sm btn-outline-success filter-button" data-category="Kerajinan">Kerajinan</button>
         </div>
+        <p class="small text-muted mt-3 mb-0" id="searchResultInfo" aria-live="polite">Menampilkan semua produk</p>
       </div>
-      <div class="search-result-info" id="searchResultInfo" aria-live="polite">Menampilkan semua produk</div>
     </div>
-    <div class="product-grid" id="productGrid"></div>
+    <div class="row row-cols-2 row-cols-md-3 row-cols-lg-4 g-3" id="productGrid"></div>
   </div>
 </section>
 
 <section class="page" id="page-rekomendasi">
-  <div class="container page-container">
-    <div class="page-header">
-      <span class="section-label">FITUR UTAMA</span>
-      <h2>Rekomendasi Konten Promosi</h2>
-      <p>Tentukan produk, target audiens, platform, dan gaya konten.</p>
-    </div>
-    <div class="recommendation-box">
-      <div class="recommendation-form">
-        <div class="form-group">
-          <label for="recommendationProduct">Produk</label>
-          <select id="recommendationProduct"><option value="">Pilih Produk</option></select>
+  <div class="container py-4">
+    <p class="text-success fw-semibold small mb-1">FITUR UTAMA</p>
+    <h2 class="fw-bold">Rekomendasi Konten Promosi</h2>
+    <p class="text-muted">Tentukan produk, target audiens, platform, dan gaya konten.</p>
+    <div class="card border-0 shadow-sm mb-4">
+      <div class="card-body">
+        <div class="row g-3">
+          <div class="col-md-6">
+            <label for="recommendationProduct" class="form-label">Produk</label>
+            <select id="recommendationProduct" class="form-select"><option value="">Pilih Produk</option></select>
+          </div>
+          <div class="col-md-6">
+            <label for="recommendationTarget" class="form-label">Target Audiens</label>
+            <select id="recommendationTarget" class="form-select">
+              <option value="">Pilih Target Audiens</option>
+              <option value="Remaja">Remaja</option>
+              <option value="Mahasiswa">Mahasiswa</option>
+              <option value="Keluarga">Keluarga</option>
+              <option value="Masyarakat Umum">Masyarakat Umum</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="recommendationPlatform" class="form-label">Platform Promosi</label>
+            <select id="recommendationPlatform" class="form-select">
+              <option value="">Pilih Platform</option>
+              <option value="Instagram">Instagram</option>
+              <option value="TikTok">TikTok</option>
+              <option value="Facebook">Facebook</option>
+              <option value="WhatsApp">WhatsApp</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="recommendationStyle" class="form-label">Gaya Konten</label>
+            <select id="recommendationStyle" class="form-select">
+              <option value="">Pilih Gaya Konten</option>
+              <option value="Informatif">Informatif</option>
+              <option value="Promosi">Promosi</option>
+              <option value="Storytelling">Storytelling</option>
+              <option value="Santai">Santai</option>
+            </select>
+          </div>
         </div>
-        <div class="form-group">
-          <label for="recommendationTarget">Target Audiens</label>
-          <select id="recommendationTarget">
-            <option value="">Pilih Target Audiens</option>
-            <option value="Remaja">Remaja</option>
-            <option value="Mahasiswa">Mahasiswa</option>
-            <option value="Keluarga">Keluarga</option>
-            <option value="Masyarakat Umum">Masyarakat Umum</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="recommendationPlatform">Platform Promosi</label>
-          <select id="recommendationPlatform">
-            <option value="">Pilih Platform</option>
-            <option value="Instagram">Instagram</option>
-            <option value="TikTok">TikTok</option>
-            <option value="Facebook">Facebook</option>
-            <option value="WhatsApp">WhatsApp</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="recommendationStyle">Gaya Konten</label>
-          <select id="recommendationStyle">
-            <option value="">Pilih Gaya Konten</option>
-            <option value="Informatif">Informatif</option>
-            <option value="Promosi">Promosi</option>
-            <option value="Storytelling">Storytelling</option>
-            <option value="Santai">Santai</option>
-          </select>
-        </div>
-        <button class="button primary recommendation-button" id="recommendationButton" type="button">✨ Buat Rekomendasi</button>
+        <button class="btn btn-success mt-3" id="recommendationButton" type="button">✨ Buat Rekomendasi</button>
       </div>
     </div>
-    <div class="recommendation-result" id="recommendationResult">
-      <span class="section-label">HASIL REKOMENDASI</span>
-      <h2>Konten Promosi</h2>
-      <div class="result-item">
-        <span class="result-icon">💡</span>
-        <div><h3>Ide Konten</h3><p id="resultIdea">-</p></div>
+    <div class="card border-0 shadow-sm" id="recommendationResult">
+      <div class="card-body">
+        <p class="text-success fw-semibold small mb-1">HASIL REKOMENDASI</p>
+        <h3 class="h4">Konten Promosi</h3>
+        <h4 class="h6 mt-3">💡 Ide Konten</h4>
+        <p id="resultIdea">-</p>
+        <h4 class="h6">✍️ Caption</h4>
+        <p id="resultCaption" style="white-space: pre-line;">-</p>
+        <h4 class="h6">#️⃣ Hashtag</h4>
+        <p id="resultHashtag">-</p>
+        <button class="btn btn-outline-success" id="copyRecommendation" type="button">📋 Salin Konten</button>
       </div>
-      <div class="result-item">
-        <span class="result-icon">✍️</span>
-        <div><h3>Caption</h3><p id="resultCaption">-</p></div>
-      </div>
-      <div class="result-item">
-        <span class="result-icon">#️⃣</span>
-        <div><h3>Hashtag</h3><p id="resultHashtag">-</p></div>
-      </div>
-      <button class="button secondary" id="copyRecommendation" type="button">📋 Salin Konten</button>
     </div>
   </div>
 </section>
 
 <section class="page" id="page-keranjang">
-  <div class="container page-container">
-    <div class="page-header">
-      <span class="section-label">KERANJANG</span>
-      <h2>Keranjang Belanja</h2>
-      <p>Periksa produk, isi alamat pengiriman, lalu buat pesanan.</p>
-    </div>
+  <div class="container py-4" style="max-width: 720px;">
+    <p class="text-success fw-semibold small mb-1">KERANJANG</p>
+    <h2 class="fw-bold">Keranjang Belanja</h2>
+    <p class="text-muted">Periksa produk, isi alamat pengiriman, lalu buat pesanan.</p>
 
-    <div id="cartEmpty" class="order-notice" style="display:none;">
-      <p>Keranjang masih kosong.</p>
-      <button type="button" class="button primary" data-page="produk">Lihat Produk</button>
+    <div id="cartEmpty" class="alert alert-light border" style="display:none;">
+      <p class="mb-2">Keranjang masih kosong.</p>
+      <button type="button" class="btn btn-success btn-sm" data-page="produk">Lihat Produk</button>
     </div>
 
     <div id="cartItems"></div>
 
-    <div id="cartLoginNotice" class="order-notice" style="display:none;">
-      <p>Silakan masuk atau daftar dulu untuk melanjutkan pesanan.</p>
-      <button type="button" class="button primary" data-page="akun">Ke Halaman Akun</button>
+    <div id="cartLoginNotice" class="alert alert-warning" style="display:none;">
+      <p class="mb-2">Silakan masuk atau daftar dulu untuk melanjutkan pesanan.</p>
+      <button type="button" class="btn btn-success btn-sm" data-page="akun">Ke Halaman Akun</button>
     </div>
 
     <div id="cartCheckout" style="display:none;">
-      <div class="cart-total-row"><span>Total Produk</span><span id="cartTotal">Rp0</span></div>
-      <p class="order-hint">Ongkos kirim belum termasuk dan dikonfirmasi penjual lewat chat.</p>
-      <form id="checkoutForm" class="checkout-form">
-        <div>
-          <label for="shipName">Nama Penerima</label>
-          <input type="text" id="shipName" required>
+      <div class="d-flex justify-content-between fw-bold fs-5 my-3"><span>Total Produk</span><span id="cartTotal">Rp0</span></div>
+      <p class="small text-muted">Ongkos kirim belum termasuk dan dikonfirmasi penjual lewat chat.</p>
+      <form id="checkoutForm" class="card card-body border-0 shadow-sm">
+        <div class="mb-3">
+          <label for="shipName" class="form-label">Nama Penerima</label>
+          <input type="text" class="form-control" id="shipName" required>
         </div>
-        <div>
-          <label for="shipPhone">Nomor HP</label>
-          <input type="tel" id="shipPhone" placeholder="081234567890" required>
+        <div class="mb-3">
+          <label for="shipPhone" class="form-label">Nomor HP</label>
+          <input type="tel" class="form-control" id="shipPhone" placeholder="081234567890" required>
         </div>
-        <div>
-          <label for="shipAddress">Alamat Lengkap</label>
-          <textarea id="shipAddress" placeholder="Jalan, desa/kelurahan, kecamatan, kota, kode pos" required></textarea>
+        <div class="mb-3">
+          <label for="shipAddress" class="form-label">Alamat Lengkap</label>
+          <textarea class="form-control" id="shipAddress" rows="3" placeholder="Jalan, desa/kelurahan, kecamatan, kota, kode pos" required></textarea>
         </div>
-        <div>
-          <label for="shipCourier">Kurir</label>
-          <select id="shipCourier">
-            <option value="JNE">JNE</option>
-            <option value="J&T Express">J&T Express</option>
-            <option value="SiCepat">SiCepat</option>
-            <option value="Pos Indonesia">Pos Indonesia</option>
-          </select>
+        <div class="row g-3 mb-3">
+          <div class="col-md-6">
+            <label for="shipCourier" class="form-label">Kurir</label>
+            <select class="form-select" id="shipCourier">
+              <option value="JNE">JNE</option>
+              <option value="J&T Express">J&T Express</option>
+              <option value="SiCepat">SiCepat</option>
+              <option value="Pos Indonesia">Pos Indonesia</option>
+            </select>
+          </div>
+          <div class="col-md-6">
+            <label for="payMethod" class="form-label">Metode Pembayaran</label>
+            <select class="form-select" id="payMethod">
+              <option value="Transfer Bank BRI">Transfer Bank BRI</option>
+              <option value="Transfer Bank BCA">Transfer Bank BCA</option>
+              <option value="Transfer Bank Mandiri">Transfer Bank Mandiri</option>
+              <option value="Transfer Bank Lainnya">Transfer Bank Lainnya</option>
+              <option value="DANA">DANA</option>
+              <option value="OVO">OVO</option>
+              <option value="GoPay">GoPay</option>
+              <option value="ShopeePay">ShopeePay</option>
+            </select>
+          </div>
         </div>
-        <div>
-          <label for="payMethod">Metode Pembayaran</label>
-          <select id="payMethod">
-            <option value="Transfer Bank BRI">Transfer Bank BRI</option>
-            <option value="Transfer Bank BCA">Transfer Bank BCA</option>
-            <option value="Transfer Bank Mandiri">Transfer Bank Mandiri</option>
-            <option value="Transfer Bank Lainnya">Transfer Bank Lainnya</option>
-            <option value="DANA">DANA</option>
-            <option value="OVO">OVO</option>
-            <option value="GoPay">GoPay</option>
-            <option value="ShopeePay">ShopeePay</option>
-          </select>
-        </div>
-        <p class="auth-error" id="checkoutError"></p>
-        <button type="submit" class="button primary" id="checkoutButton">Buat Pesanan</button>
+        <p class="text-danger small" id="checkoutError"></p>
+        <button type="submit" class="btn btn-success w-100" id="checkoutButton">Buat Pesanan</button>
       </form>
     </div>
   </div>
 </section>
 
 <section class="page" id="page-pesanan">
-  <div class="container page-container">
-    <div class="page-header">
-      <span class="section-label">PESANAN</span>
-      <h2>Pesanan</h2>
-      <p>Pantau dan kelola pesanan di sini.</p>
-    </div>
+  <div class="container py-4" style="max-width: 760px;">
+    <p class="text-success fw-semibold small mb-1">PESANAN</p>
+    <h2 class="fw-bold">Pesanan</h2>
+    <p class="text-muted">Pantau dan kelola pesanan di sini.</p>
 
     <input type="file" id="proofInput" accept="image/*" style="display:none;">
 
     <div id="buyerOrdersView">
-      <div id="ordersLoginNotice" class="order-notice" style="display:none;">
-        <p>Silakan masuk atau daftar dulu untuk melihat pesanan kamu.</p>
-        <button type="button" class="button primary" data-page="akun">Ke Halaman Akun</button>
+      <div id="ordersLoginNotice" class="alert alert-warning" style="display:none;">
+        <p class="mb-2">Silakan masuk atau daftar dulu untuk melihat pesanan kamu.</p>
+        <button type="button" class="btn btn-success btn-sm" data-page="akun">Ke Halaman Akun</button>
       </div>
-      <div id="ordersEmpty" class="order-notice" style="display:none;">
-        <p>Belum ada pesanan. Yuk mulai belanja produk UMKM!</p>
-        <button type="button" class="button primary" data-page="produk">Lihat Produk</button>
+      <div id="ordersEmpty" class="alert alert-light border" style="display:none;">
+        <p class="mb-2">Belum ada pesanan. Yuk mulai belanja produk UMKM!</p>
+        <button type="button" class="btn btn-success btn-sm" data-page="produk">Lihat Produk</button>
       </div>
-      <div id="ordersList" class="orders-list"></div>
+      <div id="ordersList"></div>
     </div>
 
     <div id="adminOrdersView" style="display:none;">
-      <div id="adminOrdersList" class="orders-list"></div>
+      <div id="adminOrdersList"></div>
     </div>
   </div>
 </section>
 
 <section class="page" id="page-akun">
-  <div class="container page-container">
-    <div class="page-header">
-      <span class="section-label">AKUN</span>
-      <h2>Masuk atau Daftar</h2>
-      <p>Buat akun untuk mulai membeli produk UMKM.</p>
-    </div>
+  <div class="container py-4" style="max-width: 640px;">
+    <p class="text-success fw-semibold small mb-1">AKUN</p>
+    <h2 class="fw-bold">Masuk atau Daftar</h2>
+    <p class="text-muted">Buat akun untuk mulai membeli produk UMKM.</p>
 
     <div id="authLoggedOut">
-      <div class="auth-tabs">
-        <button type="button" class="auth-tab active" data-auth-tab="login">Masuk</button>
-        <button type="button" class="auth-tab" data-auth-tab="register">Daftar</button>
-      </div>
+      <ul class="nav nav-tabs mb-3">
+        <li class="nav-item"><button type="button" class="nav-link active" data-auth-tab="login">Masuk</button></li>
+        <li class="nav-item"><button type="button" class="nav-link" data-auth-tab="register">Daftar</button></li>
+      </ul>
 
-      <form id="loginForm" class="auth-form">
-        <div class="auth-field">
-          <label for="loginEmail">Email</label>
-          <input type="email" id="loginEmail" required>
+      <form id="loginForm" class="card card-body border-0 shadow-sm">
+        <div class="mb-3">
+          <label for="loginEmail" class="form-label">Email</label>
+          <input type="email" class="form-control" id="loginEmail" required>
         </div>
-        <div class="auth-field">
-          <label for="loginPassword">Password</label>
-          <input type="password" id="loginPassword" required>
+        <div class="mb-3">
+          <label for="loginPassword" class="form-label">Password</label>
+          <input type="password" class="form-control" id="loginPassword" required>
         </div>
-        <p class="auth-error" id="loginError"></p>
-        <button type="submit" class="button primary">Masuk</button>
-        <button type="button" class="link-button" id="forgotPasswordButton">Lupa password?</button>
+        <p class="text-danger small mb-2" id="loginError"></p>
+        <button type="submit" class="btn btn-success w-100">Masuk</button>
+        <button type="button" class="btn btn-link btn-sm mt-2" id="forgotPasswordButton">Lupa password?</button>
       </form>
 
-      <form id="registerForm" class="auth-form" style="display:none;">
-        <div class="auth-field">
-          <label for="registerName">Nama</label>
-          <input type="text" id="registerName" required>
+      <form id="registerForm" class="card card-body border-0 shadow-sm" style="display:none;">
+        <div class="mb-3">
+          <label for="registerName" class="form-label">Nama</label>
+          <input type="text" class="form-control" id="registerName" required>
         </div>
-        <div class="auth-field">
-          <label for="registerEmail">Email</label>
-          <input type="email" id="registerEmail" required>
+        <div class="mb-3">
+          <label for="registerEmail" class="form-label">Email</label>
+          <input type="email" class="form-control" id="registerEmail" required>
         </div>
-        <div class="auth-field">
-          <label for="registerPassword">Password (min. 6 karakter)</label>
-          <input type="password" id="registerPassword" required minlength="6">
+        <div class="mb-3">
+          <label for="registerPassword" class="form-label">Password (min. 6 karakter)</label>
+          <input type="password" class="form-control" id="registerPassword" required minlength="6">
         </div>
-        <p class="auth-error" id="registerError"></p>
-        <button type="submit" class="button primary">Daftar</button>
+        <p class="text-danger small mb-2" id="registerError"></p>
+        <button type="submit" class="btn btn-success w-100">Daftar</button>
       </form>
     </div>
 
     <div id="authLoggedIn" style="display:none;">
-      <div class="account-card">
-        <div class="account-card-head">
-          <div class="avatar-circle avatar-clickable" id="accountAvatar"></div>
-          <div>
-            <div class="account-name-row">
-              <h3 id="accountName">-</h3>
-              <button type="button" class="link-button" id="editNameButton">✏️ Ubah</button>
+      <div class="card border-0 shadow-sm mb-3">
+        <div class="card-body">
+          <div class="d-flex gap-3 align-items-center mb-3">
+            <div class="avatar avatar-clickable rounded-circle overflow-hidden bg-success-subtle d-flex align-items-center justify-content-center flex-shrink-0" id="accountAvatar"></div>
+            <div>
+              <div class="d-flex align-items-center gap-2 flex-wrap">
+                <h3 class="h5 mb-0" id="accountName">-</h3>
+                <button type="button" class="btn btn-link btn-sm p-0" id="editNameButton">✏️ Ubah</button>
+              </div>
+              <form id="editNameForm" class="gap-2 flex-wrap my-1" style="display:none;">
+                <input type="text" class="form-control form-control-sm w-auto" id="editNameInput" required>
+                <button type="submit" class="btn btn-success btn-sm">Simpan</button>
+                <button type="button" class="btn btn-outline-secondary btn-sm" id="editNameCancel">Batal</button>
+              </form>
+              <p class="text-muted small mb-0" id="accountEmail">-</p>
             </div>
-            <form id="editNameForm" class="edit-name-form" style="display:none;">
-              <input type="text" id="editNameInput" required>
-              <button type="submit" class="button primary">Simpan</button>
-              <button type="button" class="button secondary" id="editNameCancel">Batal</button>
-            </form>
-            <p id="accountEmail">-</p>
+          </div>
+          <input type="file" id="accountPhotoInput" accept="image/*" style="display:none;">
+          <div class="d-flex flex-wrap gap-2">
+            <button type="button" class="btn btn-outline-success btn-sm" id="accountPhotoButton">🖼️ Ubah Foto Profil</button>
+            <button type="button" class="btn btn-outline-danger btn-sm" id="logoutButton">Keluar</button>
           </div>
         </div>
-        <input type="file" id="accountPhotoInput" accept="image/*" style="display:none;">
-        <button type="button" class="button secondary" id="accountPhotoButton">🖼️ Ubah Foto Profil</button>
-        <button type="button" class="button secondary" id="logoutButton">Keluar</button>
       </div>
 
-      <div class="account-summary">
-        <button type="button" class="account-summary-item" data-page="pesanan">
-          <span class="account-summary-count" id="countBelumBayar">0</span>
-          <span class="account-summary-label">Belum Bayar</span>
-        </button>
-        <button type="button" class="account-summary-item" data-page="pesanan">
-          <span class="account-summary-count" id="countDiproses">0</span>
-          <span class="account-summary-label">Diproses</span>
-        </button>
-        <button type="button" class="account-summary-item" data-page="pesanan">
-          <span class="account-summary-count" id="countDikirim">0</span>
-          <span class="account-summary-label">Dikirim</span>
-        </button>
-        <button type="button" class="account-summary-item" data-page="pesanan">
-          <span class="account-summary-count" id="countSelesai">0</span>
-          <span class="account-summary-label">Selesai</span>
-        </button>
+      <div class="row row-cols-2 row-cols-md-4 g-2 mb-3 text-center">
+        <div class="col"><button type="button" class="card w-100 border-0 shadow-sm py-2" data-page="pesanan"><span class="fs-4 fw-bold text-success" id="countBelumBayar">0</span><span class="small text-muted">Belum Bayar</span></button></div>
+        <div class="col"><button type="button" class="card w-100 border-0 shadow-sm py-2" data-page="pesanan"><span class="fs-4 fw-bold text-success" id="countDiproses">0</span><span class="small text-muted">Diproses</span></button></div>
+        <div class="col"><button type="button" class="card w-100 border-0 shadow-sm py-2" data-page="pesanan"><span class="fs-4 fw-bold text-success" id="countDikirim">0</span><span class="small text-muted">Dikirim</span></button></div>
+        <div class="col"><button type="button" class="card w-100 border-0 shadow-sm py-2" data-page="pesanan"><span class="fs-4 fw-bold text-success" id="countSelesai">0</span><span class="small text-muted">Selesai</span></button></div>
       </div>
 
-      <div class="account-menu-list">
-        <button type="button" class="account-menu-item" data-page="produk"><span>🛍️</span> Lihat Produk</button>
-        <button type="button" class="account-menu-item" data-page="keranjang"><span>🛒</span> Keranjang Saya</button>
-        <button type="button" class="account-menu-item" id="accountChatButton"><span>💬</span> Chat dengan Penjual</button>
-        <button type="button" class="account-menu-item" data-page="tentang"><span>🏪</span> Tentang Toko</button>
+      <div class="list-group shadow-sm">
+        <button type="button" class="list-group-item list-group-item-action" data-page="produk">🛍️ Lihat Produk</button>
+        <button type="button" class="list-group-item list-group-item-action" data-page="keranjang">🛒 Keranjang Saya</button>
+        <button type="button" class="list-group-item list-group-item-action" id="accountChatButton">💬 Chat dengan Penjual</button>
+        <button type="button" class="list-group-item list-group-item-action" data-page="tentang">🏪 Tentang Toko</button>
       </div>
     </div>
   </div>
 </section>
 
 <section class="page" id="page-admin-stok">
-  <div class="container page-container">
-    <div class="page-header">
-      <span class="section-label">KHUSUS PENJUAL</span>
-      <h2>Kelola Produk dan Stok</h2>
-      <p>Tambah produk baru, ubah data produk, atur stok, atau sembunyikan produk.</p>
-    </div>
-
-    <div id="onlyAdminNotice" class="order-notice">
-      <p>Halaman ini hanya bisa diakses oleh pemilik toko.</p>
-    </div>
-
+  <div class="container py-4" style="max-width: 760px;">
+    <p class="text-success fw-semibold small mb-1">KHUSUS PENJUAL</p>
+    <h2 class="fw-bold">Kelola Produk dan Stok</h2>
+    <p class="text-muted">Tambah produk baru, ubah data produk, atur stok, atau sembunyikan produk.</p>
+    <div id="onlyAdminNotice" class="alert alert-warning">Halaman ini hanya bisa diakses oleh pemilik toko.</div>
     <div id="adminStockList" style="display:none;"></div>
   </div>
 </section>
 
 <section class="page" id="page-chat">
-  <div class="container page-container">
-    <div class="page-header">
-      <span class="section-label">CHAT</span>
-      <h2 id="chatWithLabel">Chat dengan Penjual</h2>
-      <p>Kirim pesan langsung ke penjual UMKM Promo.</p>
+  <div class="container py-4" style="max-width: 760px;">
+    <p class="text-success fw-semibold small mb-1">CHAT</p>
+    <h2 class="fw-bold" id="chatWithLabel">Chat dengan Penjual</h2>
+    <p class="text-muted">Kirim pesan langsung ke penjual UMKM Promo.</p>
+
+    <div id="chatInboxNotice" class="alert alert-warning" style="display:none;">
+      <p class="mb-2">Silakan masuk atau daftar dulu untuk mulai chat.</p>
+      <button type="button" class="btn btn-success btn-sm" data-page="akun">Ke Halaman Akun</button>
     </div>
 
-    <div id="chatInboxNotice" class="order-notice" style="display:none;">
-      <p>Silakan masuk atau daftar dulu untuk mulai chat.</p>
-      <button type="button" class="button primary" data-page="akun">Ke Halaman Akun</button>
-    </div>
-
-    <div id="chatInbox" class="chat-inbox" style="display:none;"></div>
+    <div id="chatInbox" class="list-group" style="display:none;"></div>
 
     <div id="chatThread" style="display:none;">
-      <button type="button" class="button secondary" id="chatBackButton" style="display:none;">← Kembali ke Daftar Chat</button>
-      <div id="chatMessages" class="chat-messages"></div>
-      <form id="chatForm" class="chat-form">
-        <input type="text" id="chatInput" placeholder="Tulis pesan..." autocomplete="off" required>
-        <button type="submit" class="button primary">Kirim</button>
+      <button type="button" class="btn btn-outline-secondary btn-sm mb-2" id="chatBackButton" style="display:none;">← Kembali ke Daftar Chat</button>
+      <div id="chatMessages" class="chat-box border rounded bg-white p-3 mb-2"></div>
+      <form id="chatForm" class="input-group">
+        <input type="text" class="form-control" id="chatInput" placeholder="Tulis pesan..." autocomplete="off" required>
+        <button type="submit" class="btn btn-success">Kirim</button>
       </form>
     </div>
   </div>
 </section>
 
 <section class="page" id="page-tentang">
-  <div class="container page-container">
-    <div class="about-card">
-      <span class="section-label">TENTANG SISTEM</span>
-      <h2>UMKM PROMO</h2>
-      <p>UMKM Promo merupakan rancangan sistem informasi pemasaran produk UMKM berbasis website yang menyediakan katalog produk dan fitur rekomendasi konten promosi.</p>
-      <div class="about-grid">
-        <div class="about-item"><span>💻</span><h3>Teknologi</h3><p>HTML, CSS, JavaScript, dan Firebase.</p></div>
-        <div class="about-item"><span>🎯</span><h3>Tujuan</h3><p>Membantu UMKM menyiapkan ide konten promosi.</p></div>
-        <div class="about-item"><span>📱</span><h3>Platform</h3><p>Website responsif untuk perangkat desktop dan mobile.</p></div>
-      </div>
-      <div class="toko-card">
-        <div class="avatar-circle avatar-clickable" id="tokoAvatar"></div>
+  <div class="container py-4" style="max-width: 760px;">
+    <p class="text-success fw-semibold small mb-1">TENTANG SISTEM</p>
+    <h2 class="fw-bold">UMKM PROMO</h2>
+    <p>UMKM Promo merupakan rancangan sistem informasi pemasaran produk UMKM berbasis website yang menyediakan katalog produk dan fitur rekomendasi konten promosi.</p>
+    <div class="row row-cols-1 row-cols-md-3 g-3 mb-4">
+      <div class="col"><div class="card h-100 shadow-sm border-0"><div class="card-body"><div class="fs-2">💻</div><h3 class="h6 mt-2">Teknologi</h3><p class="small text-muted mb-0">HTML, CSS (Bootstrap), JavaScript, dan Firebase.</p></div></div></div>
+      <div class="col"><div class="card h-100 shadow-sm border-0"><div class="card-body"><div class="fs-2">🎯</div><h3 class="h6 mt-2">Tujuan</h3><p class="small text-muted mb-0">Membantu UMKM menyiapkan ide konten promosi.</p></div></div></div>
+      <div class="col"><div class="card h-100 shadow-sm border-0"><div class="card-body"><div class="fs-2">📱</div><h3 class="h6 mt-2">Platform</h3><p class="small text-muted mb-0">Website responsif untuk desktop dan mobile.</p></div></div></div>
+    </div>
+    <div class="card border-0 shadow-sm">
+      <div class="card-body d-flex align-items-center gap-3">
+        <div class="avatar avatar-clickable rounded-circle overflow-hidden bg-success-subtle d-flex align-items-center justify-content-center flex-shrink-0" id="tokoAvatar"></div>
         <div>
           <strong>Pemilik Toko</strong>
-          <p>Raden Adi Pranata Setiawan</p>
+          <p class="mb-0 text-muted">Raden Adi Pranata Setiawan</p>
         </div>
       </div>
     </div>
@@ -413,28 +402,36 @@
 
 </main>
 
-<div class="product-modal" id="productModal">
-  <div class="product-modal-content">
-    <button class="modal-close" id="modalClose" type="button" aria-label="Tutup">×</button>
-    <img class="modal-product-icon" id="modalProductIcon" src="" alt="">
-    <span class="product-category" id="modalProductCategory">Makanan</span>
-    <h2 id="modalProductName">Keripik Tette</h2>
-    <p class="product-price" id="modalProductPrice">Rp15.000</p>
-    <p class="modal-product-description" id="modalProductDescription">Deskripsi produk.</p>
-    <p class="modal-stock" id="modalProductStock"></p>
-    <p class="modal-rating-summary" id="modalRatingSummary"></p>
-    <div class="modal-reviews-list" id="modalReviewsList"></div>
-    <div class="modal-qty-row">
-      <span>Jumlah</span>
-      <div class="qty-stepper">
-        <button type="button" id="modalQtyMinus">−</button>
-        <span id="modalQty">1</span>
-        <button type="button" id="modalQtyPlus">+</button>
+<div class="modal fade" id="productModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <span class="badge text-bg-success" id="modalProductCategory">Makanan</span>
+        <button type="button" class="btn-close" id="modalClose" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <img class="img-fluid rounded w-100 mb-3 product-img" id="modalProductIcon" src="" alt="">
+        <h2 class="h4" id="modalProductName">Keripik Tette</h2>
+        <p class="fs-5 fw-bold text-success" id="modalProductPrice">Rp15.000</p>
+        <p class="text-muted" id="modalProductDescription">Deskripsi produk.</p>
+        <p class="small fw-semibold mb-1" id="modalProductStock"></p>
+        <p class="small fw-semibold text-warning" id="modalRatingSummary"></p>
+        <div class="small mb-3" id="modalReviewsList"></div>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span>Jumlah</span>
+          <div class="input-group input-group-sm w-auto">
+            <button type="button" class="btn btn-outline-success" id="modalQtyMinus">−</button>
+            <span class="input-group-text" id="modalQty">1</span>
+            <button type="button" class="btn btn-outline-success" id="modalQtyPlus">+</button>
+          </div>
+        </div>
+        <div class="d-grid gap-2">
+          <button class="btn btn-success" id="modalBuyButton" type="button">⚡ Beli Sekarang</button>
+          <button class="btn btn-outline-success" id="modalAddCartButton" type="button">🛒 Tambah ke Keranjang</button>
+          <button class="btn btn-outline-secondary" id="modalPromoButton" type="button">✨ Buat Konten Promosi</button>
+        </div>
       </div>
     </div>
-    <button class="button primary" id="modalBuyButton" type="button">⚡ Beli Sekarang</button>
-    <button class="button secondary" id="modalAddCartButton" type="button">🛒 Tambah ke Keranjang</button>
-    <button class="button secondary" id="modalPromoButton" type="button">✨ Buat Konten Promosi</button>
   </div>
 </div>
 
@@ -446,32 +443,33 @@
     </div>
     <p class="photo-viewer-hint">Ketuk 2x pada foto untuk perbesar</p>
     <div class="photo-viewer-actions">
-      <button type="button" class="button secondary" id="photoViewerChange" style="display:none;">🖼️ Ganti Foto</button>
-      <button type="button" class="button secondary" id="photoViewerShare">🔗 Bagikan</button>
+      <button type="button" class="btn btn-light btn-sm" id="photoViewerChange" style="display:none;">🖼️ Ganti Foto</button>
+      <button type="button" class="btn btn-light btn-sm" id="photoViewerShare">🔗 Bagikan</button>
     </div>
   </div>
 </div>
 
-<footer class="footer">
+<footer class="bg-dark text-light text-center py-4 mt-5">
   <div class="container">
     <strong>UMKM PROMO</strong>
-    <p>Sistem Informasi Pemasaran Produk UMKM</p>
-    <small>© Raden Adi Pranata Setiawan 2026/2027</small>
+    <p class="mb-1 small">Sistem Informasi Pemasaran Produk UMKM</p>
+    <small class="text-secondary">© Raden Adi Pranata Setiawan 2026/2027</small>
   </div>
 </footer>
 
-<script src="js/products.js?v=16"></script>
-<script src="js/app.js?v=16"></script>
-<script type="module" src="js/firebase-config.js?v=16"></script>
-<script type="module" src="js/auth.js?v=16"></script>
-<script type="module" src="js/orders.js?v=16"></script>
-<script type="module" src="js/admin.js?v=16"></script>
-<script type="module" src="js/admin-orders.js?v=16"></script>
-<script type="module" src="js/chat.js?v=16"></script>
-<script type="module" src="js/profile.js?v=16"></script>
-<script type="module" src="js/reviews.js?v=16"></script>
-<script type="module" src="js/cart.js?v=16"></script>
-<script type="module" src="js/forgot.js?v=16"></script>
-<script type="module" src="js/catalog.js?v=16"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/products.js?v=17"></script>
+<script src="js/app.js?v=17"></script>
+<script type="module" src="js/firebase-config.js?v=17"></script>
+<script type="module" src="js/auth.js?v=17"></script>
+<script type="module" src="js/orders.js?v=17"></script>
+<script type="module" src="js/admin.js?v=17"></script>
+<script type="module" src="js/admin-orders.js?v=17"></script>
+<script type="module" src="js/chat.js?v=17"></script>
+<script type="module" src="js/profile.js?v=17"></script>
+<script type="module" src="js/reviews.js?v=17"></script>
+<script type="module" src="js/cart.js?v=17"></script>
+<script type="module" src="js/forgot.js?v=17"></script>
+<script type="module" src="js/catalog.js?v=17"></script>
 </body>
 </html>

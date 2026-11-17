@@ -66,8 +66,9 @@ function maxFor(id) {
 
 function toast(message) {
     const el = document.createElement("div");
-    el.className = "toast";
-    el.textContent = message;
+    el.className = "toast show align-items-center text-bg-dark border-0 position-fixed bottom-0 start-50 translate-middle-x mb-5";
+    el.style.zIndex = "2000";
+    el.innerHTML = '<div class="toast-body">' + esc(message) + '</div>';
     document.body.appendChild(el);
     setTimeout(function () { el.remove(); }, 2000);
 }
@@ -77,7 +78,7 @@ function renderCart() {
     const totalQty = cart.reduce(function (sum, l) { return sum + l.qty; }, 0);
     if (cartBadge) {
         cartBadge.textContent = totalQty;
-        cartBadge.style.display = totalQty > 0 ? "flex" : "none";
+        cartBadge.style.display = totalQty > 0 ? "inline-block" : "none";
     }
     if (!cartItemsEl) return;
     if (cart.length === 0) {
@@ -96,17 +97,19 @@ function renderCart() {
         const short = stock !== undefined && l.qty > stock;
         if (short) problem = true;
         total += p.price * l.qty;
-        return '<div class="cart-item">' +
-            '<img class="cart-item-image" src="' + esc(p.image) + '" alt="">' +
-            '<div class="cart-item-info"><strong>' + esc(p.name) + '</strong><span>' + rupiah(p.price) + '</span>' +
-            (short ? '<span class="stock-habis">Stok tersisa ' + stock + '</span>' : '') +
-            '<div class="qty-stepper">' +
-            '<button type="button" data-cart="minus" data-id="' + p.id + '">−</button>' +
-            '<span>' + l.qty + '</span>' +
-            '<button type="button" data-cart="plus" data-id="' + p.id + '">+</button>' +
+        return '<div class="card border-0 shadow-sm mb-2"><div class="card-body d-flex gap-3 align-items-start">' +
+            '<img class="rounded flex-shrink-0" style="width:72px;height:72px;object-fit:cover;" src="' + esc(p.image) + '" alt="">' +
+            '<div class="flex-grow-1">' +
+            '<div class="fw-semibold">' + esc(p.name) + '</div>' +
+            '<div class="text-success fw-bold small">' + rupiah(p.price) + '</div>' +
+            (short ? '<div class="text-danger small">Stok tersisa ' + stock + '</div>' : '') +
+            '<div class="input-group input-group-sm mt-2" style="width:130px;">' +
+            '<button type="button" class="btn btn-outline-success" data-cart="minus" data-id="' + p.id + '">−</button>' +
+            '<span class="input-group-text flex-grow-1 justify-content-center">' + l.qty + '</span>' +
+            '<button type="button" class="btn btn-outline-success" data-cart="plus" data-id="' + p.id + '">+</button>' +
             '</div></div>' +
-            '<button type="button" class="link-button" data-cart="remove" data-id="' + p.id + '">Hapus</button>' +
-            '</div>';
+            '<button type="button" class="btn btn-sm btn-outline-danger" data-cart="remove" data-id="' + p.id + '">Hapus</button>' +
+            '</div></div>';
     }).join("");
     cartTotal.textContent = rupiah(total);
     cartCheckout.style.display = currentUser ? "block" : "none";

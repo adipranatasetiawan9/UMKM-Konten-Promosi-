@@ -25,6 +25,15 @@ const STAGE_LABEL = {
     selesai: "Selesai",
     dibatalkan: "Dibatalkan"
 };
+const STATUS_BADGE = {
+    menunggu_pembayaran: "text-bg-warning",
+    menunggu_konfirmasi: "text-bg-info",
+    diproses: "text-bg-primary",
+    dikemas: "text-bg-primary",
+    dikirim: "text-bg-primary",
+    selesai: "text-bg-success",
+    dibatalkan: "text-bg-danger"
+};
 
 function esc(text) {
     return String(text == null ? "" : text).replace(/[&<>"']/g, function (c) {
@@ -80,33 +89,32 @@ function paymentInstruction(method) {
 }
 
 function stepperHtml(status) {
-    if (status === "dibatalkan") return '<div class="order-cancelled-banner">Pesanan ini sudah dibatalkan.</div>';
-    const currentIndex = STAGE_ORDER.indexOf(status);
-    return '<div class="order-stepper">' +
-        STAGE_ORDER.map(function (stage, i) {
-            const state = i < currentIndex ? "done" : (i === currentIndex ? "current" : "upcoming");
-            return '<div class="order-step order-step-' + state + '"><span class="order-step-dot"></span><span class="order-step-label">' + STAGE_LABEL[stage] + '</span></div>';
-        }).join("") +
+    if (status === "dibatalkan") return '<div class="alert alert-danger py-2 small my-3">Pesanan ini sudah dibatalkan.</div>';
+    const idx = STAGE_ORDER.indexOf(status);
+    const pct = Math.round(((idx + 1) / STAGE_ORDER.length) * 100);
+    return '<div class="my-3">' +
+        '<div class="d-flex justify-content-between small text-muted mb-1"><span>Tahap ' + (idx + 1) + ' dari ' + STAGE_ORDER.length + '</span><span>' + STAGE_LABEL[status] + '</span></div>' +
+        '<div class="progress" role="progressbar" aria-valuenow="' + pct + '" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar bg-success" style="width:' + pct + '%"></div></div>' +
         '</div>';
 }
 
 function itemsHtml(order) {
-    return '<div class="order-items">' + orderItems(order).map(function (it) {
+    return '<div class="d-flex flex-column gap-2 my-2">' + orderItems(order).map(function (it) {
         const img = findProductImage(it.productId);
-        return '<div class="order-item">' +
-            (img ? '<img class="order-product-image" src="' + esc(img) + '" alt="">' : '') +
-            '<div class="order-item-info"><strong>' + esc(it.name) + '</strong><span>' + it.qty + ' × ' + formatRupiah(it.price) + '</span></div>' +
+        return '<div class="d-flex gap-2 align-items-center">' +
+            (img ? '<img class="rounded" style="width:48px;height:48px;object-fit:cover;" src="' + esc(img) + '" alt="">' : '') +
+            '<div class="small"><div class="fw-semibold">' + esc(it.name) + '</div><div class="text-muted">' + it.qty + ' × ' + formatRupiah(it.price) + '</div></div>' +
             '</div>';
     }).join("") + '</div>';
 }
 
 function shippingHtml(order) {
     if (!order.address) return "";
-    return '<div class="order-shipping">' +
-        '<p><strong>Penerima:</strong> ' + esc(order.recipientName) + ' · ' + esc(order.phone) + '</p>' +
-        '<p>' + esc(order.address) + '</p>' +
-        '<p><strong>Kurir:</strong> ' + esc(order.courier || "-") + '</p>' +
-        (order.trackingNumber ? '<p><strong>No. Resi:</strong> ' + esc(order.trackingNumber) + '</p>' : '') +
+    return '<div class="bg-light rounded p-2 small my-2">' +
+        '<div><strong>Penerima:</strong> ' + esc(order.recipientName) + ' · ' + esc(order.phone) + '</div>' +
+        '<div>' + esc(order.address) + '</div>' +
+        '<div><strong>Kurir:</strong> ' + esc(order.courier || "-") + '</div>' +
+        (order.trackingNumber ? '<div><strong>No. Resi:</strong> ' + esc(order.trackingNumber) + '</div>' : '') +
         '</div>';
 }
 
@@ -114,15 +122,15 @@ function reviewSectionHtml(order, id) {
     if (order.status !== "selesai") return "";
     return orderItems(order).map(function (it) {
         if (typeof window.hasReviewedItem === "function" && window.hasReviewedItem(id, it.productId)) {
-            return '<p class="order-hint">✓ Sudah diulas: ' + esc(it.name) + '</p>';
+            return '<p class="small text-success mt-3 mb-0">✓ Sudah diulas: ' + esc(it.name) + '</p>';
         }
-        return '<div class="review-form" data-order-id="' + id + '" data-product-id="' + it.productId + '" data-product-name="' + esc(it.name) + '" data-rating="0">' +
-            '<p class="order-hint">Beri ulasan untuk ' + esc(it.name) + ':</p>' +
-            '<div class="review-stars-input">' +
-            [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" class="review-star" data-rating="' + n + '">★</button>'; }).join("") +
+        return '<div class="review-form border-top pt-3 mt-3" data-order-id="' + id + '" data-product-id="' + it.productId + '" data-product-name="' + esc(it.name) + '" data-rating="0">' +
+            '<p class="small fw-semibold mb-1">Beri ulasan untuk ' + esc(it.name) + ':</p>' +
+            '<div class="mb-2">' +
+            [1, 2, 3, 4, 5].map(function (n) { return '<button type="button" class="btn btn-link p-0 me-1 fs-3 text-secondary text-decoration-none review-star" data-rating="' + n + '">★</button>'; }).join("") +
             '</div>' +
-            '<textarea class="review-comment" placeholder="Tulis ulasan kamu (opsional)..."></textarea>' +
-            '<button type="button" class="button primary review-submit">Kirim Ulasan</button>' +
+            '<textarea class="form-control review-comment mb-2" rows="2" placeholder="Tulis ulasan kamu (opsional)..."></textarea>' +
+            '<button type="button" class="btn btn-success btn-sm review-submit">Kirim Ulasan</button>' +
             '</div>';
     }).join("");
 }
@@ -140,7 +148,8 @@ function updateStockDisplay() {
         const qty = stockMap[el.dataset.stockId];
         if (qty === undefined) { el.textContent = ""; return; }
         el.textContent = qty > 0 ? "Stok: " + qty : "Stok Habis";
-        el.classList.toggle("stock-habis", qty <= 0);
+        el.classList.toggle("text-danger", qty <= 0);
+        el.classList.toggle("fw-semibold", qty <= 0);
     });
 }
 
@@ -149,7 +158,10 @@ window.onProductsRendered = updateStockDisplay;
 window.onProductDetailShown = function (product) {
     const qty = stockMap[product.id];
     const modalStockEl = document.getElementById("modalProductStock");
-    if (modalStockEl) modalStockEl.textContent = qty === undefined ? "Memuat stok..." : (qty > 0 ? "Stok tersedia: " + qty : "Stok Habis");
+    if (modalStockEl) {
+        modalStockEl.textContent = qty === undefined ? "Memuat stok..." : (qty > 0 ? "Stok tersedia: " + qty : "Stok Habis");
+        modalStockEl.classList.toggle("text-danger", qty !== undefined && qty <= 0);
+    }
     const habis = !(qty > 0);
     ["modalBuyButton", "modalAddCartButton"].forEach(function (id) {
         const b = document.getElementById(id);
@@ -196,21 +208,22 @@ function renderOrders(docsSnap) {
         let paymentHtml = "";
         let actionsHtml = "";
         if (order.status === "menunggu_pembayaran") {
-            paymentHtml = '<p class="order-payment-method">Metode: ' + esc(order.paymentMethod || "-") + '</p>' +
-                '<img class="order-qris" src="assets/payment/qris-dana.jpg" alt="QRIS Pembayaran">' +
-                '<p class="order-hint">Total yang dibayar: <strong>' + formatRupiah(orderTotal(order)) + '</strong>. ' + esc(paymentInstruction(order.paymentMethod)) + ' Setelah bayar, unggah screenshot bukti bayarnya.</p>';
-            actionsHtml = '<div class="order-actions"><button type="button" class="button primary" data-action="bukti" data-id="' + id + '">📎 Unggah Bukti Bayar</button><button type="button" class="button secondary" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
+            paymentHtml = '<p class="small mb-1"><strong>Metode:</strong> ' + esc(order.paymentMethod || "-") + '</p>' +
+                '<img class="img-fluid rounded border my-2" style="max-width:240px;" src="assets/payment/qris-dana.jpg" alt="QRIS Pembayaran">' +
+                '<p class="small text-muted">Total yang dibayar: <strong>' + formatRupiah(orderTotal(order)) + '</strong>. ' + esc(paymentInstruction(order.paymentMethod)) + ' Setelah bayar, unggah screenshot bukti bayarnya.</p>';
+            actionsHtml = '<div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-success btn-sm" data-action="bukti" data-id="' + id + '">📎 Unggah Bukti Bayar</button><button type="button" class="btn btn-outline-danger btn-sm" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
         } else if (order.status === "menunggu_konfirmasi") {
-            paymentHtml = '<p class="order-hint">' + (order.hasProof ? '✓ Bukti bayar terkirim. ' : '') + 'Menunggu konfirmasi penjual.</p>';
-            actionsHtml = '<div class="order-actions"><button type="button" class="button secondary" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
+            paymentHtml = '<p class="small text-muted">' + (order.hasProof ? '✓ Bukti bayar terkirim. ' : '') + 'Menunggu konfirmasi penjual.</p>';
+            actionsHtml = '<div class="d-flex flex-wrap gap-2"><button type="button" class="btn btn-outline-danger btn-sm" data-action="batal" data-id="' + id + '">Batalkan Pesanan</button></div>';
         }
-        return '<div class="order-card">' +
-            '<div class="order-card-head-row"><h3>Pesanan #' + id.slice(-6).toUpperCase() + '</h3><span class="order-status order-status-' + order.status + '">' + (STAGE_LABEL[order.status] || order.status) + '</span></div>' +
+        return '<div class="card border-0 shadow-sm mb-3"><div class="card-body">' +
+            '<div class="d-flex justify-content-between align-items-center"><h3 class="h6 mb-0">Pesanan #' + id.slice(-6).toUpperCase() + '</h3><span class="badge ' + (STATUS_BADGE[order.status] || "text-bg-secondary") + '">' + (STAGE_LABEL[order.status] || order.status) + '</span></div>' +
             itemsHtml(order) +
-            '<p class="order-price">Total: ' + formatRupiah(orderTotal(order)) + '</p>' +
+            '<p class="fw-bold text-success mb-2">Total: ' + formatRupiah(orderTotal(order)) + '</p>' +
             shippingHtml(order) +
-            '<button type="button" class="button secondary order-chat-button" data-action="chat">💬 Chat Penjual</button>' +
-            stepperHtml(order.status) + paymentHtml + actionsHtml + reviewSectionHtml(order, id) + '</div>';
+            '<button type="button" class="btn btn-outline-secondary btn-sm" data-action="chat">💬 Chat Penjual</button>' +
+            stepperHtml(order.status) + paymentHtml + actionsHtml + reviewSectionHtml(order, id) +
+            '</div></div>';
     }).join("");
 }
 
@@ -224,7 +237,9 @@ if (ordersList) {
             const rating = Number(starBtn.dataset.rating);
             form.dataset.rating = rating;
             form.querySelectorAll(".review-star").forEach(function (s) {
-                s.classList.toggle("active", Number(s.dataset.rating) <= rating);
+                const on = Number(s.dataset.rating) <= rating;
+                s.classList.toggle("text-warning", on);
+                s.classList.toggle("text-secondary", !on);
             });
             return;
         }
@@ -307,3 +322,4 @@ onAuthStateChanged(auth, function (user) {
         if (ordersEmpty) ordersEmpty.style.display = "none";
     }
 });
+
