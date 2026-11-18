@@ -12,6 +12,9 @@ const adminOrdersList = document.getElementById("adminOrdersList");
 const photoViewer = document.getElementById("photoViewer");
 const photoViewerImage = document.getElementById("photoViewerImage");
 const photoViewerChange = document.getElementById("photoViewerChange");
+const resiModalEl = document.getElementById("resiModal");
+const resiInput = document.getElementById("resiInput");
+const resiSaveButton = document.getElementById("resiSaveButton");
 
 const STAGE_ORDER = ["menunggu_pembayaran", "menunggu_konfirmasi", "diproses", "dikemas", "dikirim", "selesai"];
 const STAGE_LABEL = {
@@ -35,6 +38,7 @@ const STATUS_BADGE = {
 
 let lastAdminOrdersSnap = [];
 let reviewsByOrderId = {};
+let pendingShipOrderId = null;
 
 function esc(text) {
     return String(text == null ? "" : text).replace(/[&<>"']/g, function (c) {
@@ -148,10 +152,24 @@ async function showProof(orderId) {
         photoViewerImage.src = snap.data().dataUrl;
         photoViewerImage.classList.remove("zoomed-img");
         if (photoViewerChange) photoViewerChange.style.display = "none";
-        photoViewer.classList.add("active");
+        bootstrap.Modal.getOrCreateInstance(photoViewer).show();
     } catch (error) {
         alert("Gagal membuka bukti bayar: " + error.message);
     }
+}
+
+if (resiSaveButton) {
+    resiSaveButton.addEventListener("click", function () {
+        if (!pendingShipOrderId) return;
+        const payload = { status: "dikirim", statusUpdatedAt: Date.now() };
+        const resi = resiInput.value.trim();
+        if (resi) payload.trackingNumber = resi;
+        const orderId = pendingShipOrderId;
+        pendingShipOrderId = null;
+        bootstrap.Modal.getOrCreateInstance(resiModalEl).hide();
+        updateDoc(doc(db, "orders", orderId), payload)
+            .catch(function (error) { alert("Gagal update: " + error.message); });
+    });
 }
 
 if (adminOrdersList) {
@@ -173,13 +191,13 @@ if (adminOrdersList) {
 
         if (advanceBtn) {
             const next = advanceBtn.dataset.next;
-            const payload = { status: next, statusUpdatedAt: Date.now() };
             if (next === "dikirim") {
-                const resi = prompt("Masukkan nomor resi pengiriman (boleh dikosongkan):");
-                if (resi === null) return;
-                if (resi.trim()) payload.trackingNumber = resi.trim();
+                pendingShipOrderId = advanceBtn.dataset.id;
+                resiInput.value = "";
+                bootstrap.Modal.getOrCreateInstance(resiModalEl).show();
+                return;
             }
-            updateDoc(doc(db, "orders", advanceBtn.dataset.id), payload)
+            updateDoc(doc(db, "orders", advanceBtn.dataset.id), { status: next, statusUpdatedAt: Date.now() })
                 .catch(function (error) { alert("Gagal update: " + error.message); });
             return;
         }

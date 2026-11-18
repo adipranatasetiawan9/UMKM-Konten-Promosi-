@@ -55,7 +55,10 @@ window.onProductDetailShown = function (product) {
     if (modalReviewsList) {
         const list = (stat && stat.items) || [];
         modalReviewsList.innerHTML = list.map(function (r) {
-            return '<div class="review-item"><p class="review-author">' + escapeHtml(maskEmail(r.buyerEmail)) + '</p><span class="review-stars">' + starsHtml(r.rating) + '</span><p>' + escapeHtml(r.comment || "") + '</p></div>';
+            return '<div class="border-bottom py-2 text-start">' +
+                '<div class="fw-semibold small">' + escapeHtml(maskEmail(r.buyerEmail)) + '</div>' +
+                '<div class="text-warning">' + starsHtml(r.rating) + '</div>' +
+                '<div>' + escapeHtml(r.comment || "") + '</div></div>';
         }).join("");
     }
 };

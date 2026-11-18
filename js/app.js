@@ -9,9 +9,9 @@ function esc(text) {
 }
 
 function showPage(pageName) {
-    pages.forEach(function(page) { page.classList.remove("active"); });
+    pages.forEach(function(page) { page.classList.add("d-none"); });
     const targetPage = document.getElementById("page-" + pageName);
-    if (targetPage) targetPage.classList.add("active");
+    if (targetPage) targetPage.classList.remove("d-none");
     pageButtons.forEach(function(button) {
         if (button.classList.contains("nav-link")) {
             button.classList.remove("active");
@@ -36,6 +36,8 @@ const productSearch = document.getElementById("productSearch");
 const clearSearch = document.getElementById("clearSearch");
 const categoryFilters = document.getElementById("categoryFilters");
 const searchResultInfo = document.getElementById("searchResultInfo");
+const featuredInner = document.getElementById("featuredInner");
+const featuredIndicators = document.getElementById("featuredIndicators");
 
 let currentSearch = "";
 let currentCategory = "Semua";
@@ -46,6 +48,23 @@ function formatRupiah(price) {
 
 function visibleProducts() {
     return products.filter(function(product) { return !product.hidden; });
+}
+
+function renderFeatured() {
+    if (!featuredInner || !featuredIndicators) return;
+    const picks = visibleProducts().filter(function(p) { return p.image; }).slice(0, 5);
+    featuredInner.innerHTML = picks.map(function(p, i) {
+        return '<div class="carousel-item' + (i === 0 ? ' active' : '') + '">' +
+            '<div class="ratio ratio-16x9"><img class="object-fit-cover" src="' + esc(p.image) + '" alt="' + esc(p.name) + '"></div>' +
+            '<div class="carousel-caption d-block bg-dark bg-opacity-50 rounded p-2 mb-2">' +
+            '<h3 class="h6 mb-1">' + esc(p.name) + '</h3>' +
+            '<p class="small mb-1">' + formatRupiah(p.price) + '</p>' +
+            '<button type="button" class="btn btn-warning btn-sm" data-featured-id="' + p.id + '">Lihat detail</button>' +
+            '</div></div>';
+    }).join("");
+    featuredIndicators.innerHTML = picks.map(function(p, i) {
+        return '<button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="' + i + '"' + (i === 0 ? ' class="active" aria-current="true"' : '') + ' aria-label="Slide ' + (i + 1) + '"></button>';
+    }).join("");
 }
 
 function displayProducts(productList) {
@@ -157,21 +176,30 @@ function closeProductModal() {
 }
 
 function setupProductInteraction() {
-    if (!productGrid) return;
-    productGrid.addEventListener("click", function(event) {
-        const card = event.target.closest(".product-card");
-        if (!card) return;
-        const product = products.find(function(item) { return item.id === Number(card.dataset.id); });
-        if (product) showProductDetail(product);
-    });
-    productGrid.addEventListener("keydown", function(event) {
-        if (event.key !== "Enter" && event.key !== " ") return;
-        const card = event.target.closest(".product-card");
-        if (!card) return;
-        event.preventDefault();
-        const product = products.find(function(item) { return item.id === Number(card.dataset.id); });
-        if (product) showProductDetail(product);
-    });
+    if (productGrid) {
+        productGrid.addEventListener("click", function(event) {
+            const card = event.target.closest(".product-card");
+            if (!card) return;
+            const product = products.find(function(item) { return item.id === Number(card.dataset.id); });
+            if (product) showProductDetail(product);
+        });
+        productGrid.addEventListener("keydown", function(event) {
+            if (event.key !== "Enter" && event.key !== " ") return;
+            const card = event.target.closest(".product-card");
+            if (!card) return;
+            event.preventDefault();
+            const product = products.find(function(item) { return item.id === Number(card.dataset.id); });
+            if (product) showProductDetail(product);
+        });
+    }
+    if (featuredInner) {
+        featuredInner.addEventListener("click", function(event) {
+            const button = event.target.closest("[data-featured-id]");
+            if (!button) return;
+            const product = products.find(function(item) { return item.id === Number(button.dataset.featuredId); });
+            if (product) showProductDetail(product);
+        });
+    }
 }
 
 const recommendationProduct = document.getElementById("recommendationProduct");
@@ -201,6 +229,7 @@ window.refreshCatalog = function() {
     loadRecommendationProducts();
     if (recommendationProduct && selected) recommendationProduct.value = selected;
     filterProducts();
+    renderFeatured();
 };
 
 if (modalPromoButton) {
@@ -240,7 +269,7 @@ function generateRecommendation() {
     if (resultIdea) resultIdea.textContent = idea;
     if (resultCaption) resultCaption.textContent = caption;
     if (resultHashtag) resultHashtag.textContent = hashtag;
-    if (recommendationResult) recommendationResult.classList.add("active");
+    if (recommendationResult) recommendationResult.classList.remove("d-none");
 }
 
 if (recommendationButton) recommendationButton.addEventListener("click", generateRecommendation);
@@ -258,4 +287,5 @@ if (copyRecommendation) copyRecommendation.addEventListener("click", copyRecomme
 loadRecommendationProducts();
 setupProductInteraction();
 filterProducts();
+renderFeatured();
 showPage("beranda");

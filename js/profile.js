@@ -19,7 +19,6 @@ const editNameCancel = document.getElementById("editNameCancel");
 const photoViewer = document.getElementById("photoViewer");
 const photoViewerImage = document.getElementById("photoViewerImage");
 const photoViewerImageWrap = document.getElementById("photoViewerImageWrap");
-const photoViewerClose = document.getElementById("photoViewerClose");
 const photoViewerChange = document.getElementById("photoViewerChange");
 const photoViewerShare = document.getElementById("photoViewerShare");
 
@@ -28,6 +27,10 @@ let isAdmin = false;
 let unsubscribeMyProfile = null;
 let myPhotoDataUrl = null;
 let tokoPhotoDataUrl = null;
+
+function viewerModal() {
+    return (window.bootstrap && photoViewer) ? bootstrap.Modal.getOrCreateInstance(photoViewer) : null;
+}
 
 function resizeToDataUrl(file) {
     return new Promise(function (resolve, reject) {
@@ -56,8 +59,8 @@ function resizeToDataUrl(file) {
 function setAvatarImage(el, dataUrl, fallbackLetter) {
     if (!el) return;
     el.innerHTML = dataUrl
-        ? '<img src="' + dataUrl + '" alt="Foto profil">'
-        : '<span class="avatar-fallback">' + (fallbackLetter || "?") + '</span>';
+        ? '<img class="w-100 h-100 object-fit-cover" src="' + dataUrl + '" alt="Foto profil">'
+        : '<span class="fs-3 fw-bold text-success">' + (fallbackLetter || "?") + '</span>';
 }
 
 if (accountPhotoButton) {
@@ -84,7 +87,8 @@ function openPhotoViewer(dataUrl, allowChange) {
     photoViewerImage.src = dataUrl;
     photoViewerImage.classList.remove("zoomed-img");
     if (photoViewerChange) photoViewerChange.style.display = allowChange ? "inline-block" : "none";
-    photoViewer.classList.add("active");
+    const modal = viewerModal();
+    if (modal) modal.show();
 }
 
 if (accountAvatar) {
@@ -93,15 +97,10 @@ if (accountAvatar) {
 if (tokoAvatar) {
     tokoAvatar.addEventListener("click", function () { openPhotoViewer(tokoPhotoDataUrl, false); });
 }
-if (photoViewerClose) {
-    photoViewerClose.addEventListener("click", function () { photoViewer.classList.remove("active"); });
-}
-if (photoViewer) {
-    photoViewer.addEventListener("click", function (event) { if (event.target === photoViewer) photoViewer.classList.remove("active"); });
-}
 if (photoViewerChange) {
     photoViewerChange.addEventListener("click", function () {
-        photoViewer.classList.remove("active");
+        const modal = viewerModal();
+        if (modal) modal.hide();
         if (accountPhotoInput) accountPhotoInput.click();
     });
 }
@@ -142,6 +141,7 @@ if (editNameButton) {
         if (!currentUser || !editNameForm || !editNameInput) return;
         editNameInput.value = currentUser.displayName || "";
         editNameForm.style.display = "flex";
+        editNameButton.style.display = "inline-block";
         editNameButton.style.display = "none";
     });
 }

@@ -10,9 +10,9 @@
 <meta property="og:url" content="https://adipranatasetiawan9.github.io/UMKM-Konten-Promosi-/">
 <title>UMKM PROMO - Katalog & Pemasaran Produk UMKM</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/style.css?v=18">
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
 
 <nav class="navbar navbar-expand-lg bg-white border-bottom sticky-top">
   <div class="container">
@@ -38,9 +38,9 @@
   </div>
 </nav>
 
-<main>
+<main class="flex-grow-1">
 
-<section class="page active" id="page-beranda">
+<section class="page" id="page-beranda">
   <div class="hero-section py-5">
     <div class="container py-lg-4">
       <div class="row align-items-center g-4">
@@ -74,9 +74,24 @@
       <div class="col"><div class="card h-100 shadow-sm border-0"><div class="card-body"><div class="fs-2">✨</div><h3 class="h6 mt-2">Ide konten promosi</h3><p class="small text-muted mb-0">Dapatkan ide, caption, dan hashtag untuk mempromosikan produk.</p></div></div></div>
     </div>
   </div>
+  <div class="container pb-4">
+    <h2 class="h4 fw-bold mb-3">Produk Pilihan</h2>
+    <div id="featuredCarousel" class="carousel slide shadow-sm rounded overflow-hidden" data-bs-ride="carousel">
+      <div class="carousel-indicators" id="featuredIndicators"></div>
+      <div class="carousel-inner" id="featuredInner"></div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Sebelumnya</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Berikutnya</span>
+      </button>
+    </div>
+  </div>
 </section>
 
-<section class="page" id="page-produk">
+<section class="page d-none" id="page-produk">
   <div class="container py-4">
     <p class="text-success fw-semibold small mb-1">KATALOG</p>
     <h2 class="fw-bold">Produk Unggulan</h2>
@@ -104,7 +119,7 @@
   </div>
 </section>
 
-<section class="page" id="page-rekomendasi">
+<section class="page d-none" id="page-rekomendasi">
   <div class="container py-4">
     <p class="text-success fw-semibold small mb-1">FITUR UTAMA</p>
     <h2 class="fw-bold">Rekomendasi Konten Promosi</h2>
@@ -150,7 +165,7 @@
         <button class="btn btn-success mt-3" id="recommendationButton" type="button">✨ Buat Rekomendasi</button>
       </div>
     </div>
-    <div class="card border-0 shadow-sm" id="recommendationResult">
+    <div class="card border-0 shadow-sm d-none" id="recommendationResult">
       <div class="card-body">
         <p class="text-success fw-semibold small mb-1">HASIL REKOMENDASI</p>
         <h3 class="h4">Konten Promosi</h3>
@@ -166,7 +181,7 @@
   </div>
 </section>
 
-<section class="page" id="page-keranjang">
+<section class="page d-none" id="page-keranjang">
   <div class="container py-4" style="max-width: 720px;">
     <p class="text-success fw-semibold small mb-1">KERANJANG</p>
     <h2 class="fw-bold">Keranjang Belanja</h2>
@@ -231,7 +246,7 @@
   </div>
 </section>
 
-<section class="page" id="page-pesanan">
+<section class="page d-none" id="page-pesanan">
   <div class="container py-4" style="max-width: 760px;">
     <p class="text-success fw-semibold small mb-1">PESANAN</p>
     <h2 class="fw-bold">Pesanan</h2>
@@ -257,7 +272,7 @@
   </div>
 </section>
 
-<section class="page" id="page-akun">
+<section class="page d-none" id="page-akun">
   <div class="container py-4" style="max-width: 640px;">
     <p class="text-success fw-semibold small mb-1">AKUN</p>
     <h2 class="fw-bold">Masuk atau Daftar</h2>
@@ -344,7 +359,7 @@
   </div>
 </section>
 
-<section class="page" id="page-admin-stok">
+<section class="page d-none" id="page-admin-stok">
   <div class="container py-4" style="max-width: 760px;">
     <p class="text-success fw-semibold small mb-1">KHUSUS PENJUAL</p>
     <h2 class="fw-bold">Kelola Produk dan Stok</h2>
@@ -354,7 +369,7 @@
   </div>
 </section>
 
-<section class="page" id="page-chat">
+<section class="page d-none" id="page-chat">
   <div class="container py-4" style="max-width: 760px;">
     <p class="text-success fw-semibold small mb-1">CHAT</p>
     <h2 class="fw-bold" id="chatWithLabel">Chat dengan Penjual</h2>
@@ -378,7 +393,7 @@
   </div>
 </section>
 
-<section class="page" id="page-tentang">
+<section class="page d-none" id="page-tentang">
   <div class="container py-4" style="max-width: 760px;">
     <p class="text-success fw-semibold small mb-1">TENTANG SISTEM</p>
     <h2 class="fw-bold">UMKM PROMO</h2>
@@ -388,13 +403,37 @@
       <div class="col"><div class="card h-100 shadow-sm border-0"><div class="card-body"><div class="fs-2">🎯</div><h3 class="h6 mt-2">Tujuan</h3><p class="small text-muted mb-0">Membantu UMKM menyiapkan ide konten promosi.</p></div></div></div>
       <div class="col"><div class="card h-100 shadow-sm border-0"><div class="card-body"><div class="fs-2">📱</div><h3 class="h6 mt-2">Platform</h3><p class="small text-muted mb-0">Website responsif untuk desktop dan mobile.</p></div></div></div>
     </div>
-    <div class="card border-0 shadow-sm">
+    <div class="card border-0 shadow-sm mb-4">
       <div class="card-body d-flex align-items-center gap-3">
         <div class="avatar avatar-clickable rounded-circle overflow-hidden bg-success-subtle d-flex align-items-center justify-content-center flex-shrink-0" id="tokoAvatar"></div>
         <div>
           <strong>Pemilik Toko</strong>
           <p class="mb-0 text-muted">Raden Adi Pranata Setiawan</p>
         </div>
+      </div>
+    </div>
+
+    <h3 class="h5 fw-bold mb-3">Pertanyaan Umum</h3>
+    <div class="accordion shadow-sm" id="faqAccordion">
+      <div class="accordion-item">
+        <h4 class="accordion-header"><button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1" aria-expanded="true" aria-controls="faq1">Bagaimana cara memesan?</button></h4>
+        <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion"><div class="accordion-body small">Pilih produk, atur jumlah, tambahkan ke keranjang, isi alamat pengiriman, lalu buat pesanan.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h4 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2" aria-expanded="false" aria-controls="faq2">Bagaimana cara membayar?</button></h4>
+        <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body small">Pembayaran lewat QRIS (DANA). Setelah membayar, unggah bukti bayar di halaman Pesanan, lalu penjual mengonfirmasinya secara manual.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h4 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3" aria-expanded="false" aria-controls="faq3">Bagaimana dengan ongkos kirim dan resi?</button></h4>
+        <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body small">Ongkos kirim dikonfirmasi penjual lewat chat. Nomor resi diisi penjual saat barang dikirim dan tampil di halaman Pesanan.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h4 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4" aria-expanded="false" aria-controls="faq4">Siapa yang bisa memberi ulasan?</button></h4>
+        <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body small">Hanya pembeli yang pesanannya sudah berstatus Selesai. Ulasan terlihat oleh semua pengunjung dan email pengulas disamarkan.</div></div>
+      </div>
+      <div class="accordion-item">
+        <h4 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq5" aria-expanded="false" aria-controls="faq5">Apakah rekomendasi konten memakai AI?</button></h4>
+        <div id="faq5" class="accordion-collapse collapse" data-bs-parent="#faqAccordion"><div class="accordion-body small">Tidak. Rekomendasi konten dibuat dari template berbasis aturan, berdasarkan produk, target audiens, platform, dan gaya yang dipilih.</div></div>
       </div>
     </div>
   </div>
@@ -435,41 +474,83 @@
   </div>
 </div>
 
-<div class="photo-viewer" id="photoViewer">
-  <div class="photo-viewer-content">
-    <button type="button" class="photo-viewer-close" id="photoViewerClose" aria-label="Tutup">×</button>
-    <div class="photo-viewer-image-wrap" id="photoViewerImageWrap">
-      <img id="photoViewerImage" src="" alt="Foto">
-    </div>
-    <p class="photo-viewer-hint">Ketuk 2x pada foto untuk perbesar</p>
-    <div class="photo-viewer-actions">
-      <button type="button" class="btn btn-light btn-sm" id="photoViewerChange" style="display:none;">🖼️ Ganti Foto</button>
-      <button type="button" class="btn btn-light btn-sm" id="photoViewerShare">🔗 Bagikan</button>
+<div class="modal fade" id="photoViewer" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-white">
+      <div class="modal-header border-0">
+        <h2 class="modal-title h6">Foto</h2>
+        <button type="button" class="btn-close btn-close-white" id="photoViewerClose" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body text-center p-0 overflow-auto" id="photoViewerImageWrap">
+        <img id="photoViewerImage" class="img-fluid" src="" alt="Foto">
+      </div>
+      <div class="modal-footer border-0 justify-content-center">
+        <span class="small text-secondary w-100 text-center">Ketuk 2x pada foto untuk perbesar</span>
+        <button type="button" class="btn btn-light btn-sm" id="photoViewerChange" style="display:none;">🖼️ Ganti Foto</button>
+        <button type="button" class="btn btn-light btn-sm" id="photoViewerShare">🔗 Bagikan</button>
+      </div>
     </div>
   </div>
 </div>
 
-<footer class="bg-dark text-light text-center py-4 mt-5">
+<div class="modal fade" id="resiModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title h5">Nomor Resi Pengiriman</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+      </div>
+      <div class="modal-body">
+        <label for="resiInput" class="form-label">Masukkan nomor resi (boleh dikosongkan)</label>
+        <input type="text" class="form-control" id="resiInput" autocomplete="off">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Batal</button>
+        <button type="button" class="btn btn-success" id="resiSaveButton">Simpan dan Tandai Dikirim</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="bg-dark text-light pt-4 pb-3 mt-5">
   <div class="container">
-    <strong>UMKM PROMO</strong>
-    <p class="mb-1 small">Sistem Informasi Pemasaran Produk UMKM</p>
-    <small class="text-secondary">© Raden Adi Pranata Setiawan 2026/2027</small>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <strong class="fs-5">UMKM PROMO</strong>
+        <p class="small text-secondary mb-0">Sistem Informasi Pemasaran Produk UMKM dengan fitur rekomendasi konten promosi.</p>
+      </div>
+      <div class="col-6 col-md-3">
+        <h3 class="h6">Menu</h3>
+        <ul class="list-unstyled small mb-0">
+          <li><button type="button" class="btn btn-link btn-sm p-0 text-light" data-page="produk">Produk</button></li>
+          <li><button type="button" class="btn btn-link btn-sm p-0 text-light" data-page="pesanan">Pesanan</button></li>
+          <li><button type="button" class="btn btn-link btn-sm p-0 text-light" data-page="keranjang">Keranjang</button></li>
+          <li><button type="button" class="btn btn-link btn-sm p-0 text-light" data-page="tentang">Tentang</button></li>
+        </ul>
+      </div>
+      <div class="col-6 col-md-3">
+        <h3 class="h6">Dibangun dengan</h3>
+        <p class="small text-secondary mb-0">Bootstrap 5, JavaScript, Firebase, dan GitHub Pages.</p>
+      </div>
+    </div>
+    <hr class="border-secondary">
+    <p class="text-center small text-secondary mb-0">© Raden Adi Pranata Setiawan 2026/2027</p>
   </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="js/products.js?v=17"></script>
-<script src="js/app.js?v=17"></script>
-<script type="module" src="js/firebase-config.js?v=17"></script>
-<script type="module" src="js/auth.js?v=17"></script>
-<script type="module" src="js/orders.js?v=17"></script>
-<script type="module" src="js/admin.js?v=17"></script>
-<script type="module" src="js/admin-orders.js?v=17"></script>
-<script type="module" src="js/chat.js?v=17"></script>
-<script type="module" src="js/profile.js?v=17"></script>
-<script type="module" src="js/reviews.js?v=17"></script>
-<script type="module" src="js/cart.js?v=17"></script>
-<script type="module" src="js/forgot.js?v=17"></script>
-<script type="module" src="js/catalog.js?v=17"></script>
+<script src="js/products.js?v=18"></script>
+<script src="js/app.js?v=18"></script>
+<script type="module" src="js/firebase-config.js?v=18"></script>
+<script type="module" src="js/auth.js?v=18"></script>
+<script type="module" src="js/orders.js?v=18"></script>
+<script type="module" src="js/admin.js?v=18"></script>
+<script type="module" src="js/admin-orders.js?v=18"></script>
+<script type="module" src="js/chat.js?v=18"></script>
+<script type="module" src="js/profile.js?v=18"></script>
+<script type="module" src="js/reviews.js?v=18"></script>
+<script type="module" src="js/cart.js?v=18"></script>
+<script type="module" src="js/forgot.js?v=18"></script>
+<script type="module" src="js/catalog.js?v=18"></script>
 </body>
 </html>
