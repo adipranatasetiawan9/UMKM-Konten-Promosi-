@@ -4,7 +4,10 @@ import { getFirestore, collection, onSnapshot, doc, getDoc, updateDoc, deleteDoc
 
 const ADMIN_EMAIL = "adipranatasetiawan9@gmail.com";
 const db = getFirestore(app);
-const CLEANUP_MS = 24 * 60 * 60 * 1000;
+// Berapa hari pesanan selesai atau batal disimpan sebelum dibersihkan otomatis.
+// Naikkan angkanya kalau ingin laporan mencakup periode lebih panjang.
+const LAMA_SIMPAN_HARI = 1;
+const CLEANUP_MS = LAMA_SIMPAN_HARI * 24 * 60 * 60 * 1000;
 
 const buyerOrdersView = document.getElementById("buyerOrdersView");
 const adminOrdersView = document.getElementById("adminOrdersView");
@@ -35,10 +38,13 @@ const STATUS_BADGE = {
     selesai: "text-bg-success",
     dibatalkan: "text-bg-danger"
 };
+const FILTER_PESANAN = [["semua", "Semua"], ["menunggu", "Perlu dicek"], ["proses", "Diproses"], ["dikirim", "Dikirim"], ["selesai", "Selesai"], ["batal", "Dibatalkan"]];
 
 let lastAdminOrdersSnap = [];
 let reviewsByOrderId = {};
 let pendingShipOrderId = null;
+let filterStatus = "semua";
+let kataCari = "";
 
 function esc(text) {
     return String(text == null ? "" : text).replace(/[&<>"']/g, function (c) {
@@ -121,10 +127,90 @@ function cleanupOldOrders(docsSnap) {
     });
 }
 
+function hitungRingkasan(docsSnap) {
+    const r = { aktif: 0, perluCek: 0, selesai: 0, batal: 0, pendapatan: 0, terlaris: {} };
+    docsSnap.forEach(function (docSnap) {
+        const order = docSnap.data();
+        if (order.status === "selesai") {
+            r.selesai++;
+            r.pendapatan += orderTotal(order);
+            orderItems(order).forEach(function (it) {
+                r.terlaris[it.name] = (r.terlaris[it.name] || 0) + it.qty;
+            });
+        } else if (order.status === "dibatalkan") {
+            r.batal++;
+        } else {
+            r.aktif++;
+            if (order.status === "menunggu_konfirmasi") r.perluCek++;
+        }
+    });
+    return r;
+}
+
+function kartuStat(label, nilai, kelas) {
+    return '<div class="col"><div class="card border-0 shadow-sm py-2">' +
+        '<div class="' + (kelas || "fs-4") + ' fw-bold text-success">' + nilai + '</div>' +
+        '<div class="small text-muted">' + label + '</div></div></div>';
+}
+
+function renderDashboard(docsSnap) {
+    const box = document.getElementById("adminDashboard");
+    if (!box) return;
+    const r = hitungRingkasan(docsSnap);
+    const urut = Object.keys(r.terlaris).sort(function (a, b) { return r.terlaris[b] - r.terlaris[a]; }).slice(0, 3);
+    box.innerHTML = '<div class="row row-cols-2 row-cols-md-4 g-2 mb-3 text-center">' +
+        kartuStat("Pesanan aktif", r.aktif) +
+        kartuStat("Perlu dicek", r.perluCek) +
+        kartuStat("Selesai", r.selesai) +
+        kartuStat("Pendapatan", formatRupiah(r.pendapatan), "fs-6") +
+        '</div>' +
+        (urut.length > 0
+            ? '<div class="card border-0 shadow-sm mb-3"><div class="card-body">' +
+              '<h3 class="h6">Produk terlaris</h3>' +
+              '<ol class="small mb-1">' + urut.map(function (nama) { return '<li>' + esc(nama) + ' (' + r.terlaris[nama] + ' terjual)</li>'; }).join("") + '</ol>' +
+              '<div class="small text-muted">Dihitung dari pesanan selesai yang masih tersimpan.</div>' +
+              '</div></div>'
+            : '');
+}
+
+function cocokFilter(order) {
+    const s = order.status;
+    if (filterStatus === "menunggu" && !(s === "menunggu_pembayaran" || s === "menunggu_konfirmasi")) return false;
+    if (filterStatus === "proses" && !(s === "diproses" || s === "dikemas")) return false;
+    if (filterStatus === "dikirim" && s !== "dikirim") return false;
+    if (filterStatus === "selesai" && s !== "selesai") return false;
+    if (filterStatus === "batal" && s !== "dibatalkan") return false;
+    if (kataCari) {
+        const teks = ((order.buyerEmail || "") + " " + (order.recipientName || "") + " " +
+            orderItems(order).map(function (i) { return i.name; }).join(" ")).toLowerCase();
+        if (teks.indexOf(kataCari) === -1) return false;
+    }
+    return true;
+}
+
+function pasangKerangka() {
+    if (!adminOrdersView || document.getElementById("adminDashboard")) return;
+    adminOrdersView.insertAdjacentHTML("afterbegin",
+        '<div id="adminDashboard"></div>' +
+        '<div class="card border-0 shadow-sm mb-3"><div class="card-body">' +
+        '<input type="search" class="form-control mb-2" id="adminSearch" placeholder="Cari email pembeli, nama penerima, atau produk..." autocomplete="off">' +
+        '<div class="d-flex flex-wrap gap-2" id="adminFilter">' +
+        FILTER_PESANAN.map(function (f) {
+            return '<button type="button" class="btn btn-sm btn-outline-success' + (f[0] === filterStatus ? ' active' : '') + '" data-filter="' + f[0] + '">' + f[1] + '</button>';
+        }).join("") +
+        '</div></div></div>');
+}
+
 function renderAdminOrders(docsSnap) {
     if (!adminOrdersList) return;
-    const sorted = docsSnap.slice().sort(function (a, b) { return (b.data().createdAt || 0) - (a.data().createdAt || 0); });
-    if (sorted.length === 0) { adminOrdersList.innerHTML = '<div class="alert alert-light border">Belum ada pesanan masuk.</div>'; return; }
+    renderDashboard(docsSnap);
+    const sorted = docsSnap
+        .filter(function (docSnap) { return cocokFilter(docSnap.data()); })
+        .sort(function (a, b) { return (b.data().createdAt || 0) - (a.data().createdAt || 0); });
+    if (sorted.length === 0) {
+        adminOrdersList.innerHTML = '<div class="alert alert-light border">' + (docsSnap.length === 0 ? "Belum ada pesanan masuk." : "Tidak ada pesanan yang cocok dengan filter.") + '</div>';
+        return;
+    }
     adminOrdersList.innerHTML = sorted.map(function (docSnap) {
         const order = docSnap.data();
         const id = docSnap.id;
@@ -169,6 +255,23 @@ if (resiSaveButton) {
         bootstrap.Modal.getOrCreateInstance(resiModalEl).hide();
         updateDoc(doc(db, "orders", orderId), payload)
             .catch(function (error) { alert("Gagal update: " + error.message); });
+    });
+}
+
+if (adminOrdersView) {
+    adminOrdersView.addEventListener("input", function (event) {
+        if (event.target.id !== "adminSearch") return;
+        kataCari = event.target.value.trim().toLowerCase();
+        renderAdminOrders(lastAdminOrdersSnap);
+    });
+    adminOrdersView.addEventListener("click", function (event) {
+        const tombol = event.target.closest("[data-filter]");
+        if (!tombol) return;
+        filterStatus = tombol.dataset.filter;
+        document.querySelectorAll("#adminFilter [data-filter]").forEach(function (item) {
+            item.classList.toggle("active", item === tombol);
+        });
+        renderAdminOrders(lastAdminOrdersSnap);
     });
 }
 
@@ -240,6 +343,7 @@ onAuthStateChanged(auth, function (user) {
     if (adminOrdersView) adminOrdersView.style.display = isAdmin ? "block" : "none";
     if (unsubscribeAdminOrders) { unsubscribeAdminOrders(); unsubscribeAdminOrders = null; }
     if (isAdmin) {
+        pasangKerangka();
         unsubscribeAdminOrders = onSnapshot(collection(db, "orders"), function (snapshot) {
             lastAdminOrdersSnap = snapshot.docs;
             renderAdminOrders(snapshot.docs);
