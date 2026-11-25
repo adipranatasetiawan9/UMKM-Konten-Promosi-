@@ -1,6 +1,6 @@
 import { app, auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { getFirestore, collection, doc, runTransaction } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getFirestore, collection, doc, getDoc, runTransaction } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const db = getFirestore(app);
 const CART_KEY = "umkm_cart";
@@ -29,6 +29,8 @@ const modalBuyButton = document.getElementById("modalBuyButton");
 
 let currentUser = null;
 let cart = loadCart();
+// Data voucher yang sedang dipakai di keranjang (null kalau tidak ada).
+let voucherAktif = null;
 
 function loadCart() {
     try {
@@ -64,6 +66,75 @@ function maxFor(id) {
     return Math.max(0, Math.min(MAX_QTY, s === undefined ? MAX_QTY : s));
 }
 
+function subtotalKeranjang() {
+    return cart.reduce(function (sum, l) {
+        const p = findProduct(l.productId);
+        return sum + (p ? p.price * l.qty : 0);
+    }, 0);
+}
+
+// Besar potongan: persen dari subtotal, atau nominal tetap, tidak boleh melebihi subtotal.
+function hitungDiskon(subtotal, v) {
+    const diskon = v.jenis === "persen" ? Math.floor(subtotal * v.nilai / 100) : v.nilai;
+    return Math.max(0, Math.min(diskon, subtotal));
+}
+
+// Mengembalikan alasan voucher tidak bisa dipakai, atau teks kosong kalau semua aturan terpenuhi.
+function cekAturanVoucher(v, subtotal) {
+    if (!v.aktif) return "Voucher tidak aktif.";
+    if (v.berlakuSampai && Date.now() > v.berlakuSampai) return "Voucher sudah kedaluwarsa.";
+    if (v.kuota > 0 && v.terpakai >= v.kuota) return "Kuota voucher sudah habis.";
+    if (subtotal < v.minimal) return "Belanja minimal " + rupiah(v.minimal) + " untuk voucher ini.";
+    return "";
+}
+
+function tulisPesanVoucher(teks, sukses) {
+    const pesan = document.getElementById("pesanVoucher");
+    if (!pesan) return;
+    pesan.className = "form-text " + (sukses ? "text-success" : "text-danger");
+    pesan.textContent = teks;
+}
+
+// Memasang kolom voucher dan ringkasan diskon ke dalam form checkout lewat JavaScript.
+function pasangKerangkaVoucher() {
+    if (!checkoutForm || document.getElementById("inputVoucher")) return;
+    checkoutForm.insertAdjacentHTML("beforebegin", '<div id="ringkasanDiskon"></div>');
+    checkoutError.insertAdjacentHTML("beforebegin",
+        '<div class="mb-3"><label for="inputVoucher" class="form-label">Kode Voucher (opsional)</label>' +
+        '<div class="input-group"><input type="text" class="form-control text-uppercase" id="inputVoucher" maxlength="15" autocomplete="off" placeholder="Contoh: HEMAT10">' +
+        '<button type="button" class="btn btn-outline-success" id="tombolVoucher">Pakai</button></div>' +
+        '<div class="form-text" id="pesanVoucher"></div></div>');
+    document.getElementById("tombolVoucher").addEventListener("click", pakaiVoucher);
+}
+
+async function pakaiVoucher() {
+    const input = document.getElementById("inputVoucher");
+    const kode = input.value.trim().toUpperCase();
+    if (!kode) { tulisPesanVoucher("Isi kode voucher dulu.", false); return; }
+    try {
+        const snap = await getDoc(doc(db, "vouchers", kode));
+        if (!snap.exists()) {
+            voucherAktif = null;
+            tulisPesanVoucher("Kode voucher tidak ditemukan.", false);
+            renderCart();
+            return;
+        }
+        const v = snap.data();
+        const alasan = cekAturanVoucher(v, subtotalKeranjang());
+        if (alasan) {
+            voucherAktif = null;
+            tulisPesanVoucher(alasan, false);
+            renderCart();
+            return;
+        }
+        voucherAktif = v;
+        renderCart();
+        tulisPesanVoucher("Voucher " + v.kode + " dipakai.", true);
+    } catch (error) {
+        tulisPesanVoucher("Gagal memeriksa voucher: " + (error && error.message ? error.message : error), false);
+    }
+}
+
 function toast(message) {
     const el = document.createElement("div");
     el.className = "toast show align-items-center text-bg-dark border-0 position-fixed bottom-0 start-50 translate-middle-x mb-5";
@@ -86,6 +157,7 @@ function renderCart() {
         cartEmpty.style.display = "block";
         cartCheckout.style.display = "none";
         cartLoginNotice.style.display = "none";
+        voucherAktif = null;
         return;
     }
     cartEmpty.style.display = "none";
@@ -112,6 +184,24 @@ function renderCart() {
             '</div></div>';
     }).join("");
     cartTotal.textContent = rupiah(total);
+
+    // Kalau belanja berubah dan tidak lagi memenuhi aturan voucher, voucher dilepas.
+    if (voucherAktif) {
+        const alasan = cekAturanVoucher(voucherAktif, total);
+        if (alasan) {
+            voucherAktif = null;
+            tulisPesanVoucher("Voucher dilepas. " + alasan, false);
+        }
+    }
+    const ringkasan = document.getElementById("ringkasanDiskon");
+    if (ringkasan) {
+        const diskon = voucherAktif ? hitungDiskon(total, voucherAktif) : 0;
+        ringkasan.innerHTML = diskon > 0
+            ? '<div class="d-flex justify-content-between small text-success"><span>Diskon (' + esc(voucherAktif.kode) + ')</span><span>−' + rupiah(diskon) + '</span></div>' +
+              '<div class="d-flex justify-content-between fw-bold fs-5 mb-2"><span>Total Bayar</span><span>' + rupiah(total - diskon) + '</span></div>'
+            : '';
+    }
+
     cartCheckout.style.display = currentUser ? "block" : "none";
     cartLoginNotice.style.display = currentUser ? "none" : "block";
     checkoutButton.disabled = problem;
@@ -222,7 +312,7 @@ if (checkoutForm) {
             return { productId: p.id, name: p.name, price: p.price, qty: l.qty };
         });
         if (items.length === 0) return;
-        const total = items.reduce(function (sum, i) { return sum + i.price * i.qty; }, 0);
+        const subtotal = items.reduce(function (sum, i) { return sum + i.price * i.qty; }, 0);
 
         try {
             localStorage.setItem(SHIP_KEY, JSON.stringify({ name: name, phone: phone, address: address, courier: courier, payMethod: method }));
@@ -230,24 +320,47 @@ if (checkoutForm) {
 
         checkoutButton.disabled = true;
         const orderRef = doc(collection(db, "orders"));
+        const voucherRef = voucherAktif ? doc(db, "vouchers", voucherAktif.kode) : null;
 
         runTransaction(db, async function (transaction) {
+            // Semua pembacaan dilakukan dulu, baru penulisan.
             const stockRefs = items.map(function (i) { return doc(db, "stock", String(i.productId)); });
             const snaps = [];
             for (const ref of stockRefs) snaps.push(await transaction.get(ref));
+
+            let dataVoucher = null;
+            if (voucherRef) {
+                const vSnap = await transaction.get(voucherRef);
+                if (!vSnap.exists()) throw new Error("VOUCHER:Voucher tidak ditemukan.");
+                dataVoucher = vSnap.data();
+                const alasan = cekAturanVoucher(dataVoucher, subtotal);
+                if (alasan) throw new Error("VOUCHER:" + alasan);
+            }
+
             snaps.forEach(function (snap, idx) {
                 const available = snap.exists() ? snap.data().quantity : 0;
                 if (available < items[idx].qty) throw new Error("STOK_KURANG:" + items[idx].name);
             });
+
             snaps.forEach(function (snap, idx) {
                 transaction.update(stockRefs[idx], { quantity: snap.data().quantity - items[idx].qty });
             });
+
+            let diskon = 0;
+            if (dataVoucher) {
+                diskon = hitungDiskon(subtotal, dataVoucher);
+                transaction.update(voucherRef, { terpakai: dataVoucher.terpakai + 1 });
+            }
+
             const now = Date.now();
             transaction.set(orderRef, {
                 userId: currentUser.uid,
                 buyerEmail: currentUser.email,
                 items: items,
-                totalPrice: total,
+                subtotal: subtotal,
+                diskon: diskon,
+                voucherKode: dataVoucher ? dataVoucher.kode : null,
+                totalPrice: subtotal - diskon,
                 paymentMethod: method,
                 courier: courier,
                 recipientName: name,
@@ -259,16 +372,25 @@ if (checkoutForm) {
             });
         }).then(function () {
             cart = [];
+            voucherAktif = null;
+            const input = document.getElementById("inputVoucher");
+            if (input) input.value = "";
+            tulisPesanVoucher("", true);
             saveCart();
             renderCart();
             if (typeof showPage === "function") showPage("pesanan");
         }).catch(function (error) {
-            if (error && error.message && error.message.indexOf("STOK_KURANG:") === 0) {
-                checkoutError.textContent = "Stok tidak cukup untuk: " + error.message.replace("STOK_KURANG:", "");
+            const teks = error && error.message ? error.message : "";
+            if (teks.indexOf("STOK_KURANG:") === 0) {
+                checkoutError.textContent = "Stok tidak cukup untuk: " + teks.replace("STOK_KURANG:", "");
+            } else if (teks.indexOf("VOUCHER:") === 0) {
+                voucherAktif = null;
+                checkoutError.textContent = teks.replace("VOUCHER:", "");
+                renderCart();
             } else if (error && error.code === "permission-denied") {
                 checkoutError.textContent = "Ditolak Firestore. Pastikan Rules terbaru sudah di-publish.";
             } else {
-                checkoutError.textContent = "Gagal membuat pesanan: " + (error && error.message ? error.message : error);
+                checkoutError.textContent = "Gagal membuat pesanan: " + (teks || error);
             }
             console.error(error);
         }).finally(function () {
@@ -283,4 +405,5 @@ onAuthStateChanged(auth, function (user) {
     renderCart();
 });
 
+pasangKerangkaVoucher();
 renderCart();

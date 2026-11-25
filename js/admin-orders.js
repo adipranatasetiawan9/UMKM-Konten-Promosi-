@@ -77,6 +77,13 @@ function orderTotal(order) {
     return orderItems(order).reduce(function (sum, i) { return sum + i.price * i.qty; }, 0);
 }
 
+// Baris subtotal dan diskon, hanya muncul kalau pesanan memakai voucher.
+function diskonHtml(order) {
+    if (!(order.diskon > 0)) return "";
+    return '<p class="small text-muted mb-0">Subtotal: ' + formatRupiah(order.subtotal) + '</p>' +
+        '<p class="small text-success mb-1">Diskon voucher ' + esc(order.voucherKode) + ': −' + formatRupiah(order.diskon) + '</p>';
+}
+
 function itemsHtml(order) {
     return '<div class="d-flex flex-column gap-2 my-2">' + orderItems(order).map(function (it) {
         const img = findProductImage(it.productId);
@@ -218,6 +225,7 @@ function renderAdminOrders(docsSnap) {
         return '<div class="card border-0 shadow-sm mb-3"><div class="card-body">' +
             '<div class="d-flex justify-content-between align-items-center"><h3 class="h6 mb-0">Pesanan #' + id.slice(-6).toUpperCase() + '</h3><span class="badge ' + (STATUS_BADGE[order.status] || "text-bg-secondary") + '">' + (STAGE_LABEL[order.status] || order.status) + '</span></div>' +
             itemsHtml(order) +
+            diskonHtml(order) +
             '<p class="fw-bold text-success mb-1">Total: ' + formatRupiah(orderTotal(order)) + '</p>' +
             '<p class="small text-muted mb-2">Pembeli: ' + esc(order.buyerEmail || "-") + ' · ' + esc(order.paymentMethod || "-") + '</p>' +
             shippingHtml(order) +
