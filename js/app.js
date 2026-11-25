@@ -2,12 +2,14 @@ const pages = document.querySelectorAll(".page");
 const pageButtons = document.querySelectorAll("[data-page]");
 const navMenu = document.getElementById("navMenu");
 
+// Mengamankan teks dari pengguna sebelum dimasukkan ke HTML.
 function esc(text) {
     return String(text == null ? "" : text).replace(/[&<>"']/g, function(c) {
         return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
     });
 }
 
+// Menampilkan satu halaman dan menyembunyikan halaman lain memakai kelas d-none milik Bootstrap.
 function showPage(pageName) {
     pages.forEach(function(page) { page.classList.add("d-none"); });
     const targetPage = document.getElementById("page-" + pageName);
@@ -41,15 +43,20 @@ const featuredIndicators = document.getElementById("featuredIndicators");
 
 let currentSearch = "";
 let currentCategory = "Semua";
+let urutanProduk = "bawaan";
+let halamanSekarang = 1;
+const PER_HALAMAN = 12;
 
 function formatRupiah(price) {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(price);
 }
 
+// Produk yang disembunyikan admin tidak ditampilkan ke pengunjung.
 function visibleProducts() {
     return products.filter(function(product) { return !product.hidden; });
 }
 
+// Mengisi carousel "Produk Pilihan" di Beranda dengan lima produk pertama.
 function renderFeatured() {
     if (!featuredInner || !featuredIndicators) return;
     const picks = visibleProducts().filter(function(p) { return p.image; }).slice(0, 5);
@@ -67,6 +74,7 @@ function renderFeatured() {
     }).join("");
 }
 
+// Membuat kartu produk untuk daftar yang sudah disaring dan dipotong per halaman.
 function displayProducts(productList) {
     if (!productGrid) return;
     productGrid.innerHTML = "";
@@ -92,9 +100,35 @@ function displayProducts(productList) {
     if (typeof window.onProductsRendered === "function") window.onProductsRendered();
 }
 
+// Mengurutkan salinan daftar produk sesuai pilihan pengguna.
+function urutkanProduk(daftar) {
+    const salinan = daftar.slice();
+    if (urutanProduk === "termurah") salinan.sort(function(a, b) { return a.price - b.price; });
+    else if (urutanProduk === "termahal") salinan.sort(function(a, b) { return b.price - a.price; });
+    else if (urutanProduk === "nama") salinan.sort(function(a, b) { return String(a.name).localeCompare(String(b.name), "id"); });
+    return salinan;
+}
+
+// Menggambar tombol nomor halaman memakai komponen pagination Bootstrap.
+function tampilkanPaginasi(totalProduk) {
+    const ul = document.getElementById("produkPagination");
+    if (!ul) return 1;
+    const jumlahHalaman = Math.max(1, Math.ceil(totalProduk / PER_HALAMAN));
+    if (halamanSekarang > jumlahHalaman) halamanSekarang = jumlahHalaman;
+    if (jumlahHalaman === 1) { ul.innerHTML = ""; return 1; }
+    let html = '<li class="page-item' + (halamanSekarang === 1 ? ' disabled' : '') + '"><button type="button" class="page-link" data-halaman="' + (halamanSekarang - 1) + '">Sebelumnya</button></li>';
+    for (let i = 1; i <= jumlahHalaman; i++) {
+        html += '<li class="page-item' + (i === halamanSekarang ? ' active' : '') + '"><button type="button" class="page-link" data-halaman="' + i + '">' + i + '</button></li>';
+    }
+    html += '<li class="page-item' + (halamanSekarang === jumlahHalaman ? ' disabled' : '') + '"><button type="button" class="page-link" data-halaman="' + (halamanSekarang + 1) + '">Berikutnya</button></li>';
+    ul.innerHTML = html;
+    return jumlahHalaman;
+}
+
+// Alur utama katalog: saring, urutkan, potong per halaman, lalu tampilkan.
 function filterProducts() {
     const search = currentSearch.trim().toLowerCase();
-    const filteredProducts = visibleProducts().filter(function(product) {
+    const hasilSaring = visibleProducts().filter(function(product) {
         const name = String(product.name).toLowerCase();
         const category = String(product.category).toLowerCase();
         const description = String(product.description).toLowerCase();
@@ -102,22 +136,66 @@ function filterProducts() {
         const matchesCategory = currentCategory === "Semua" || product.category === currentCategory;
         return matchesSearch && matchesCategory;
     });
-    displayProducts(filteredProducts);
-    updateSearchInfo(filteredProducts.length);
+    const terurut = urutkanProduk(hasilSaring);
+    const jumlahHalaman = tampilkanPaginasi(terurut.length);
+    const awal = (halamanSekarang - 1) * PER_HALAMAN;
+    displayProducts(terurut.slice(awal, awal + PER_HALAMAN));
+    updateSearchInfo(terurut.length, jumlahHalaman);
 }
 
-function updateSearchInfo(resultCount) {
+function updateSearchInfo(resultCount, jumlahHalaman) {
     if (!searchResultInfo) return;
     const searchText = currentSearch.trim();
-    if (searchText === "" && currentCategory === "Semua") { searchResultInfo.textContent = "Menampilkan semua " + visibleProducts().length + " produk"; return; }
-    if (searchText !== "" && currentCategory !== "Semua") { searchResultInfo.textContent = resultCount + ' produk ditemukan untuk "' + searchText + '" dalam kategori ' + currentCategory; return; }
-    if (searchText !== "") { searchResultInfo.textContent = resultCount + ' produk ditemukan untuk "' + searchText + '"'; return; }
-    searchResultInfo.textContent = resultCount + " produk dalam kategori " + currentCategory;
+    let pesan;
+    if (searchText === "" && currentCategory === "Semua") pesan = "Menampilkan semua " + resultCount + " produk";
+    else if (searchText !== "" && currentCategory !== "Semua") pesan = resultCount + ' produk ditemukan untuk "' + searchText + '" dalam kategori ' + currentCategory;
+    else if (searchText !== "") pesan = resultCount + ' produk ditemukan untuk "' + searchText + '"';
+    else pesan = resultCount + " produk dalam kategori " + currentCategory;
+    if (jumlahHalaman > 1) pesan += " · halaman " + halamanSekarang + " dari " + jumlahHalaman;
+    searchResultInfo.textContent = pesan;
+}
+
+// Memasang pilihan urutan dan tempat nomor halaman ke dalam halaman Produk lewat JavaScript.
+function pasangKontrolKatalog() {
+    if (categoryFilters && !document.getElementById("sortProduk")) {
+        categoryFilters.insertAdjacentHTML("afterend",
+            '<div class="d-flex align-items-center gap-2 mt-3">' +
+            '<label for="sortProduk" class="small fw-semibold mb-0">Urutkan</label>' +
+            '<select id="sortProduk" class="form-select form-select-sm w-auto">' +
+            '<option value="bawaan">Bawaan</option>' +
+            '<option value="termurah">Harga termurah</option>' +
+            '<option value="termahal">Harga termahal</option>' +
+            '<option value="nama">Nama A sampai Z</option>' +
+            '</select></div>');
+    }
+    if (productGrid && !document.getElementById("produkPagination")) {
+        productGrid.insertAdjacentHTML("afterend",
+            '<nav class="mt-4" aria-label="Halaman produk"><ul class="pagination justify-content-center flex-wrap" id="produkPagination"></ul></nav>');
+    }
+    const pilihUrutan = document.getElementById("sortProduk");
+    if (pilihUrutan) {
+        pilihUrutan.addEventListener("change", function() {
+            urutanProduk = pilihUrutan.value;
+            halamanSekarang = 1;
+            filterProducts();
+        });
+    }
+    const daftarHalaman = document.getElementById("produkPagination");
+    if (daftarHalaman) {
+        daftarHalaman.addEventListener("click", function(event) {
+            const tombol = event.target.closest("[data-halaman]");
+            if (!tombol) return;
+            halamanSekarang = Number(tombol.dataset.halaman);
+            filterProducts();
+            if (productGrid) productGrid.scrollIntoView({ behavior: "smooth", block: "start" });
+        });
+    }
 }
 
 if (productSearch) {
     productSearch.addEventListener("input", function() {
         currentSearch = productSearch.value;
+        halamanSekarang = 1;
         filterProducts();
     });
 }
@@ -126,6 +204,7 @@ if (clearSearch) {
     clearSearch.addEventListener("click", function() {
         if (productSearch) productSearch.value = "";
         currentSearch = "";
+        halamanSekarang = 1;
         filterProducts();
         if (productSearch) productSearch.focus();
     });
@@ -136,6 +215,7 @@ if (categoryFilters) {
         const button = event.target.closest(".filter-button");
         if (!button) return;
         currentCategory = button.dataset.category;
+        halamanSekarang = 1;
         categoryFilters.querySelectorAll(".filter-button").forEach(function(item) { item.classList.remove("active"); });
         button.classList.add("active");
         filterProducts();
@@ -156,6 +236,7 @@ function modalInstance() {
     return (window.bootstrap && productModal) ? bootstrap.Modal.getOrCreateInstance(productModal) : null;
 }
 
+// Mengisi jendela detail produk lalu membukanya (komponen modal Bootstrap).
 function showProductDetail(product) {
     if (!productModal) return;
     if (modalProductIcon) { modalProductIcon.src = product.image; modalProductIcon.alt = product.name; }
@@ -224,6 +305,7 @@ function loadRecommendationProducts() {
     });
 }
 
+// Dipanggil catalog.js setiap kali data produk dari Firestore berubah.
 window.refreshCatalog = function() {
     const selected = recommendationProduct ? recommendationProduct.value : "";
     loadRecommendationProducts();
@@ -243,6 +325,7 @@ if (modalPromoButton) {
 function getTargetName(v) { return { Remaja: "Remaja", Mahasiswa: "Mahasiswa", Keluarga: "Keluarga", "Masyarakat Umum": "Masyarakat Umum" }[v] || v; }
 function getPlatformName(v) { return { Instagram: "Instagram", TikTok: "TikTok", Facebook: "Facebook", WhatsApp: "WhatsApp" }[v] || v; }
 
+// Menyusun ide, caption, dan hashtag dari template berdasarkan pilihan pengguna (bukan AI).
 function generateRecommendation() {
     if (!recommendationProduct || !recommendationTarget || !recommendationPlatform || !recommendationStyle) return;
     const productId = Number(recommendationProduct.value);
@@ -286,6 +369,7 @@ if (copyRecommendation) copyRecommendation.addEventListener("click", copyRecomme
 
 loadRecommendationProducts();
 setupProductInteraction();
+pasangKontrolKatalog();
 filterProducts();
 renderFeatured();
 showPage("beranda");
