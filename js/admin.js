@@ -1,10 +1,9 @@
 import { app, auth } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-auth.js";
-import { getFirestore, collection, doc, setDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
+import { getFirestore, collection, doc, setDoc, deleteDoc, onSnapshot, writeBatch } from "https://www.gstatic.com/firebasejs/12.2.1/firebase-firestore.js";
 
 const ADMIN_EMAIL = "adipranatasetiawan9@gmail.com";
 const db = getFirestore(app);
-const CATEGORIES = ["Makanan", "Minuman", "Fashion", "Kerajinan"];
 
 const onlyAdminNotice = document.getElementById("onlyAdminNotice");
 const adminStockList = document.getElementById("adminStockList");
@@ -24,6 +23,7 @@ function rupiah(price) {
     return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(price);
 }
 
+// Notifikasi singkat memakai komponen toast Bootstrap.
 function toast(message) {
     const el = document.createElement("div");
     el.className = "toast show align-items-center text-bg-dark border-0 position-fixed bottom-0 start-50 translate-middle-x mb-5";
@@ -33,6 +33,7 @@ function toast(message) {
     setTimeout(function () { el.remove(); }, 2200);
 }
 
+// Memperkecil foto di browser sebelum disimpan sebagai teks base64 di Firestore.
 function fileToDataUrl(file, maxSide, quality) {
     return new Promise(function (resolve, reject) {
         const reader = new FileReader();
@@ -54,14 +55,32 @@ function fileToDataUrl(file, maxSide, quality) {
     });
 }
 
+// Daftar kategori terbaru dari catalog.js.
+function daftarKategori() {
+    return (window.kategoriData && window.kategoriData.daftar) || [];
+}
+
+function opsiKategoriHtml() {
+    return daftarKategori().map(function (k) {
+        return '<option value="' + esc(k.nama) + '">' + esc(k.nama) + '</option>';
+    }).join("");
+}
+
 function skeletonHtml() {
-    return '<div class="mb-3"><button type="button" class="btn btn-success" id="adminAddButton">➕ Tambah Produk Baru</button></div>' +
+    return '<div class="card border-0 shadow-sm mb-3"><div class="card-body">' +
+        '<h3 class="h6">Kategori produk</h3>' +
+        '<div class="d-flex flex-wrap gap-2 mb-3" id="daftarKategoriAdmin"></div>' +
+        '<form id="formKategori" class="input-group input-group-sm">' +
+        '<input type="text" class="form-control" id="inputKategori" placeholder="Nama kategori baru" maxlength="30" autocomplete="off" required>' +
+        '<button type="submit" class="btn btn-success">Tambah</button>' +
+        '</form>' +
+        '<div class="form-text text-danger" id="pesanKategori"></div>' +
+        '</div></div>' +
+        '<div class="mb-3"><button type="button" class="btn btn-success" id="adminAddButton">➕ Tambah Produk Baru</button></div>' +
         '<form id="adminProductForm" class="card card-body border-0 shadow-sm mb-3" style="display:none;">' +
         '<h3 class="h5" id="adminFormTitle">Tambah Produk</h3>' +
         '<div class="mb-3"><label for="apName" class="form-label">Nama Produk</label><input type="text" class="form-control" id="apName" required></div>' +
-        '<div class="mb-3"><label for="apCategory" class="form-label">Kategori</label><select class="form-select" id="apCategory">' +
-        CATEGORIES.map(function (c) { return '<option value="' + c + '">' + c + '</option>'; }).join("") +
-        '</select></div>' +
+        '<div class="mb-3"><label for="apCategory" class="form-label">Kategori</label><select class="form-select" id="apCategory">' + opsiKategoriHtml() + '</select></div>' +
         '<div class="mb-3"><label for="apPrice" class="form-label">Harga (Rp)</label><input type="number" class="form-control" id="apPrice" min="1" step="1" required></div>' +
         '<div class="mb-3"><label for="apDesc" class="form-label">Deskripsi</label><textarea class="form-control" id="apDesc" rows="3" placeholder="Deskripsi singkat produk"></textarea></div>' +
         '<div class="mb-3" id="apStockWrap"><label for="apStock" class="form-label">Stok Awal</label><input type="number" class="form-control" id="apStock" min="0" step="1" value="10"></div>' +
@@ -70,6 +89,95 @@ function skeletonHtml() {
         '<div class="d-flex gap-2"><button type="submit" class="btn btn-success" id="apSubmit">Simpan Produk</button><button type="button" class="btn btn-outline-secondary" id="apCancel">Batal</button></div>' +
         '</form>' +
         '<div class="list-group shadow-sm" id="adminProductRows"></div>';
+}
+
+// Menampilkan kategori sebagai badge, lengkap dengan jumlah produk yang memakainya.
+function renderKategori() {
+    const box = document.getElementById("daftarKategoriAdmin");
+    if (!box) return;
+    box.innerHTML = daftarKategori().map(function (k) {
+        const jumlah = products.filter(function (p) { return p.category === k.nama; }).length;
+        return '<span class="badge text-bg-success d-inline-flex align-items-center gap-2 fs-6 fw-normal">' + esc(k.nama) +
+            '<span class="badge text-bg-light">' + jumlah + '</span>' +
+            '<button type="button" class="btn-close btn-close-white" style="font-size:.6rem;" data-hapus-kategori="' + esc(k.nama) + '" aria-label="Hapus ' + esc(k.nama) + '"></button>' +
+            '</span>';
+    }).join("");
+}
+
+// Memperbarui pilihan kategori di form produk tanpa menghilangkan pilihan yang sedang aktif.
+function isiPilihanKategori() {
+    const pilih = document.getElementById("apCategory");
+    if (!pilih) return;
+    const nilaiLama = pilih.value;
+    pilih.innerHTML = opsiKategoriHtml();
+    if (nilaiLama) pastikanOpsi(pilih, nilaiLama);
+}
+
+function pastikanOpsi(pilih, nilai) {
+    const ada = Array.prototype.some.call(pilih.options, function (o) { return o.value === nilai; });
+    if (!ada) {
+        const o = document.createElement("option");
+        o.value = nilai;
+        o.textContent = nilai;
+        pilih.appendChild(o);
+    }
+    pilih.value = nilai;
+}
+
+// Kalau kategori masih bawaan (belum di database), simpan dulu semuanya supaya bisa diubah.
+async function simpanBawaanJikaPerlu() {
+    if (window.kategoriData && window.kategoriData.dariDatabase) return;
+    const batch = writeBatch(db);
+    window.KATEGORI_BAWAAN.forEach(function (nama, i) {
+        batch.set(doc(db, "categories", window.slugKategori(nama)), { nama: nama, urutan: i });
+    });
+    await batch.commit();
+}
+
+async function tambahKategori(event) {
+    event.preventDefault();
+    const input = document.getElementById("inputKategori");
+    const pesan = document.getElementById("pesanKategori");
+    const nama = input.value.trim().replace(/\s+/g, " ");
+    pesan.textContent = "";
+    if (nama.length < 3) { pesan.textContent = "Nama kategori minimal 3 huruf."; return; }
+    const idBaru = window.slugKategori(nama);
+    const sudahAda = daftarKategori().some(function (k) {
+        return k.nama.toLowerCase() === nama.toLowerCase() || k.id === idBaru || window.slugKategori(k.nama) === idBaru;
+    });
+    if (sudahAda) { pesan.textContent = "Kategori itu sudah ada."; return; }
+    try {
+        await simpanBawaanJikaPerlu();
+        await setDoc(doc(db, "categories", idBaru), { nama: nama, urutan: Date.now() });
+        input.value = "";
+        toast("Kategori ditambahkan ✓");
+    } catch (error) {
+        pesan.textContent = error && error.code === "permission-denied"
+            ? "Ditolak Firestore. Pastikan Rules terbaru sudah di-publish."
+            : "Gagal menambah kategori: " + (error && error.message ? error.message : error);
+        console.error(error);
+    }
+}
+
+async function hapusKategori(nama) {
+    const daftar = daftarKategori();
+    const dipakai = products.filter(function (p) { return p.category === nama; }).length;
+    if (dipakai > 0) {
+        alert('Kategori "' + nama + '" masih dipakai ' + dipakai + ' produk. Pindahkan produknya ke kategori lain lewat tombol Ubah dulu.');
+        return;
+    }
+    if (daftar.length <= 1) { alert("Minimal harus ada satu kategori."); return; }
+    if (!confirm('Hapus kategori "' + nama + '"?')) return;
+    const target = daftar.find(function (k) { return k.nama === nama; });
+    const id = (target && target.id) || window.slugKategori(nama);
+    try {
+        await simpanBawaanJikaPerlu();
+        await deleteDoc(doc(db, "categories", id));
+        toast("Kategori dihapus ✓");
+    } catch (error) {
+        alert("Gagal menghapus kategori: " + (error && error.message ? error.message : error));
+        console.error(error);
+    }
 }
 
 function renderRows() {
@@ -116,7 +224,7 @@ function openForm(productId) {
         if (!p) return;
         document.getElementById("adminFormTitle").textContent = "Ubah Produk";
         document.getElementById("apName").value = p.name;
-        document.getElementById("apCategory").value = p.category;
+        pastikanOpsi(document.getElementById("apCategory"), p.category);
         document.getElementById("apPrice").value = p.price;
         document.getElementById("apDesc").value = p.description || "";
         document.getElementById("apStockWrap").style.display = "none";
@@ -145,6 +253,7 @@ async function submitProduct(event) {
     const file = document.getElementById("apPhoto").files[0];
 
     if (name.length < 3) { msg.textContent = "Nama produk minimal 3 huruf."; return; }
+    if (!category) { msg.textContent = "Pilih kategori produk."; return; }
     if (!Number.isFinite(price) || price < 1) { msg.textContent = "Harga tidak valid."; return; }
 
     submit.disabled = true;
@@ -182,6 +291,8 @@ async function submitProduct(event) {
 
 if (adminStockList) {
     adminStockList.addEventListener("click", function (event) {
+        const tombolKategori = event.target.closest("[data-hapus-kategori]");
+        if (tombolKategori) { hapusKategori(tombolKategori.dataset.hapusKategori); return; }
         if (event.target.closest("#adminAddButton")) { openForm(null); return; }
         if (event.target.closest("#apCancel")) { closeForm(); return; }
 
@@ -210,11 +321,16 @@ if (adminStockList) {
 
     adminStockList.addEventListener("submit", function (event) {
         if (event.target.id === "adminProductForm") submitProduct(event);
+        if (event.target.id === "formKategori") tambahKategori(event);
     });
 }
 
 window.addEventListener("catalog-changed", function () {
-    if (isAdmin) renderRows();
+    if (isAdmin) { renderRows(); renderKategori(); }
+});
+
+window.addEventListener("kategori-berubah", function () {
+    if (isAdmin) { renderKategori(); isiPilihanKategori(); }
 });
 
 onAuthStateChanged(auth, function (user) {
@@ -229,6 +345,7 @@ onAuthStateChanged(auth, function (user) {
     editingId = null;
 
     if (isAdmin) {
+        renderKategori();
         renderRows();
         unsubscribeStock = onSnapshot(collection(db, "stock"), function (snapshot) {
             snapshot.forEach(function (docSnap) { stockMap[docSnap.id] = docSnap.data().quantity; });
